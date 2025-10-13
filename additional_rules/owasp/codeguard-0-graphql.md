@@ -4,7 +4,7 @@ languages:
 - javascript
 - typescript
 alwaysApply: false
-version: 1.0.0
+version: 0.1.0
 severity: medium
 ---
 
