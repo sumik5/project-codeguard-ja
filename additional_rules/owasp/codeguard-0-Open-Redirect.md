@@ -1,7 +1,13 @@
 ---
 description: Open Redirect Prevention - Secure handling of user-controlled redirects
   to prevent phishing attacks
-alwaysApply: true
+languages:
+- c
+- javascript
+- php
+- typescript
+- vlang
+alwaysApply: false
 version: 1.0.0
 severity: medium
 ---

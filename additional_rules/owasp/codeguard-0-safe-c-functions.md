@@ -1,6 +1,12 @@
 ---
 description: Safe C Functions
-alwaysApply: true
+languages:
+- c
+- javascript
+- ruby
+- typescript
+- yaml
+alwaysApply: false
 version: 1.0.0
 severity: medium
 ---
