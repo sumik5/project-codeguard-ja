@@ -3,7 +3,7 @@ description: Cryptographic Security Guidelines
 languages:
 - c
 alwaysApply: false
-version: 1.0.0
+0.1.0
 severity: medium
 ---
 

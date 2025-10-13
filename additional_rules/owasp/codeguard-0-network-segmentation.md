@@ -6,7 +6,7 @@ languages:
 - shell
 - yaml
 alwaysApply: false
-version: 1.0.0
+0.1.0
 severity: medium
 ---
 
