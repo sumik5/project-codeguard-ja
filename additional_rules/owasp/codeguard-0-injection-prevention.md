@@ -12,7 +12,7 @@ languages:
 - shell
 - typescript
 alwaysApply: false
-0.1.0
+version: 0.1.0
 severity: medium
 ---
 
