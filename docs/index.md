@@ -11,6 +11,7 @@ AI coding agents are transforming software engineering, but this speed can intro
 - ❌ Using weak cryptographic algorithms
 - ❌ Relying on unsafe functions
 - ❌ Missing authentication/authorization checks
+- ❌ Missing any other security best practice
 
 Project CodeGuard solves this by embedding security best practices directly into AI coding agent workflows. 
 
