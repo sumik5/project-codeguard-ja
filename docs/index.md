@@ -17,7 +17,7 @@ Project CodeGuard solves this by embedding security best practices directly into
 **During and After Code Generation.**
 
 These rules can be used for: 
-- preventing vulnerabilities to be introduced during code generation
+- preventing vulnerabilities from being introduced during code generation
 - automated code review by AI agents
 
 
