@@ -2,6 +2,7 @@
 description: Safe C Functions
 languages:
 - c
+- c++
 - javascript
 - ruby
 - typescript
