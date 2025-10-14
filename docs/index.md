@@ -4,7 +4,7 @@
 
 ## Why Project CodeGuard?
 
-AI coding agents are transforming software engineering, but this speed can introduce security vulnerabilties. Is your AI coding agent implementation introducting security vulnerabilities?
+AI coding agents are transforming software engineering, but this speed can introduce security vulnerabilities. Is your AI coding agent implementation introducing security vulnerabilities?
 
 - ❌ Skipping input validation
 - ❌ Hardcoding secrets and credentials
