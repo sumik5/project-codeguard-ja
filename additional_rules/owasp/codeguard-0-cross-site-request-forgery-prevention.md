@@ -3,6 +3,7 @@ description: Cross-Site Request Forgery (CSRF) Prevention Best Practices
 languages:
 - c
 - go
+- html
 - java
 - javascript
 - php

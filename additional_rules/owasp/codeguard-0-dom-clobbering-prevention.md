@@ -2,6 +2,7 @@
 description: DOM Clobbering Prevention Best Practices
 languages:
 - c
+- html
 - javascript
 - php
 - typescript

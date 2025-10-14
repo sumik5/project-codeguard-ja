@@ -8,6 +8,7 @@ languages:
 - php
 - python
 - ruby
+- sql
 - typescript
 - xml
 alwaysApply: false

@@ -3,6 +3,7 @@ description: Client-side web security (XSS/DOM XSS, CSP, CSRF, clickjacking, XS-
   third-party JS)
 languages:
 - c
+- html
 - javascript
 - php
 - typescript

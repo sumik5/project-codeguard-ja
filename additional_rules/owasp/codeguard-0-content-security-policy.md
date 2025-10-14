@@ -2,6 +2,7 @@
 description: Content Security Policy (CSP) Best Practices
 languages:
 - c
+- html
 - javascript
 - php
 - typescript

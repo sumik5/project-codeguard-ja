@@ -64,6 +64,8 @@ LANGUAGE_TO_EXTENSIONS = {
     "glsl": [".glsl", ".vert", ".frag"],
     "hlsl": [".hlsl"],
     "wgsl": [".wgsl"],
+    "html": [".html", ".htm"],
+    "sql": [".sql", ".ddl", ".dml"],
 }
 
 # Reverse mapping: extension to language (for conversion from globs)
