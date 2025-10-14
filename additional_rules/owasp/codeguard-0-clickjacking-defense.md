@@ -2,6 +2,7 @@
 description: Clickjacking Defense Best Practices
 languages:
 - c
+- html
 - javascript
 - php
 - typescript

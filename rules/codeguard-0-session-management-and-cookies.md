@@ -4,6 +4,7 @@ description: Session management and secure cookies (rotation, fixation, timeouts
 languages:
 - c
 - go
+- html
 - java
 - javascript
 - php

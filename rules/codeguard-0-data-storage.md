@@ -4,6 +4,7 @@ description: Data & storage security (DB isolation, TLS, least privilege, RLS/CL
 languages:
 - c
 - javascript
+- sql
 - yaml
 alwaysApply: false
 ---

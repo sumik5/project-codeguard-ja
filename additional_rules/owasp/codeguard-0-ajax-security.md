@@ -2,6 +2,7 @@
 description: AJAX Security Best Practices for Client-Side Scripts
 languages:
 - c
+- html
 - javascript
 - php
 - typescript

@@ -5,6 +5,7 @@ languages:
 - java
 - javascript
 - python
+- sql
 - yaml
 alwaysApply: false
 version: 0.1.0

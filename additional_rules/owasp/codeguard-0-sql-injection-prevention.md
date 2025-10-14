@@ -9,6 +9,7 @@ languages:
 - php
 - python
 - ruby
+- sql
 - typescript
 alwaysApply: false
 version: 0.1.0

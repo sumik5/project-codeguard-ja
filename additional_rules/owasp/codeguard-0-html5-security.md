@@ -3,6 +3,7 @@ description: HTML5 Security Best Practices
 languages:
 - c
 - go
+- html
 - java
 - javascript
 - php

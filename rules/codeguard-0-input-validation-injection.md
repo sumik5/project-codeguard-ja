@@ -4,6 +4,7 @@ description: Input validation and injection defense (SQL/LDAP/OS), parameterizat
 languages:
 - c
 - go
+- html
 - java
 - javascript
 - php
@@ -11,6 +12,7 @@ languages:
 - python
 - ruby
 - shell
+- sql
 - typescript
 alwaysApply: false
 ---
