@@ -1,10 +1,10 @@
-# Project CodeGuard: Security Rules for AI Coding Assistants
+# Project CodeGuard: Security Rules for AI Coding Agents
 
-Project CodeGuard is an open-source, model-agnostic security framework that embeds secure-by-default practices into AI coding workflows. It provides comprehensive security rules that guide AI assistants to generate more secure code automatically.
+[Project CodeGuard](https://github.com/project-codeguard/rules) is an open-source, model-agnostic security framework that embeds secure-by-default practices into AI coding agent workflows. It provides comprehensive security rules that guide AI assistants to generate more secure code automatically.
 
 ## Why Project CodeGuard?
 
-AI-powered IDEs and coding agents are transforming software development, but this speed can introduce security gaps:
+AI coding agents are transforming software engineering, but this speed can introduce security vulnerabilties. Is your AI coding agent implementation introducting security vulnerabilities?
 
 - ❌ Skipping input validation
 - ❌ Hardcoding secrets and credentials
@@ -12,43 +12,20 @@ AI-powered IDEs and coding agents are transforming software development, but thi
 - ❌ Relying on unsafe functions
 - ❌ Missing authentication/authorization checks
 
-**Project CodeGuard solves this by embedding security best practices directly into AI coding workflows.**
+Project CodeGuard solves this by embedding security best practices directly into AI coding agent workflows. 
 
-## Key Features
+**During and After Code Generation.**
 
-<div class="grid cards" markdown>
+These rules can be used for: 
+- preventing vulnerabilities to be introduced during code generation
+- automated code review by AI agents
 
--   :material-shield-check: **Comprehensive Coverage**
-
-    ---
-
-    Security rules covering cryptography, input validation, authentication, authorization, and more
-
--   :material-robot: **Model-Agnostic**
-
-    ---
-
-    Works with any AI coding assistant - Cursor, Windsurf, GitHub Copilot, and more
-
--   :material-speedometer: **Zero Friction**
-
-    ---
-
-    No developer overhead or workflow changes required - works transparently in the background
-
--   :material-open-source-initiative: **Open Source**
-
-    ---
-
-    Apache 2.0 licensed, community-driven, and extensible for your specific needs
-
-</div>
 
 ## Security Coverage
 
 Our rules cover essential security domains:
 
-- **🔐 Cryptography**: Safe algorithms (AES-256, SHA-256+), secure key management, certificate validation
+- **🔐 Cryptography**: Safe algorithms (including post-quantum cryptography), secure key management, certificate validation
 - **🛡️ Input Validation**: SQL injection prevention, XSS protection, command injection defense
 - **🔑 Authentication**: MFA best practices, OAuth/OIDC, secure session management
 - **⚡ Authorization**: RBAC/ABAC, access control, IDOR prevention
@@ -80,8 +57,4 @@ Get started in minutes:
 - **📋 Issues**: [Report bugs or request features](https://github.com/project-codeguard/rules/issues)
 - **💬 Discussions**: [Join the conversation](https://github.com/project-codeguard/rules/discussions)
 - **🤝 Contributing**: [Learn how to contribute](https://github.com/project-codeguard/rules/blob/main/CONTRIBUTING.md)
-
-## License
-
-Project CodeGuard is released under the [Apache License](https://github.com/project-codeguard/rules/blob/main/LICENSE).
 
