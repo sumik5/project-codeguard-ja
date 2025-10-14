@@ -1,6 +1,6 @@
 ---
 trigger: glob
-globs: **/*.bash,**/*.c,**/*.go,**/*.h,**/*.java,**/*.js,**/*.jsx,**/*.mjs,**/*.php,**/*.ps1,**/*.py,**/*.pyi,**/*.pyx,**/*.rb,**/*.sh,**/*.ts,**/*.tsx
+globs: **/*.bash,**/*.c,**/*.ddl,**/*.dml,**/*.go,**/*.h,**/*.htm,**/*.html,**/*.java,**/*.js,**/*.jsx,**/*.mjs,**/*.php,**/*.ps1,**/*.py,**/*.pyi,**/*.pyx,**/*.rb,**/*.sh,**/*.sql,**/*.ts,**/*.tsx
 title: Input validation and injection defense (SQL/LDAP/OS), parameterization, prototype
   pollution
 version: 0.1.0

@@ -1,5 +1,5 @@
 ---
-applyTo: **/*.c,**/*.h,**/*.js,**/*.jsx,**/*.mjs,**/*.php,**/*.ts,**/*.tsx,**/*.v
+applyTo: **/*.c,**/*.h,**/*.htm,**/*.html,**/*.js,**/*.jsx,**/*.mjs,**/*.php,**/*.ts,**/*.tsx,**/*.v
 title: Client-side web security (XSS/DOM XSS, CSP, CSRF, clickjacking, XS-Leaks, third-party
   JS)
 version: 0.1.0
