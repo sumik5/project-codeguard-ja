@@ -58,3 +58,5 @@ Get started in minutes:
 - **📋 Issues**: [Report bugs or request features](https://github.com/project-codeguard/rules/issues)
 - **💬 Discussions**: [Join the conversation](https://github.com/project-codeguard/rules/discussions)
 - **🤝 Contributing**: [Learn how to contribute](https://github.com/project-codeguard/rules/blob/main/CONTRIBUTING.md)
+
+Copyright © 2025 Cisco Systems, Inc. Licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
