@@ -3,8 +3,6 @@ description: XML Security Rule
 languages:
 - xml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 Enforce robust XML security practices to prevent XXE, SSRF, DoS, schema poisoning, and data integrity issues in XML parsing and validation.

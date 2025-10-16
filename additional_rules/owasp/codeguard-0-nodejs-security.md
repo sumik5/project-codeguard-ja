@@ -5,8 +5,6 @@ languages:
 - javascript
 - typescript
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Node.js Security Guidelines

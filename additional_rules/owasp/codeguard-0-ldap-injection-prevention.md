@@ -12,8 +12,6 @@ languages:
 - xml
 - yaml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## LDAP Injection Prevention Guidelines

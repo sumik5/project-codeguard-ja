@@ -10,8 +10,6 @@ languages:
 - ruby
 - typescript
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 Security questions are no longer considered a strong authentication factor in authentication systems. Modern best practices strongly recommend against using them as a standalone method for authentication or account recovery.

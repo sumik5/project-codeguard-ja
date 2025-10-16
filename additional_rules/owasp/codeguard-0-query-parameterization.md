@@ -9,8 +9,6 @@ languages:
 - rust
 - sql
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Query Parameterization Guidelines

@@ -12,8 +12,6 @@ languages:
 - swift
 - typescript
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Multifactor Authentication Guidelines

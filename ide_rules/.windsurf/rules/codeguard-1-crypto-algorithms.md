@@ -1,7 +1,7 @@
 ---
 trigger: always_on
 title: Cryptographic Security Guidelines
-version: 0.1.0
+version: 1.0.0
 ---
 
 rule_id: codeguard-1-crypto-algorithms

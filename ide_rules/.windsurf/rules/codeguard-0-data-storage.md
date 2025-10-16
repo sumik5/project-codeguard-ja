@@ -3,7 +3,7 @@ trigger: glob
 globs: **/*.c,**/*.ddl,**/*.dml,**/*.h,**/*.js,**/*.jsx,**/*.mjs,**/*.sql,**/*.yaml,**/*.yml
 title: Data & storage security (DB isolation, TLS, least privilege, RLS/CLS, backups,
   auditing)
-version: 0.1.0
+version: 1.0.0
 ---
 
 rule_id: codeguard-0-data-storage

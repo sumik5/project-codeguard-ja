@@ -4,8 +4,6 @@ languages:
 - c
 - matlab
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 The security of your compiled application depends heavily on the options you pass to your C/C++ compiler and linker. Modern toolchains provide a powerful set of features to harden your binaries against common exploitation techniques.

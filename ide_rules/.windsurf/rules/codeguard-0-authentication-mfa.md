@@ -3,7 +3,7 @@ trigger: glob
 globs: **/*.c,**/*.go,**/*.h,**/*.java,**/*.js,**/*.jsx,**/*.kt,**/*.kts,**/*.m,**/*.mjs,**/*.php,**/*.py,**/*.pyi,**/*.pyx,**/*.rb,**/*.swift,**/*.ts,**/*.tsx
 title: Authentication and MFA best practices (passwords, MFA, OAuth/OIDC, SAML, recovery,
   tokens)
-version: 0.1.0
+version: 1.0.0
 ---
 
 rule_id: codeguard-0-authentication-mfa

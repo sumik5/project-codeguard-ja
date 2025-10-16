@@ -7,8 +7,6 @@ languages:
 - php
 - typescript
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 It is crucial to follow AJAX security best practices to prevent common web vulnerabilities. Here are some guidelines to keep in mind:

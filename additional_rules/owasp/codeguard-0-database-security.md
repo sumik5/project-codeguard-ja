@@ -8,8 +8,6 @@ languages:
 - sql
 - yaml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Database Security Guidelines

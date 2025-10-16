@@ -7,8 +7,6 @@ languages:
 - php
 - typescript
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Content Security Policy (CSP): A Defense-in-Depth Strategy

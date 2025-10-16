@@ -2,7 +2,7 @@
 trigger: glob
 globs: **/*.c,**/*.go,**/*.h,**/*.java,**/*.js,**/*.jsx,**/*.kt,**/*.kts,**/*.m,**/*.mjs,**/*.php,**/*.py,**/*.pyi,**/*.pyx,**/*.rb,**/*.swift,**/*.ts,**/*.tsx,**/*.wsdl,**/*.xml,**/*.xsd,**/*.xslt,**/*.yaml,**/*.yml
 title: Additional Cryptography guidance
-version: 0.1.0
+version: 1.0.0
 ---
 
 rule_id: codeguard-0-additional-cryptography

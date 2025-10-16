@@ -2,7 +2,7 @@
 applyTo: **/*.c,**/*.h,**/*.htm,**/*.html,**/*.js,**/*.jsx,**/*.mjs,**/*.php,**/*.ts,**/*.tsx,**/*.v
 title: Client-side web security (XSS/DOM XSS, CSP, CSRF, clickjacking, XS-Leaks, third-party
   JS)
-version: 0.1.0
+version: 1.0.0
 ---
 
 rule_id: codeguard-0-client-side-web-security

@@ -8,8 +8,6 @@ languages:
 - xml
 - yaml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## JSON Web Token Security for Java

@@ -2,7 +2,7 @@
 description: Session management and secure cookies (rotation, fixation, timeouts,
   theft detection)
 globs: **/*.c,**/*.go,**/*.h,**/*.htm,**/*.html,**/*.java,**/*.js,**/*.jsx,**/*.mjs,**/*.php,**/*.py,**/*.pyi,**/*.pyx,**/*.rb,**/*.ts,**/*.tsx
-version: 0.1.0
+version: 1.0.0
 ---
 
 rule_id: codeguard-0-session-management-and-cookies

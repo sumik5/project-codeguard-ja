@@ -2,7 +2,7 @@
 applyTo: **/*.c,**/*.h,**/*.js,**/*.jsx,**/*.mjs,**/*.yaml,**/*.yml
 title: Logging & monitoring (structured telemetry, redaction, integrity, detection
   & alerting)
-version: 0.1.0
+version: 1.0.0
 ---
 
 rule_id: codeguard-0-logging

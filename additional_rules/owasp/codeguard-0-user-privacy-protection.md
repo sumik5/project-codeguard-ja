@@ -11,8 +11,6 @@ languages:
 - swift
 - typescript
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 - Implement strong cryptography, enforce HTTPS with HSTS, enable certificate pinning,
