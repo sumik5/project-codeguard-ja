@@ -3,7 +3,7 @@ trigger: glob
 globs: **/*.c,**/*.go,**/*.h,**/*.java,**/*.php,**/*.py,**/*.pyi,**/*.pyx,**/*.rb,**/*.wsdl,**/*.xml,**/*.xsd,**/*.xslt
 title: XML security and safe deserialization (DTD/XXE hardening, schema validation,
   no unsafe native deserialization)
-version: 0.1.0
+version: 1.0.0
 ---
 
 rule_id: codeguard-0-xml-and-serialization

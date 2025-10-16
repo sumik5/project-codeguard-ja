@@ -1,7 +1,7 @@
 ---
 applyTo: **/*
 title: No Hardcoded Credentials
-version: 0.1.0
+version: 1.0.0
 ---
 
 rule_id: codeguard-1-hardcoded-credentials

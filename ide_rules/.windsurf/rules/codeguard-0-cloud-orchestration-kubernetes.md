@@ -3,7 +3,7 @@ trigger: glob
 globs: **/*.js,**/*.jsx,**/*.mjs,**/*.yaml,**/*.yml
 title: Kubernetes hardening (RBAC, admission policies, network policies, secrets,
   supply chain)
-version: 0.1.0
+version: 1.0.0
 ---
 
 rule_id: codeguard-0-cloud-orchestration-kubernetes
