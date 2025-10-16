@@ -8,8 +8,6 @@ languages:
 - typescript
 - vlang
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Introduction

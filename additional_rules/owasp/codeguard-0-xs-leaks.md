@@ -5,8 +5,6 @@ languages:
 - javascript
 - typescript
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 Protecting your applications from Cross-Site Leaks is crucial for safeguarding user privacy. XS-Leaks are a class of vulnerabilities that exploit subtle browser behaviors to extract sensitive user information across origins. 

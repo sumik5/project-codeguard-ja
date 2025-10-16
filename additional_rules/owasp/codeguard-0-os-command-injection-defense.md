@@ -11,8 +11,6 @@ languages:
 - ruby
 - shell
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## OS Command Injection Defense Guidelines

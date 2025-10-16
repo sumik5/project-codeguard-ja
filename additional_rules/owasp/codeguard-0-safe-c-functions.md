@@ -8,8 +8,6 @@ languages:
 - typescript
 - yaml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 # Prioritize Safe Memory and String Functions in C/C++

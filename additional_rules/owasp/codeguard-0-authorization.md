@@ -11,8 +11,6 @@ languages:
 - typescript
 - yaml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 Implementing robust authorization is critical to ensure users can only access the data and features they are permitted to. While authentication confirms who a user is, authorization determines what they can do.

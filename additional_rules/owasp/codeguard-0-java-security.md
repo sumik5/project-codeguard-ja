@@ -8,8 +8,6 @@ languages:
 - xml
 - yaml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Java Security Guidelines

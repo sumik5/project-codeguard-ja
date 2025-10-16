@@ -5,8 +5,6 @@ languages:
 - java
 - xml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Introduction - What is JAAS authentication

@@ -11,8 +11,6 @@ languages:
 - typescript
 - xml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Web Service Security

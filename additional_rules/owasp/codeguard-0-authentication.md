@@ -10,8 +10,6 @@ languages:
 - ruby
 - typescript
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 Secure authentication is one of the most critical aspects of application development.

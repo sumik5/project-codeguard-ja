@@ -4,8 +4,6 @@ languages:
 - c
 - python
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Django Security Guidelines

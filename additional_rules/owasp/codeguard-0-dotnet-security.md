@@ -5,8 +5,6 @@ languages:
 - javascript
 - xml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## .NET Security Guidelines

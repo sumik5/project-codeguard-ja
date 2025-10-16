@@ -7,8 +7,6 @@ languages:
 - typescript
 - yaml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Ruby on Rails Security Guidelines

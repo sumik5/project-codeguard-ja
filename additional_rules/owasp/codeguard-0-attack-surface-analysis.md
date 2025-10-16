@@ -12,8 +12,6 @@ languages:
 - typescript
 - yaml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 Understanding and managing your application's attack surface is a fundamental part of building secure software. Your application's attack surface is the sum of all points where an unauthorized user (an attacker) can try to enter data, extract data, or invoke execution. Here’s how to approach it:

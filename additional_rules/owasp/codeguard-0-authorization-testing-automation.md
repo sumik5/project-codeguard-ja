@@ -10,8 +10,6 @@ languages:
 - xml
 - yaml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 Enforce Automated Authorization Testing Using a Formal Authorization Matrix

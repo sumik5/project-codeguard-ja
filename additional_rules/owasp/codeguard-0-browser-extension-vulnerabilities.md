@@ -5,8 +5,6 @@ languages:
 - javascript
 - typescript
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 A browser extension can access sensitive user data and modify web page content, making security a top priority. Here are the key areas to focus on when developing extensions.

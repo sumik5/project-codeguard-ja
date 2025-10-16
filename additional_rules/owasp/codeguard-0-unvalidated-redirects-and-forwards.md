@@ -9,8 +9,6 @@ languages:
 - rust
 - typescript
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Unvalidated Redirects and Forwards Prevention

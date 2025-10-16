@@ -9,8 +9,6 @@ languages:
 - swift
 - xml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## XML External Entity Prevention

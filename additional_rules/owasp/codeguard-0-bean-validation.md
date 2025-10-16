@@ -4,8 +4,6 @@ languages:
 - java
 - xml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 Using a declarative, centralized approach to validation is crucial for security and maintainability. The Java Bean Validation standard (now Jakarta Validation) and its primary implementation, Hibernate Validator, provide a powerful way to handle this.

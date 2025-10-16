@@ -4,8 +4,6 @@ languages:
 - d
 - javascript
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 ## Node.js Docker Security Guidelines

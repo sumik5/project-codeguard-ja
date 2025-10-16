@@ -7,8 +7,6 @@ languages:
 - xml
 - yaml
 alwaysApply: false
-version: 0.1.0
-severity: medium
 ---
 
 The CI/CD pipeline is the backbone of a software development process. It's also a high-value target for attackers. Securing the pipeline is essential for protecting code, infrastructure, and users.
