@@ -64,4 +64,15 @@ Get started in minutes:
 - **💬 Discussions**: [Join the conversation](https://github.com/project-codeguard/rules/discussions)
 - **🤝 Contributing**: [Learn how to contribute](https://github.com/project-codeguard/rules/blob/main/CONTRIBUTING.md)
 
-Copyright © 2025 Cisco Systems, Inc. Licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)
+
+## 📄 Licensing
+
+This project uses dual licensing:
+
+- **Security Rules & Documentation**: Licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) - includes all rule files, documentation, and project content
+- **Source Code & Tools**: The `src/` directory is licensed under [Apache License 2.0](src/LICENSE.md) - includes conversion tools, validators, and other software components
+
+This licensing approach ensures the security rules remain freely accessible and reusable while providing appropriate terms for software components.
+
+
+Copyright © 2025 Cisco Systems, Inc.
