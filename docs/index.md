@@ -15,7 +15,7 @@ AI coding agents are transforming software engineering, but this speed can intro
 
 Project CodeGuard solves this by embedding security best practices directly into AI coding agent workflows. 
 
-**Before,During, and After Code Generation.**
+**Before, During, and After Code Generation.**
 
 Project CodeGuard can be used **before**, **during** and **after** code generation. They can be used at the AI agent planning phase or for initial specification-driven engineering tasks. Project CodeGuard rules can also be used to prevent vulnerabilities from being introduced during code generation. They can also be used by automated code-review AI agents. 
 
