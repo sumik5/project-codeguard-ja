@@ -25,6 +25,32 @@ This FAQ document provides clear, concise answers to help developers seamlessly 
 
 ---
 
+## Q: Why does the downloaded release folder appear empty?
+
+**A:** After downloading and extracting the release, the folders may appear empty because the rule directories (`.cursor/`, `.windsurf/`, `.github/`) start with a dot (`.`) and are hidden by default on most operating systems.
+
+**To show hidden files:**
+
+=== "macOS"
+    
+    In Finder, navigate to the extracted `ide_rules/` folder and press ++cmd+shift+period++ to toggle the visibility of hidden files. You should now see the `.cursor/`, `.windsurf/`, and `.github/` directories.
+
+=== "Windows"
+    
+    In File Explorer:
+    
+    1. Navigate to the extracted `ide_rules/` folder
+    2. Click on the **View** tab in the ribbon
+    3. Check the **Hidden items** checkbox
+
+=== "Linux"
+    
+    In your file manager, press ++ctrl+h++ to toggle hidden files, or use `ls -la` in the terminal to view all files including hidden ones.
+
+Once hidden files are visible, you can copy the appropriate directory (`.cursor/`, `.windsurf/`, or `.github/`) to your project root.
+
+---
+
 ## Q: Can I use this with Claude Code?
 
 **A:** Yes! Claude Code automatically reads and follows instructions from a `CLAUDE.md` file in your project root. To use Project CodeGuard rules with Claude Code you can point to the Project CodeGuard rules in your `CLAUDE.md` file.

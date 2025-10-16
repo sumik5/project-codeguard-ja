@@ -48,7 +48,7 @@ Get started in minutes:
 2. **Copy to your project** - Place AI agent and IDE specific rules in your repository
 3. **Start coding** - AI assistants will automatically follow security best practices
 
-- Additional details in the [Get Started →](getting-started.md)
+- Additional details in the [Get Started →](https://project-codeguard.org/getting-started/)
 
 
 ## How It Works
