@@ -1,4 +1,7 @@
 # Project CodeGuard: Security Rules for AI Coding Agents
+![Securing](https://img.shields.io/badge/Securing%20AI%20Generated%20Code-green)
+![Open Source](https://img.shields.io/badge/Now-Open%20Source-brightgreen)
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 
 This project is an AI model-agnostic security framework and ruleset (internally nicknamed "Project CodeGuard" when developed at Cisco) that embeds secure-by-default practices into AI coding workflows (generation and review). It ships core security rules, translators for popular coding agents, and validators to test rule compliance.
 
@@ -18,9 +21,10 @@ Project CodeGuard solves this by embedding security best practices directly into
 
 **During and After Code Generation.**
 
-These rules can be used for: 
-- preventing vulnerabilities from being introduced during code generation
-- automated code review by AI agents
+Project CodeGuard is designed to integrate seamlessly across the entire AI coding lifecycle. 
+- **Before code generation**, rules can be used for the design of a product and for spec-driven development. You can use the rules in the “planning phase” of an AI coding agent to steer models toward secure patterns from the start.
+- **During code generation**, rules can help AI agents to prevent security issues as code is being written.
+- **After code generation**, AI agents like Cursor, GitHub Copilot, Codex, Windsurf, and Claude Code can use the rules for code review. 
 
 
 ## Security Coverage

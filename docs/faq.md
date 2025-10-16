@@ -29,7 +29,7 @@ This FAQ document provides clear, concise answers to help developers seamlessly 
 
 **A:** Yes! Claude Code automatically reads and follows instructions from a `CLAUDE.md` file in your project root. To use Project CodeGuard rules with Claude Code you can point to the Project CodeGuard rules in your `CLAUDE.md` file.
 
-You can point to the Project CodeGuard rules in your `CLAUDE.md` file. When Claude Code operates in your project, it treats the Project CodeGuard security rules in `CLAUDE.md` as authoritative system instructions.
+When Claude Code operates in your project, it treats the Project CodeGuard security rules in `CLAUDE.md` as authoritative system instructions.
 
 
 ## Q: How can I report a problem or enhancement to any of the rules?
