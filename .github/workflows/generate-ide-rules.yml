@@ -8,6 +8,7 @@ on:
     paths:
       - 'rules/**'
       - 'src/**'
+      - 'pyproject.toml'
   workflow_dispatch:
 
 jobs:
