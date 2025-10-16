@@ -1,6 +1,7 @@
 # Project CodeGuard: Security Rules for AI Coding Agents
 
-[Project CodeGuard](https://project-codeguard.org) is an open-source, model-agnostic security framework that embeds secure-by-default practices into AI coding agent workflows. It provides comprehensive security rules that guide AI assistants to generate more secure code automatically.
+This project is an AI model-agnostic security framework and ruleset (internally nicknamed "Project CodeGuard" when developed at Cisco) that embeds secure-by-default practices into AI coding workflows (generation and review). It ships core security rules, translators for popular coding agents, and validators to test rule compliance.
+
 
 ## Why Project CodeGuard?
 
