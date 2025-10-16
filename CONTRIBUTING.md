@@ -15,6 +15,8 @@ In general, a Project CodeGuard Contributor is expected to:
 
 When contributing to any CodeGuard repository, please first discuss the change you wish to make via a GitHub issue. For small fixes, opening a PR directly with clear context is fine; for larger changes or new features, please open an issue first to align on scope and approach.
 
+Please note that all of your interactions in the project are subject to our [Code of Conduct](CODE_OF_CONDUCT.md). This includes creation of issues or pull requests, commenting on issues or pull requests, and extends to all interactions in any real-time space.
+
 Please be respectful of differing opinions when discussing potential contributions. We aim for a welcoming, collaborative environment for all contributors.
 
 ## Content Update Governance Process
@@ -60,12 +62,14 @@ If you are new to the project and looking for an entry point, check the open iss
 
 ## Submitting a new issue
 
-If you want to create a new issue that doesn’t exist already, open a new one and include:
+If you want to create a new issue that doesn't exist already, open a new one and include:
 - a concise problem statement or feature request
 - steps to reproduce (for bugs)
 - expected vs. actual behavior
 - environment details (versions, OS) if applicable
 - proposed approach or alternatives (optional but helpful)
+
+**If you discover a security bug, please do not report it through GitHub. Instead, please see security procedures in [SECURITY.md](SECURITY.md).**
 
 ## Submitting a new pull request and review process
 
