@@ -29,7 +29,7 @@ This FAQ document provides clear, concise answers to help developers seamlessly 
 **A:** No. The always-on rules are designed to be lightweight and efficient, and should not consume a lot of the AI agent's context window. The "glob" rules are designed to be applied only to the related file types specified in the rule.
 
 ---
-## Q: What are the `additional_rules` folder?
+## Q: What is the `additional_rules` folder?
 
 **A:** The `additional_rules` folder contains rules that can be used to supplement the Project CodeGuard core rules. These rules are not always-on and are not included in the downloaded release. They are only available in the `project-codeguard/rules` repository for code review and security assessments post-code generation.
 
