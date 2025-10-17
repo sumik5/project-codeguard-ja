@@ -37,7 +37,7 @@ This FAQ document provides clear, concise answers to help developers seamlessly 
 
 ## Q: How can I use the rules in my own AI agent?
 
-**A:** You can use the rules in your own AI agent by creating a custom ruleset. You can create a custom ruleset by creating a new file in the `.cursor/rules`, `.windsurf/rules`, or `.github/instructions` directory and adding the rules you want to apply. You can also use the `project-codeguard/rules` repository as a template to create your own ruleset.
+**A:** You can use the rules in your own AI agent by creating a custom ruleset. You can create a custom ruleset by creating a new file in the `.cursor/rules`, `.windsurf/rules`, or `.github/instructions` directories and adding the rules you want to apply. You can also use the `project-codeguard/rules` repository as a template to create your own ruleset.
 
 ---
 
