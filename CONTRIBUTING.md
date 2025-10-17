@@ -118,7 +118,7 @@ Maintainers aim to review pull requests and issues within 3 business days.
 - `feature` – feature/this-is-a-new-feature-branch (target `develop` for content updates, `main` for non-content changes)
 - `codebugfix` – codebugfix/description-of-the-bug (typically targets `main`)
 - `languagefix` – languagefix/description-of-the-language-fix (typically targets `main`)
-- `docs` – docs/description-of-the-documentation-change (typically targets `main`)
+- `docs` – docs/description-of-the-documentation-change (typically targets `main`; documentation changes are exempt from the content update rule above)
 - `release` – release/description-of-the-release – cut from `main` when ready
 
 ### Commit messages format
