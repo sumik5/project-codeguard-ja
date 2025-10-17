@@ -116,15 +116,10 @@ Maintainers aim to review pull requests and issues within 3 business days.
 - `main` – main development branch and authoritative source; updated after community approval for content changes
 - `develop` – staging area for community review of content updates; feature branches for content changes target this branch
 - `feature` – feature/this-is-a-new-feature-branch (target `develop` for content updates, `main` for non-content changes)
-- `codebugfix` – codebugfix/name-of-the-bug (typically targets `main`)
-- `languagefix` – languagefix/fix-details (typically targets `main`)
-- `release` – release/1.0.0 – cut from `main` when ready
-
-### Rebasing note
-
-**For content updates**: After completing work on a feature branch, rebase on `develop` before opening a PR. After PR approval, rebase again to ensure the latest `develop` changes are included before merging.
-
-**For non-content changes**: After completing work on a feature branch, rebase on `main` before opening a PR. After PR approval, rebase again to ensure the latest `main` changes are included before merging.
+- `codebugfix` – codebugfix/description-of-the-bug (typically targets `main`)
+- `languagefix` – languagefix/description-of-the-language-fix (typically targets `main`)
+- `docs` – docs/description-of-the-documentation-change (typically targets `main`; documentation changes are exempt from the content update rule above)
+- `release` – release/description-of-the-release – cut from `main` when ready
 
 ### Commit messages format
 

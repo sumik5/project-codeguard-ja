@@ -24,6 +24,22 @@ This FAQ document provides clear, concise answers to help developers seamlessly 
 3. Restart your IDE and start coding - the AI assistant will automatically follow the security rules
 
 ---
+## Q: Will these rules consume a lot of the AI agent's **context window**?
+
+**A:** No. The always-on rules are designed to be lightweight and efficient, and should not consume a lot of the AI agent's context window. The "glob" rules are designed to be applied only to the related file types specified in the rule.
+
+---
+## Q: What is the `additional_rules` folder?
+
+**A:** The `additional_rules` folder contains rules that can be used to supplement the Project CodeGuard core rules. These rules are not always-on and are not included in the downloaded release. They are only available in the `project-codeguard/rules` repository for code review and security assessments post-code generation.
+
+---
+
+## Q: How can I use the rules in my own AI agent?
+
+**A:** You can use the rules in your own AI agent by creating a custom ruleset. You can create a custom ruleset by creating a new file in the `.cursor/rules`, `.windsurf/rules`, or `.github/instructions` directories and adding the rules you want to apply. You can also use the `project-codeguard/rules` repository as a template to create your own ruleset.
+
+---
 
 ## Q: Why does the downloaded release folder appear empty?
 
