@@ -1,0 +1,17 @@
+{
+  "name": "codeguard-security",
+  "description": "Security code review skill based on Project CodeGuard's comprehensive security rules. Helps AI coding agents write secure code and prevent common vulnerabilities.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Project CodeGuard",
+    "url": "https://project-codeguard.org"
+  },
+  "license": "CC-BY-4.0 (rules), Apache-2.0 (tools)",
+  "homepage": "https://github.com/project-codeguard/rules",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/project-codeguard/rules.git"
+  },
+  "keywords": ["security", "secure-coding", "vulnerability-prevention", "code-review", "appsec"]
+}
+

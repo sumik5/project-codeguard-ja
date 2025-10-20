@@ -1,0 +1,23 @@
+{
+  "name": "project-codeguard",
+  "description": "Official Project CodeGuard plugins for secure AI-assisted coding",
+  "owner": {
+    "name": "Project CodeGuard",
+    "url": "https://project-codeguard.org",
+    "email": "contact@project-codeguard.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/project-codeguard/rules.git"
+  },
+  "plugins": [
+    {
+      "name": "codeguard-security",
+      "source": ".",
+      "description": "Comprehensive security rules for AI coding agents",
+      "version": "1.0.0",
+      "tags": ["security", "code-review", "vulnerability-prevention"]
+    }
+  ]
+}
+
