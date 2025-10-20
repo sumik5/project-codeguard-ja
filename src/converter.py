@@ -44,7 +44,7 @@ class ConversionResult:
         filename: Original filename (e.g., 'my-rule.md')
         basename: Filename without extension (e.g., 'my-rule')
         outputs: Dictionary mapping format names to their outputs
-
+        languages: List of programming languages the rule applies to, empty list if always applies
     Example:
         result = ConversionResult(
             filename="my-rule.md",
@@ -55,13 +55,15 @@ class ConversionResult:
                     extension=".mdc",
                     subpath=".cursor/rules"
                 )
-            }
+            },
+            languages=["python", "javascript"]
         )
     """
 
     filename: str
     basename: str
     outputs: dict[str, FormatOutput]
+    languages: list[str]
 
 
 class RuleConverter:
@@ -239,4 +241,5 @@ class RuleConverter:
             filename=filename,
             basename=basename,
             outputs=outputs,
+            languages=rule.languages,
         )
