@@ -77,12 +77,24 @@ class BaseFormat(ABC):
     @abstractmethod
     def get_output_subpath(self) -> str:
         """
-        Return the subdirectory path for this format relative to ide_rules.
+        Return the subdirectory path for this format.
 
         Returns:
-            Subdirectory path (e.g., '.cursor/rules', '.windsurf/rules')
+            Subdirectory path (e.g., '.cursor/rules', 'skills/software-security/rules')
         """
         pass
+
+    def outputs_to_ide_rules(self) -> bool:
+        """
+        Return whether this format outputs to the ide_rules directory.
+        
+        Returns:
+            True if output should go to ide_rules/, False for project root
+            
+        Override this method if your format outputs to project root instead
+        of ide_rules/ (e.g., Claude Code plugin outputs to skills/)
+        """
+        return True
 
     @abstractmethod
     def generate(self, rule: ProcessedRule, globs: str) -> str:

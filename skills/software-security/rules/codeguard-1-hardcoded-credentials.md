@@ -1,8 +1,9 @@
 ---
 description: No Hardcoded Credentials
-languages: []
 alwaysApply: true
 ---
+
+rule_id: codeguard-1-hardcoded-credentials
 
 # No Hardcoded Credentials
 

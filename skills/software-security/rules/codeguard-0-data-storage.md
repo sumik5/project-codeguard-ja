@@ -9,6 +9,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-data-storage
+
 ## Database Security Guidelines
 
 This rule advises on securely configuring SQL and NoSQL databases to protect against data breaches and unauthorized access:

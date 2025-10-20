@@ -13,6 +13,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-file-handling-and-uploads
+
 ## File Upload Security Guidelines
 
 This rule advises on secure file upload practices to prevent malicious file attacks and protect system integrity:

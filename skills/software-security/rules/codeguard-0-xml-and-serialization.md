@@ -12,6 +12,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-xml-and-serialization
+
 ## XML & Serialization Hardening
 
 Secure parsing and processing of XML and serialized data; prevent XXE, entity expansion, SSRF, DoS, and unsafe deserialization across platforms.

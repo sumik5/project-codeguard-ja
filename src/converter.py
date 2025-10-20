@@ -27,12 +27,14 @@ class FormatOutput:
     Attributes:
         content: The fully formatted content with frontmatter
         extension: File extension including dot (e.g., '.mdc')
-        subpath: Subdirectory path relative to ide_rules (e.g., '.cursor/rules')
+        subpath: Subdirectory path (e.g., '.cursor/rules', 'skills/software-security/rules')
+        outputs_to_ide_rules: Whether this format outputs to ide_rules/ or project root
     """
 
     content: str
     extension: str
     subpath: str
+    outputs_to_ide_rules: bool
 
 
 @dataclass
@@ -50,10 +52,11 @@ class ConversionResult:
             filename="my-rule.md",
             basename="my-rule",
             outputs={
-                "CursorFormat": FormatOutput(
+                "cursor": FormatOutput(
                     content="---\\n...\\n---\\n\\nContent",
                     extension=".mdc",
-                    subpath=".cursor/rules"
+                    subpath=".cursor/rules",
+                    outputs_to_ide_rules=True
                 )
             }
         )
@@ -233,6 +236,7 @@ class RuleConverter:
                 content=format_handler.generate(rule, globs),
                 extension=format_handler.get_file_extension(),
                 subpath=format_handler.get_output_subpath(),
+                outputs_to_ide_rules=format_handler.outputs_to_ide_rules(),
             )
 
         return ConversionResult(

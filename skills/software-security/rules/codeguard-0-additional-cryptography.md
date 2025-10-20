@@ -17,6 +17,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-additional-cryptography
+
 ## Additional Cryptography & TLS
 
 Apply modern, vetted cryptography for data at rest and in transit. Manage keys safely, configure TLS correctly, deploy HSTS, and consider pinning only when appropriate.

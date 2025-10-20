@@ -11,6 +11,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-iac-security
+
 # Infrastructure as Code (IaC) Security
 
 When designing cloud infrastructure and writing Infrastructure as Code (IaC) in languages like Terraform and CloudFormation, always use secure practices and defaults such as preventing public exposure and follow the principle of least privilege. Actively identify security misconfigurations and provide secure alternatives.

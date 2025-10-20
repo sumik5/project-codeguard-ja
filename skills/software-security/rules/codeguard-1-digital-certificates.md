@@ -1,8 +1,9 @@
 ---
 description: Certificate Best Practices
-languages: []
 alwaysApply: true
 ---
+
+rule_id: codeguard-1-digital-certificates
 
 When you encounter data that appears to be an X.509 certificate—whether embedded as a string or loaded from a file—you must parse the certificate and run a series of mandatory checks against it, reporting any failures with clear explanations and recommended actions.
 
