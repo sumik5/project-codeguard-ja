@@ -23,6 +23,9 @@ This skill should be activated when:
 When writing or reviewing code:
 1. Always-Apply Rules: Some rules MUST be checked on every code operation:
 - `codeguard-1-hardcoded-credentials.md` - Never hardcode secrets, passwords, API keys, or tokens
+- `codeguard-1-crypto-algorithms.md` - Use only modern, secure cryptographic algorithms
+- `codeguard-1-digital-certificates.md` - Validate and manage digital certificates securely
+- `codeguard-1-safe-c-functions.md` - Avoid unsafe C/C++ functions and use safe alternatives
 2. Context-Specific Rules: Apply rules based on the technology, language, or feature being implemented:
 - Review the relevant rule files in the `rules/` directory
 - Match rules to the specific languages and technologies in use
