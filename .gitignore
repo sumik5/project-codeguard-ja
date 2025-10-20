@@ -162,3 +162,4 @@ AGENTS.md
 
 # Claude Code Plugin
 .claude-plugin/.cache
+.claude/settings.local.json
