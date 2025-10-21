@@ -16,6 +16,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-authentication-mfa
+
 ## Authentication & MFA
 
 Build a resilient, user-friendly authentication system that resists credential attacks, protects secrets, and supports strong, phishing-resistant MFA and secure recovery.

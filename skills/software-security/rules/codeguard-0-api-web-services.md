@@ -15,6 +15,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-api-web-services
+
 ## API & Web Services Security
 
 Secure REST, GraphQL, and SOAP/WS services end‑to‑end: transport, authn/z, schema validation, SSRF controls, DoS limits, and microservice‑safe patterns.

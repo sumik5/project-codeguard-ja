@@ -17,6 +17,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-input-validation-injection
+
 ## Input Validation & Injection Defense
 
 Ensure untrusted input is validated and never interpreted as code. Prevent injection across SQL, LDAP, OS commands, templating, and JavaScript runtime object graphs.

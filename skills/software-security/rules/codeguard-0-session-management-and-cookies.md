@@ -14,6 +14,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-session-management-and-cookies
+
 ## Session Management & Cookies
 
 Implement robust, attack-resistant session handling that prevents fixation, hijacking, and theft while maintaining usability.

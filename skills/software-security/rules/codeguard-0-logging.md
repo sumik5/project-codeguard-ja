@@ -8,6 +8,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-logging
+
 ## Logging & Monitoring
 
 Produce structured, privacy‑aware telemetry that supports detection, response, and forensics without exposing secrets.

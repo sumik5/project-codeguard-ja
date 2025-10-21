@@ -8,6 +8,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-supply-chain-security
+
 ## Dependency & Supply Chain Security
 
 Control third‑party risk across ecosystems, from selection and pinning to provenance, scanning, and rapid response.

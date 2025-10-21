@@ -12,6 +12,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-mobile-apps
+
 ## Mobile Application Security Guidelines
 
 Essential security practices for developing secure mobile applications across iOS and Android platforms.

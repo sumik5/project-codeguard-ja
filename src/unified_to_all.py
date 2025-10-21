@@ -5,7 +5,7 @@
 """
 Unified to All Formats Converter
 
-Converts unified markdown format to all IDE formats (Cursor, Windsurf, Copilot).
+Converts unified markdown format to all IDE formats (Cursor, Windsurf, Copilot, Claude Code).
 Single source of truth for AI coding rules.
 """
 
@@ -13,7 +13,7 @@ from pathlib import Path
 from collections import defaultdict
 
 from converter import RuleConverter
-from formats import CursorFormat, WindsurfFormat, CopilotFormat
+from formats import CursorFormat, WindsurfFormat, CopilotFormat, ClaudeCodeFormat
 from utils import get_version_from_pyproject
 
 
@@ -88,6 +88,7 @@ def convert_rules(input_path: str, output_dir: str = ".") -> dict[str, list[str]
         CursorFormat(version),
         WindsurfFormat(version),
         CopilotFormat(version),
+        ClaudeCodeFormat(version),
     ]
 
     converter = RuleConverter(formats=all_formats)
@@ -126,8 +127,11 @@ def convert_rules(input_path: str, output_dir: str = ".") -> dict[str, list[str]
             output_files = []
             for format_name, output in result.outputs.items():
                 # Construct output path
+                # Use format's output preference (ide_rules/ or project root)
+                base_dir = ide_rules_dir if output.outputs_to_ide_rules else output_base
+                
                 output_file = (
-                    ide_rules_dir
+                    base_dir
                     / output.subpath
                     / f"{result.basename}{output.extension}"
                 )

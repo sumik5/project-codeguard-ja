@@ -7,6 +7,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-cloud-orchestration-kubernetes
+
 ## Cloud & Orchestration (Kubernetes)
 
 Kubernetes cluster and workload hardening: identity, policy, networking, secrets, and supply chain controls.

@@ -1,8 +1,9 @@
 ---
 description: Cryptographic Security Guidelines
-languages: []
 alwaysApply: true
 ---
+
+rule_id: codeguard-1-crypto-algorithms
 
 # Cryptographic Security Guidelines
 

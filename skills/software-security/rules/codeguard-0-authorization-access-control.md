@@ -14,6 +14,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-authorization-access-control
+
 ## Authorization & Access Control
 
 Enforce least privilege and precise access decisions for every request and resource, prevent IDOR and mass assignment, and provide strong transaction authorization where necessary.

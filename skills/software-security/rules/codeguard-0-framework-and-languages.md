@@ -15,6 +15,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-framework-and-languages
+
 ## Framework & Language Guides
 
 Apply secure‑by‑default patterns per platform. Harden configurations, use built‑in protections, and avoid common pitfalls.

@@ -11,6 +11,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-devops-ci-cd-containers
+
 ## DevOps, CI/CD, and Containers
 
 Secure the build, packaging, and deployment supply chain: protect pipelines and artifacts, harden containers, and use virtual patching and toolchain flags when necessary.

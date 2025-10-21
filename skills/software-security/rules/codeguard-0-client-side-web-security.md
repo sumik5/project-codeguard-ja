@@ -11,6 +11,8 @@ languages:
 alwaysApply: false
 ---
 
+rule_id: codeguard-0-client-side-web-security
+
 ## Client‑side Web Security
 
 Protect browser clients against code injection, request forgery, UI redress, cross‑site leaks, and unsafe third‑party scripts with layered, context‑aware controls.
