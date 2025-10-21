@@ -159,3 +159,7 @@ Temporary Items
 # Coding Agents
 CLAUDE.md 
 AGENTS.md
+
+# Claude Code Plugin
+.claude-plugin/.cache
+.claude/settings.local.json

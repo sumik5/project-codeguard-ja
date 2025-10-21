@@ -11,15 +11,17 @@ Available Formats:
 - CursorFormat: Generates .mdc files for Cursor IDE
 - WindsurfFormat: Generates .md files for Windsurf IDE
 - CopilotFormat: Generates .instructions.md files for GitHub Copilot
+- ClaudeCodeFormat: Generates .md files for Claude Code plugins
 
 Usage:
-    from formats import BaseFormat, ProcessedRule, CursorFormat, WindsurfFormat, CopilotFormat
+    from formats import BaseFormat, ProcessedRule, CursorFormat, WindsurfFormat, CopilotFormat, ClaudeCodeFormat
 
     version = "1.0.0"
     formats = [
         CursorFormat(version),
         WindsurfFormat(version),
         CopilotFormat(version),
+        ClaudeCodeFormat(version),
     ]
 """
 
@@ -27,6 +29,7 @@ from formats.base import BaseFormat, ProcessedRule
 from formats.cursor import CursorFormat
 from formats.windsurf import WindsurfFormat
 from formats.copilot import CopilotFormat
+from formats.claudecode import ClaudeCodeFormat
 
 __all__ = [
     "BaseFormat",
@@ -34,4 +37,5 @@ __all__ = [
     "CursorFormat",
     "WindsurfFormat",
     "CopilotFormat",
+    "ClaudeCodeFormat",
 ]

@@ -7,4 +7,8 @@
 # Explicitly include desired items for releases
 ide_rules/ -export-ignore
 ide_rules/** -export-ignore
-README.md -export-ignore 
+README.md -export-ignore
+
+# Linguist language detection
+*.md linguist-detectable=true
+.claude-plugin/* linguist-documentation=true
