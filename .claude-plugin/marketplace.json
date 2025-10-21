@@ -1,6 +1,8 @@
 {
   "name": "project-codeguard",
-  "description": "Official Project CodeGuard plugins for secure AI-assisted coding",
+  "metadata": {
+    "description": "Official Project CodeGuard plugins for secure AI-assisted coding"
+  },
   "owner": {
     "name": "Project CodeGuard",
     "url": "https://project-codeguard.org",
