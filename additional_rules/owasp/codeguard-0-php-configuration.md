@@ -1,21 +1,21 @@
 ---
-description: PHP Secure Configuration
+description: PHPセキュア設定
 languages:
 - php
 alwaysApply: false
 ---
 
-## PHP Secure Configuration Guidelines
+## PHPセキュア設定ガイドライン
 
-Essential security settings for PHP configuration to harden PHP applications against common vulnerabilities.
+一般的な脆弱性からPHPアプリケーションを堅牢化するためのPHP設定の重要なセキュリティ設定。
 
-### PHP Version Management
+### PHPバージョン管理
 
-Run a supported version of PHP. As of this writing, 8.1 is the oldest version receiving security support from PHP, though distribution vendors often provide extended support.
+サポートされているバージョンのPHPを実行します。この記事執筆時点では、8.1がPHPからセキュリティサポートを受けている最も古いバージョンですが、ディストリビューションベンダーは多くの場合延長サポートを提供します。
 
-### Error Handling Configuration
+### エラーハンドリング設定
 
-Configure proper error handling to prevent information disclosure while ensuring errors are logged:
+エラーを確実にログに記録しながら情報開示を防ぐため、適切なエラーハンドリングを設定します：
 
 ```ini
 expose_php              = Off
@@ -27,9 +27,9 @@ error_log               = /valid_path/PHP-logs/php_error.log
 ignore_repeated_errors  = Off
 ```
 
-Keep `display_errors` to `Off` on production servers and monitor the logs frequently.
+本番サーバーでは`display_errors`を`Off`に保ち、ログを頻繁に監視します。
 
-### General Security Settings
+### 一般的なセキュリティ設定
 
 ```ini
 doc_root                = /path/DocumentRoot/PHP-scripts/
@@ -44,9 +44,9 @@ allow_webdav_methods    = Off
 session.gc_maxlifetime  = 600
 ```
 
-`allow_url_*` prevents LFIs from being easily escalated to RFIs.
+`allow_url_*`はLFIが簡単にRFIにエスカレートすることを防ぎます。
 
-### File Upload Handling
+### ファイルアップロード処理
 
 ```ini
 file_uploads            = On
@@ -55,9 +55,9 @@ upload_max_filesize     = 2M
 max_file_uploads        = 2
 ```
 
-If your application is not using file uploads, `file_uploads` should be turned `Off`.
+アプリケーションがファイルアップロードを使用していない場合、`file_uploads`を`Off`にする必要があります。
 
-### Executable Handling
+### 実行可能ファイル処理
 
 ```ini
 enable_dl               = Off
@@ -65,11 +65,11 @@ disable_functions       = system, exec, shell_exec, passthru, phpinfo, show_sour
 disable_classes         =
 ```
 
-These are dangerous PHP functions. Disable all functions that you don't use.
+これらは危険なPHP関数です。使用しないすべての関数を無効化します。
 
-### Session Handling
+### セッション処理
 
-Session settings are some of the most important values to concentrate on in configuring. It is a good practice to change `session.name` to something new.
+セッション設定は、設定で集中すべき最も重要な値の一部です。`session.name`を新しいものに変更することは良いプラクティスです。
 
 ```ini
 session.save_path                = /path/PHP-session/
@@ -81,7 +81,7 @@ session.cookie_domain            = full.qualified.domain.name
 session.use_strict_mode          = 1
 session.use_cookies              = 1
 session.use_only_cookies         = 1
-session.cookie_lifetime          = 14400 # 4 hours
+session.cookie_lifetime          = 14400 # 4時間
 session.cookie_secure            = 1
 session.cookie_httponly          = 1
 session.cookie_samesite          = Strict
@@ -90,7 +90,7 @@ session.sid_length               = 256
 session.sid_bits_per_character   = 6
 ```
 
-### Additional Security Settings
+### 追加のセキュリティ設定
 
 ```ini
 session.referer_check   = /application/path
@@ -102,19 +102,19 @@ html_errors             = Off
 zend.exception_ignore_args = On
 ```
 
-### Advanced Protection with Snuffleupagus
+### Snuffleupagusによる高度な保護
 
-Snuffleupagus is the spiritual descendant of Suhosin for PHP 7 and onwards, with modern features. It's considered stable and is usable in production.
+SnuffleupagusはPHP 7以降のSuhosinの精神的後継で、モダンな機能を備えています。安定していると考えられ、本番環境で使用可能です。
 
-### Implementation Summary
+### 実装概要
 
-Secure PHP configuration requires:
-- Hiding PHP version information (expose_php = Off)
-- Proper error handling with logging enabled but display disabled in production
-- Disabling remote file access (allow_url_fopen/include = Off)
-- Restricting dangerous functions based on application needs
-- Hardening session management with secure cookie settings
-- Setting appropriate resource limits to prevent DoS
-- Using modern security extensions like Snuffleupagus
+セキュアなPHP設定には以下が必要です：
+- PHPバージョン情報の非表示（expose_php = Off）
+- ロギングを有効化し本番環境で表示を無効化した適切なエラーハンドリング
+- リモートファイルアクセスの無効化（allow_url_fopen/include = Off）
+- アプリケーションニーズに基づく危険な関数の制限
+- セキュアCookie設定によるセッション管理の堅牢化
+- DoSを防ぐための適切なリソース制限設定
+- Snuffleupagusなどのモダンセキュリティ拡張の使用
 
-Following these configuration practices significantly reduces the attack surface of PHP applications and protects against common vulnerabilities.
+これらの設定プラクティスに従うことで、PHPアプリケーションの攻撃面を大幅に削減し、一般的な脆弱性から保護します。

@@ -1,5 +1,5 @@
 ---
-description: Legacy Application Management Security
+description: レガシーアプリケーション管理セキュリティ
 languages:
 - c
 - java
@@ -12,105 +12,105 @@ languages:
 alwaysApply: false
 ---
 
-## Legacy Application Management Guidelines
+## レガシーアプリケーション管理ガイドライン
 
-Essential security practices for managing legacy applications that remain in active use despite being outdated.
+古くなっているにもかかわらず稼働中のレガシーアプリケーションを管理するための必須セキュリティプラクティス。
 
-### Understanding Legacy Application Risks
+### レガシーアプリケーションのリスクを理解する
 
-Legacy applications introduce significant security risks because they:
-- May have reached End-of-Life (EoL) with no vendor support or patches
-- Use outdated technologies with limited expertise available
-- Produce data in custom formats incompatible with modern security tools
-- Often have accumulated security vulnerabilities over time
+レガシーアプリケーションは重大なセキュリティリスクをもたらします。その理由：
+- サポート終了（EoL）に達し、ベンダーのサポートやパッチがない可能性
+- 専門知識が限られた古い技術を使用
+- 最新のセキュリティツールと互換性のないカスタム形式でデータを生成
+- 長年にわたってセキュリティ脆弱性が蓄積されている
 
-### Inventory and Asset Management
+### インベントリと資産管理
 
-**Inventory Management**: Compile comprehensive documentation identifying legacy applications including:
-- Version numbers, production dates, and configuration settings
-- Network hosts and infrastructure dependencies
-- Services running on hosting infrastructure
-- Physical location and access permissions for servers
-- Software Bill of Materials (SBOM) for applications with third-party dependencies
+**インベントリ管理**: 以下を含むレガシーアプリケーションを識別する包括的なドキュメントを作成：
+- バージョン番号、本番日、設定
+- ネットワークホストとインフラ依存関係
+- ホスティングインフラ上で実行されているサービス
+- サーバーの物理的位置とアクセス権限
+- サードパーティ依存関係を持つアプリケーションのソフトウェア部品表（SBOM）
 
-**Risk Assessment**: Use industry standard frameworks like NIST Risk Management Framework for formal assessment. Consider these key questions:
-- What information is handled/stored and what would be the impact if compromised?
-- Do the application/dependencies/infrastructure have known vulnerabilities?
-- How critical is application availability to business continuity?
-- Could an attacker use this application to access other critical systems?
+**リスク評価**: NIST Risk Management Frameworkなどの業界標準フレームワークを使用して正式な評価を実施。以下の重要な質問を検討：
+- 処理/保存される情報は何か、侵害された場合の影響は？
+- アプリケーション/依存関係/インフラに既知の脆弱性があるか？
+- アプリケーションの可用性は事業継続にどれほど重要か？
+- 攻撃者はこのアプリケーションを使用して他の重要なシステムにアクセスできるか？
 
-### Authentication and Authorization
+### 認証と認可
 
-Apply the principle of least privilege with enhanced restrictions for legacy systems:
+レガシーシステムには強化された制限を伴う最小権限の原則を適用：
 
-**Network-Level Controls**:
-- Host applications within restricted subnets
-- Apply IP allow-listing to prevent arbitrary access
-- Consider air-gapped environments for high-risk applications
-- Close unnecessary ports on application hosts
-- Use firewall rules to restrict port access
+**ネットワークレベルの制御**:
+- 制限されたサブネット内でアプリケーションをホスト
+- IP許可リストを適用して任意のアクセスを防止
+- 高リスクアプリケーションにはエアギャップ環境を検討
+- アプリケーションホスト上の不要なポートを閉じる
+- ファイアウォールルールを使用してポートアクセスを制限
 
-**Access Controls**:
-- Reduce feature sets available to end users
-- Disable high-risk administrative functionalities
-- Require authentication via Identity Provider (IdP) services
-- Implement VPN access requirements for network environments
-- Develop intermediary services/APIs to avoid direct user access to legacy applications
+**アクセス制御**:
+- エンドユーザーが利用できる機能セットを削減
+- 高リスクの管理機能を無効化
+- Identity Provider（IdP）サービスを介した認証を要求
+- ネットワーク環境にVPNアクセス要件を実装
+- レガシーアプリケーションへの直接ユーザーアクセスを避けるため、中間サービス/APIを開発
 
-### Vulnerability Management
+### 脆弱性管理
 
-**Vulnerability Scanning**: Conduct regular automated scanning using industry standard tools:
-- Use tools like Nessus and Qualys on scheduled intervals
-- Apply Static Application Security Testing (SAST) for code vulnerabilities
-- Use Software Composition Analysis (SCA) for dependency vulnerabilities
-- Perform manual assessment when automated tools aren't viable
+**脆弱性スキャン**: 業界標準ツールを使用して定期的な自動スキャンを実施：
+- NessusやQualysなどのツールをスケジュール間隔で使用
+- コード脆弱性のために静的アプリケーションセキュリティテスト（SAST）を適用
+- 依存関係の脆弱性のためにソフトウェア構成分析（SCA）を使用
+- 自動化ツールが実行可能でない場合は手動評価を実施
 
-**Patch Management**: 
-- Prioritize patches based on vulnerability severity and CVE status
-- Focus on vulnerabilities with publicly listed exploits
-- Apply additional access restrictions when patching isn't possible
+**パッチ管理**:
+- 脆弱性の深刻度とCVEステータスに基づいてパッチに優先順位を付ける
+- 公開されたエクスプロイトを持つ脆弱性に焦点を当てる
+- パッチ適用が不可能な場合は追加のアクセス制限を適用
 
-### Data Storage Security
+### データストレージセキュリティ
 
-Ensure data protection through encryption:
-- Encrypt data at rest (database storage)
-- Encrypt data in transit with secure protocols
-- Apply most restrictive network access controls for applications limited to plain text protocols
-- Consider temporary or permanent air-gapping when necessary
+暗号化を通じてデータ保護を確保：
+- 保存時のデータを暗号化（データベースストレージ）
+- 安全なプロトコルで転送中のデータを暗号化
+- 平文プロトコルに限定されたアプリケーションには最も制限的なネットワークアクセス制御を適用
+- 必要に応じて一時的または恒久的なエアギャップを検討
 
-### Ensuring Maintainability
+### 保守性の確保
 
-Maintain institutional expertise for business continuity:
-- Train multiple staff members on legacy application troubleshooting
-- Document processes and troubleshooting guides for common failures
-- Develop expertise in legacy programming languages within the organization
-- Create knowledge transfer programs for new team members
+事業継続のための組織的専門知識を維持：
+- レガシーアプリケーションのトラブルシューティングについて複数のスタッフメンバーをトレーニング
+- 一般的な障害のプロセスとトラブルシューティングガイドを文書化
+- 組織内でレガシープログラミング言語の専門知識を開発
+- 新しいチームメンバー向けの知識移転プログラムを作成
 
-### Change Management
+### 変更管理
 
-Plan staged migration to modern solutions considering:
-- Budget allocation and timeline for upgrading solutions
-- Required expertise for migration (internal development or acquisition)
-- Migration urgency based on risk profile and organizational risk appetite
+以下を考慮して最新ソリューションへの段階的移行を計画：
+- ソリューションのアップグレードのための予算配分とタイムライン
+- 移行に必要な専門知識（内部開発または取得）
+- リスクプロファイルと組織のリスク選好度に基づく移行の緊急性
 
-Include in change management plans:
-- Granular steps toward migration with explicit completion dates
-- Clear business and security case for change
-- Extensive consultation with existing solution stakeholders
+変更管理計画に含める：
+- 明示的な完了日を伴う移行への詳細なステップ
+- 変更のための明確なビジネスおよびセキュリティケース
+- 既存ソリューションのステークホルダーとの広範な相談
 
-### Continuous Monitoring and Incident Response
+### 継続的な監視とインシデント対応
 
-Implement enhanced security monitoring with rapid response capabilities:
+迅速な対応能力を備えた強化されたセキュリティ監視を実装：
 
-**Monitoring Solutions**:
-- Develop custom APIs to convert legacy application data for modern security tools
-- Use automation scripts for compromise indicator reports when APIs aren't possible
-- Monitor for anomalous network traffic and activity surges
+**監視ソリューション**:
+- 最新のセキュリティツール用にレガシーアプリケーションデータを変換するカスタムAPIを開発
+- APIが不可能な場合、侵害指標レポート用の自動化スクリプトを使用
+- 異常なネットワークトラフィックとアクティビティの急増を監視
 
-**Incident Response**:
-- Prioritize incident response for critical legacy systems
-- Document incident response playbooks with emergency procedures
-- Include escalation contacts and incident response leader details
-- Integrate incident response with broader business continuity planning
+**インシデント対応**:
+- 重要なレガシーシステムのインシデント対応を優先
+- 緊急手順を含むインシデント対応プレイブックを文書化
+- エスカレーション連絡先とインシデント対応リーダーの詳細を含める
+- より広範な事業継続計画とインシデント対応を統合
 
-Legacy applications require heightened security measures due to their inherent risks, but with proper controls and planning, organizations can manage these risks while working toward modernization.
+レガシーアプリケーションは固有のリスクのため、強化されたセキュリティ対策が必要ですが、適切な制御と計画により、組織はモダナイゼーションに向けて取り組みながらこれらのリスクを管理できます。

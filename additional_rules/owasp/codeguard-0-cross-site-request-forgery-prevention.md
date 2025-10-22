@@ -13,25 +13,25 @@ languages:
 alwaysApply: false
 ---
 
-## Introduction
+## はじめに
 
-A Cross-Site Request Forgery (CSRF) attack occurs when a malicious web site, email, blog, instant message, or program tricks an authenticated user's web browser into performing an unwanted action on a trusted site. If a target user is authenticated to the site, unprotected target sites cannot distinguish between legitimate authorized requests and forged authenticated requests.
+クロスサイトリクエストフォージェリ（CSRF）攻撃は、悪意のあるWebサイト、メール、ブログ、インスタントメッセージ、またはプログラムが、認証されたユーザーのWebブラウザを騙して、信頼されたサイト上で望まない操作を実行させる攻撃です。対象ユーザーがサイトに認証されている場合、保護されていない対象サイトは、正当な認可されたリクエストと偽造された認証済みリクエストを区別できません。
 
-**IMPORTANT: Remember that Cross-Site Scripting (XSS) can defeat all CSRF mitigation techniques!** Consider the client and authentication method to determine the best approach for CSRF protection in your application.
+**重要：クロスサイトスクリプティング（XSS）はすべてのCSRF軽減技術を無効化できることを忘れないでください！** アプリケーションでのCSRF保護の最適なアプローチを決定するため、クライアントと認証方法を考慮してください。
 
-## Preventing Cross-Site Request Forgery (CSRF) Attacks
+## クロスサイトリクエストフォージェリ（CSRF）攻撃の防止
 
-### Implementation Best Practices
+### 実装のベストプラクティス
 
-#### 1. Fix XSS Vulnerabilities First
+#### 1. まずXSS脆弱性を修正
 
-Cross-Site Scripting (XSS) vulnerabilities can bypass CSRF protections. Always address XSS issues alongside CSRF mitigations.
+クロスサイトスクリプティング（XSS）脆弱性はCSRF保護をバイパスできます。CSRF軽減策と並行して、常にXSS問題に対処してください。
 
-#### 2. Use Framework-Native CSRF Protection
+#### 2. フレームワークネイティブのCSRF保護を使用
 
-Use framework built-in CSRF protection with correct implementation:
+フレームワーク組み込みのCSRF保護を正しい実装で使用：
 
-* **Angular**: Configure HttpClient with XSRF protection:
+* **Angular**: HttpClientをXSRF保護で設定：
   ```typescript
   // app.config.ts
   provideHttpClient(withXsrfConfiguration({
@@ -40,63 +40,63 @@ Use framework built-in CSRF protection with correct implementation:
   }))
   ```
 
-* **Next.js**: Use csrf middleware in API routes:
+* **Next.js**: APIルートでcsrfミドルウェアを使用：
   ```javascript
   // pages/api/protected.js
   import { csrf } from 'csrf';
   export default csrf(async (req, res) => {
-    // Your protected endpoint logic
+    // 保護されたエンドポイントのロジック
   });
   ```
 
-* **Spring Security**: Enable CSRF protection properly:
+* **Spring Security**: CSRF保護を適切に有効化：
   ```java
   @Configuration
   @EnableWebSecurity
   public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-      return http.csrf(Customizer.withDefaults()).build(); // CSRF enabled by default
+      return http.csrf(Customizer.withDefaults()).build(); // CSRFはデフォルトで有効
     }
   }
   ```
 
-* **Django**: Use CSRF middleware and template tags:
+* **Django**: CSRFミドルウェアとテンプレートタグを使用：
   ```python
-  # settings.py - ensure CsrfViewMiddleware is enabled
+  # settings.py - CsrfViewMiddlewareが有効であることを確認
   MIDDLEWARE = ['django.middleware.csrf.CsrfViewMiddleware', ...]
   ```
 
-#### 3. Implement the Synchronizer Token Pattern
+#### 3. シンクロナイザートークンパターンの実装
 
-Generate unique, unpredictable tokens per session:
+セッションごとに一意で予測不可能なトークンを生成：
 
 ```javascript
-// Token generation: use HMAC with session ID + secret
+// トークン生成: セッションID + シークレットでHMACを使用
 const csrfToken = crypto.createHmac('sha256', process.env.CSRF_SECRET)
   .update(req.session.id).digest('hex');
 ```
 
-**Form submissions**: Include token as hidden field:
+**フォーム送信**: トークンを隠しフィールドとして含める：
 ```html
 <input type="hidden" name="_csrf" value="{{csrfToken}}">
 ```
 
-**AJAX requests**: Send token in custom header:
+**AJAXリクエスト**: カスタムヘッダーでトークンを送信：
 ```javascript
 headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content }
 ```
 
-#### 4. Protect All State-Changing Requests
+#### 4. すべての状態変更リクエストを保護
 
-* **Never use GET for state changes**: All operations that change state should use POST, PUT, DELETE, or PATCH.
-* **Validate tokens on all unsafe methods**: Verify CSRF tokens on every state-changing request.
+* **状態変更にGETを決して使用しない**: 状態を変更するすべての操作はPOST、PUT、DELETE、またはPATCHを使用すべきです。
+* **すべての安全でないメソッドでトークンを検証**: すべての状態変更リクエストでCSRFトークンを検証してください。
 
-#### 5. Secure Token Transmission and Storage
+#### 5. トークンの安全な送信と保存
 
-**Mandatory HTTPS**: Always enforce HTTPS for CSRF token transmission:
+**必須のHTTPS**: CSRFトークン送信には常にHTTPSを強制：
 ```javascript
-// Redirect HTTP to HTTPS
+// HTTPをHTTPSにリダイレクト
 app.use((req, res, next) => {
   if (!req.secure && process.env.NODE_ENV === 'production') {
     return res.redirect(`https://${req.headers.host}${req.url}`);
@@ -105,42 +105,42 @@ app.use((req, res, next) => {
 });
 ```
 
-**Secure Cookie Configuration**: Use proper cookie attributes for CSRF tokens and sessions:
+**安全なCookie設定**: CSRFトークンとセッションに適切なCookie属性を使用：
 ```http
 Set-Cookie: __Host-XSRF-TOKEN=abc123; Path=/; Secure; SameSite=Lax
 Set-Cookie: __Host-sessionid=xyz789; Path=/; Secure; HttpOnly; SameSite=Lax
 ```
 
-Cookie attribute requirements:
-* **Secure**: Mandatory - prevents transmission over HTTP
-* **SameSite=Lax**: Balances security and usability; use `Strict` for high-security applications
-* **__Host- prefix**: Prevents subdomain cookie injection attacks
-* **HttpOnly**: For session cookies only (CSRF tokens need JavaScript access)
+Cookie属性の要件：
+* **Secure**: 必須 - HTTP経由の送信を防止
+* **SameSite=Lax**: セキュリティと使いやすさのバランス；高セキュリティアプリケーションには`Strict`を使用
+* **__Host-プレフィックス**: サブドメインCookieインジェクション攻撃を防止
+* **HttpOnly**: セッションCookieのみに使用（CSRFトークンはJavaScriptアクセスが必要）
 
-#### 6. Defense-in-Depth Strategies
+#### 6. 多層防御戦略
 
-**Combine Multiple Protections**: Layer CSRF tokens with origin validation and rate limiting:
+**複数の保護を組み合わせ**: CSRFトークンをオリジン検証とレート制限と組み合わせる：
 
 ```javascript
-// Comprehensive CSRF protection middleware
+// 包括的なCSRF保護ミドルウェア
 function csrfProtection(req, res, next) {
-  // 1. Validate Origin/Referer headers
+  // 1. Origin/Refererヘッダーを検証
   const origin = req.headers.origin || req.headers.referer;
   if (!origin || !isValidOrigin(origin)) {
-    return res.status(403).json({error: 'Invalid origin'});
+    return res.status(403).json({error: '無効なオリジン'});
   }
-  
-  // 2. Validate CSRF token
+
+  // 2. CSRFトークンを検証
   const token = req.headers['x-csrf-token'] || req.body._csrf;
   if (!isValidCsrfToken(token, req.session.id)) {
-    return res.status(403).json({error: 'Invalid CSRF token'});
+    return res.status(403).json({error: '無効なCSRFトークン'});
   }
-  
-  // 3. Rate limiting per session
+
+  // 3. セッションごとのレート制限
   if (exceedsRateLimit(req.session.id)) {
-    return res.status(429).json({error: 'Rate limit exceeded'});
+    return res.status(429).json({error: 'レート制限超過'});
   }
-  
+
   next();
 }
 
@@ -150,45 +150,45 @@ function isValidOrigin(origin) {
 }
 ```
 
-**Token-Based Authentication (SPAs)**: For SPAs using JWT/bearer tokens:
+**トークンベース認証（SPA）**: JWT/ベアラートークンを使用するSPA向け：
 ```javascript
-// Custom header approach for token-based auth
+// トークンベース認証のカスタムヘッダーアプローチ
 function apiCsrfProtection(req, res, next) {
-  // Require custom header for state-changing operations
+  // 状態変更操作にカスタムヘッダーを要求
   if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method)) {
     if (!req.headers['x-requested-with']) {
-      return res.status(403).json({error: 'Missing required header'});
+      return res.status(403).json({error: '必須ヘッダーが不足'});
     }
   }
   next();
 }
 ```
 
-#### 7. Special Cases
+#### 7. 特殊ケース
 
-**Login CSRF Protection**: Use pre-session tokens for login forms:
+**ログインCSRF保護**: ログインフォームにプリセッショントークンを使用：
 ```javascript
-// Generate token before authentication, destroy session after login
+// 認証前にトークンを生成、ログイン後にセッションを破棄
 const loginToken = crypto.randomBytes(32).toString('hex');
 req.session.loginCsrfToken = loginToken;
 ```
 
-**Client-Side CSRF Prevention**: Validate input sources in JavaScript:
+**クライアントサイドCSRF防止**: JavaScriptで入力ソースを検証：
 ```javascript
-// Avoid using URL parameters/fragments for generating requests
-// Validate endpoint URLs against allow-lists before making requests
+// リクエスト生成にURLパラメータ/フラグメントを使用しない
+// リクエスト前にエンドポイントURLを許可リストで検証
 const allowedEndpoints = ['/api/profile', '/api/settings'];
 if (!allowedEndpoints.includes(requestEndpoint)) {
-  throw new Error('Invalid endpoint');
+  throw new Error('無効なエンドポイント');
 }
 ```
 
-#### 8. Testing and Validation
+#### 8. テストと検証
 
-Essential CSRF defense tests:
-* Cross-origin form submissions should be blocked
-* CSRF tokens must be validated on all state-changing requests  
-* Test with various SameSite cookie settings
-* Verify Origin/Referer header validation works correctly
+必須のCSRF防御テスト：
+* クロスオリジンフォーム送信はブロックされるべき
+* すべての状態変更リクエストでCSRFトークンが検証されなければならない
+* さまざまなSameSite Cookie設定でテスト
+* Origin/Refererヘッダー検証が正しく機能することを確認
 
-These layered defenses provide robust CSRF protection while maintaining usability.
+これらの多層防御は、使いやすさを維持しながら堅牢なCSRF保護を提供します。

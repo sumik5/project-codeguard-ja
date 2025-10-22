@@ -1,5 +1,5 @@
 ---
-description: AJAX Security Best Practices for Client-Side Scripts
+description: クライアント側スクリプトのAJAXセキュリティベストプラクティス
 languages:
 - c
 - html
@@ -9,82 +9,82 @@ languages:
 alwaysApply: false
 ---
 
-It is crucial to follow AJAX security best practices to prevent common web vulnerabilities. Here are some guidelines to keep in mind:
+一般的なWeb脆弱性を防ぐため、AJAXセキュリティのベストプラクティスに従うことが重要です。以下のガイドラインに留意してください：
 
-### 1. Avoid Dangerous JavaScript Functions
+### 1. 危険なJavaScript関数を避ける
 
-Dynamically evaluating code with functions like `eval()`, `new Function()`, `setTimeout()`, and `setInterval()` with dynamic, unvalidated string arguments is a significant security risk. User input or untrusted data can lead to code injection vulnerabilities.
+`eval()`、`new Function()`、動的で検証されていない文字列引数を使用した`setTimeout()`、`setInterval()`などの関数でコードを動的に評価することは、重大なセキュリティリスクです。ユーザー入力や信頼できないデータは、コードインジェクション脆弱性につながる可能性があります。
 
-Best Practice:
+ベストプラクティス：
 
-Instead of using these functions with dynamic strings, use safer alternatives. For example, use anonymous functions for `setTimeout` and `setInterval`.
+これらの関数を動的文字列で使用する代わりに、より安全な代替手段を使用します。例えば、`setTimeout`と`setInterval`には無名関数を使用します。
 
-Example of what to avoid:
+避けるべき例：
 
 ```javascript
-// Unsafe: susceptible to injection
+// 安全でない：インジェクションに脆弱
 setTimeout("alert('hello')", 1000);
 
-// Safe:
+// 安全：
 setTimeout(() => alert('hello'), 1000);
 ```
 
-### 2. Prevent Cross-Site Scripting (XSS) with `innerHTML`
+### 2. `innerHTML`でのクロスサイトスクリプティング（XSS）防止
 
-Using `.innerHTML` to insert content into your web page can lead to XSS if the content is not properly sanitized.
+`.innerHTML`を使用してWebページにコンテンツを挿入すると、コンテンツが適切にサニタイズされていない場合、XSSにつながる可能性があります。
 
-Best Practice:
+ベストプラクティス：
 
-Use `.innerText` or `.textContent` when you only need to insert text. If you must insert HTML, use context-aware sanitization libraries before using `.innerHTML`.
+テキストのみを挿入する必要がある場合は、`.innerText`または`.textContent`を使用します。HTMLを挿入する必要がある場合は、`.innerHTML`を使用する前にコンテキスト対応のサニタイズライブラリを使用します。
 
-Example:
+例：
 
 ```javascript
-// Unsafe:
+// 安全でない：
 document.getElementById("div1").innerHTML = untrusted_user_input;
 
-// Safe for text content:
+// テキストコンテンツには安全：
 document.getElementById("div1").textContent = untrusted_user_input;
 ```
 
-### 3. Secure Client-Side Encryption and Secret Handling
+### 3. 安全なクライアント側暗号化とシークレット処理
 
-Never perform encryption or handle secrets on the client side. Client-side code is visible and can be manipulated by attackers.
+クライアント側で暗号化を実行したり、シークレットを処理したりしない。クライアント側のコードは可視化され、攻撃者によって操作される可能性があります。
 
-Best Practice:
+ベストプラクティス：
 
-All sensitive operations, including encryption and secret management, must be performed on the server.
+暗号化とシークレット管理を含むすべての機密操作は、サーバー上で実行する必要があります。
 
-### 4. Safe JSON and XML Creation
+### 4. 安全なJSONとXMLの作成
 
-Building JSON or XML using string concatenation is error-prone and can lead to injection vulnerabilities.
+文字列連結を使用してJSONまたはXMLを構築すると、エラーが発生しやすく、インジェクション脆弱性につながる可能性があります。
 
-Best Practice:
+ベストプラクティス：
 
-Use built-in browser APIs like `JSON.stringify()` or trusted third-party libraries to serialize data.
+`JSON.stringify()`のような組み込みブラウザAPIまたは信頼できるサードパーティライブラリを使用してデータをシリアライズします。
 
-Example:
+例：
 
 ```javascript
-// Unsafe:
+// 安全でない：
 let jsonString = '{"name":"' + name + '","email":"' + email + '"}';
 
-// Safe:
+// 安全：
 let jsonString = JSON.stringify({ name: name, email: email });
 ```
 
-### 5. Server-Side Enforcement of Security and Business Logic
+### 5. サーバー側でのセキュリティとビジネスロジックの強制
 
-Client-side validation is for user experience, not security. An attacker can easily bypass it.
+クライアント側の検証はユーザーエクスペリエンスのためのものであり、セキュリティのためのものではありません。攻撃者は簡単にバイパスできます。
 
-Best Practice:
+ベストプラクティス：
 
-Always enforce all security checks and business logic on the server. The server should never trust any data coming from the client.
+すべてのセキュリティチェックとビジネスロジックを常にサーバー上で強制します。サーバーはクライアントから送信されるデータを決して信頼してはいけません。
 
-### Additional Recommendations:
+### 追加推奨事項：
 
-*   Input Validation: Rigorously validate all inputs on the server, as AJAX services can be called directly by attackers.
-*   CSRF Protection: Use anti-CSRF tokens for any state-changing AJAX requests. Store authentication tokens securely with HttpOnly and Secure flags for cookies.
-*   JSON Hijacking: Return JSON responses with an object as the outermost element to prevent JSON hijacking in older browsers.
-*   Schema Validation: Use JSON or XML schemas to validate the structure and types of data in AJAX requests and responses.
-*   OWASP Resources: The [OWASP Java Encoder Project](https://owasp.org/www-project-java-encoder/) is an excellent resource for server-side encoding.
+*   入力検証：AJAXサービスは攻撃者によって直接呼び出される可能性があるため、サーバー上ですべての入力を厳格に検証します。
+*   CSRF保護：状態を変更するAJAXリクエストには、CSRF対策トークンを使用します。認証トークンは、CookieのHttpOnlyおよびSecureフラグで安全に保存します。
+*   JSONハイジャッキング：古いブラウザでのJSONハイジャッキングを防ぐため、最も外側の要素としてオブジェクトを持つJSONレスポンスを返します。
+*   スキーマ検証：AJAXリクエストとレスポンスのデータの構造とタイプを検証するために、JSONまたはXMLスキーマを使用します。
+*   OWASPリソース：[OWASP Java Encoder Project](https://owasp.org/www-project-java-encoder/)は、サーバー側エンコーディングの優れたリソースです。

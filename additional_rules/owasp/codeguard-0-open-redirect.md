@@ -1,6 +1,5 @@
 ---
-description: Open Redirect Prevention - Secure handling of user-controlled redirects
-  to prevent phishing attacks
+description: オープンリダイレクトの防止 - フィッシング攻撃を防ぐためのユーザー制御リダイレクトの安全な処理
 languages:
 - c
 - javascript
@@ -10,12 +9,12 @@ languages:
 alwaysApply: false
 ---
 
-# Avoid Open Redirects
+# オープンリダイレクトを避ける
 
-- Never use user input directly as a redirect target (e.g., `res.redirect(userInput)` in Node.js/Express).
-- If redirection is controlled by user input:
-    - Allow only local paths (must start with `/` and not contain protocols like `http:`).
-    - OR: Allow only destinations present in a strict allowlist of trusted domains.
-- URLs must be parsed and validated using robust libraries, not simple substring checks.
-- DO NOT allow wildcard domains like `*.example.com` in any allowlist.
-- Add explicit code comments when using redirects to document how the rule is being enforced.
+- ユーザー入力をリダイレクト先として直接使用しない（例：Node.js/Expressの`res.redirect(userInput)`）
+- リダイレクトがユーザー入力によって制御される場合：
+    - ローカルパスのみを許可する（`/`で始まり、`http:`のようなプロトコルを含まない必要があります）
+    - または：信頼されたドメインの厳格な許可リストに存在する宛先のみを許可する
+- URLは単純な部分文字列チェックではなく、堅牢なライブラリを使用して解析および検証する必要があります
+- 許可リストに`*.example.com`のようなワイルドカードドメインを許可しないでください
+- リダイレクトを使用する際は、ルールがどのように適用されているかを文書化するため、明示的なコードコメントを追加してください

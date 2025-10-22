@@ -1,5 +1,5 @@
 ---
-description: Cryptographic Key Management Security
+description: 暗号化鍵管理セキュリティ
 languages:
 - c
 - go
@@ -13,62 +13,62 @@ languages:
 alwaysApply: false
 ---
 
-## Key Management Security Guidelines
+## 鍵管理セキュリティガイドライン
 
-Essential practices for secure cryptographic key management in applications.
+アプリケーションにおける安全な暗号化鍵管理のための重要なプラクティス。
 
-### Key Generation
+### 鍵生成
 
-Cryptographic keys shall be generated within cryptographic module with at least FIPS 140-2 compliance. Any random value required by the key-generating module shall be generated within that module using a Random Bit Generator implemented within the cryptographic module.
+暗号化鍵は、少なくともFIPS 140-2準拠の暗号化モジュール内で生成する必要があります。鍵生成モジュールが必要とするランダム値は、そのモジュール内で実装されたランダムビット生成器を使用してモジュール内で生成される必要があります。
 
-Hardware cryptographic modules are preferred over software cryptographic modules for protection.
+保護のため、ソフトウェア暗号化モジュールよりもハードウェア暗号化モジュールが推奨されます。
 
-### Key Storage
+### 鍵保存
 
-- Keys must be protected on both volatile and persistent memory, ideally processed within secure cryptographic modules
-- Keys should never be stored in plaintext format
-- Ensure all keys are stored in a cryptographic vault, such as a hardware security module (HSM) or isolated cryptographic service
-- When storing keys in offline devices/databases, encrypt the keys using Key Encryption Keys (KEKs) prior to export
-- KEK length and algorithm should be equivalent to or greater in strength than the keys being protected
-- Ensure that standard application level code never reads or uses cryptographic keys directly
+- 鍵は、揮発性メモリと永続メモリの両方で保護される必要があり、理想的にはセキュアな暗号化モジュール内で処理されます
+- 鍵は決して平文形式で保存すべきではありません
+- すべての鍵は、ハードウェアセキュリティモジュール（HSM）または隔離された暗号化サービスなどの暗号化ボルトに保存することを確認します
+- オフラインデバイス/データベースに鍵を保存する場合、エクスポート前に鍵暗号化鍵（KEK）を使用して鍵を暗号化します
+- KEKの長さとアルゴリズムは、保護される鍵と同等以上の強度である必要があります
+- 標準的なアプリケーションレベルのコードが、暗号化鍵を直接読み取ったり使用したりしないことを確認します
 
-### Key Usage and Separation
+### 鍵の使用と分離
 
-According to NIST, in general, a single key should be used for only one purpose (e.g., encryption, authentication, key wrapping, random number generation, or digital signatures).
+NISTによると、一般的に、単一の鍵は1つの目的（暗号化、認証、鍵ラッピング、乱数生成、デジタル署名など）のみに使用されるべきです。
 
-Reasons for key separation:
-- The use of the same key for two different cryptographic processes may weaken the security provided
-- Limiting the use of a key limits the damage that could be done if the key is compromised
-- Some uses of keys interfere with each other
+鍵分離の理由：
+- 2つの異なる暗号化プロセスに同じ鍵を使用すると、提供されるセキュリティが弱まる可能性があります
+- 鍵の使用を制限することで、鍵が侵害された場合に発生する可能性のある損害を制限します
+- 鍵の一部の用途は互いに干渉します
 
-### Memory Management
+### メモリ管理
 
-Keys stored in memory for a long time can become "burned in". This can be mitigated by splitting the key into components that are frequently updated.
+長時間メモリに保存された鍵は「焼き付く」可能性があります。これは、頻繁に更新されるコンポーネントに鍵を分割することで緩和できます。
 
-Plan for the recovery from possible corruption of the memory media necessary for key or certificate generation, registration, and distribution systems.
+鍵または証明書の生成、登録、配布システムに必要なメモリメディアの破損から回復するための計画を立てます。
 
-### Key Backup and Recovery
+### 鍵のバックアップとリカバリ
 
-Data that has been encrypted with lost cryptographic keys will never be recovered. Therefore, it is essential that applications incorporate a secure key backup capability.
+失われた暗号化鍵で暗号化されたデータは決して回復できません。したがって、アプリケーションがセキュアな鍵バックアップ機能を組み込むことが不可欠です。
 
-When backing up keys, ensure that the database used to store the keys is encrypted using at least a FIPS 140-2 validated module.
+鍵をバックアップする際は、鍵を保存するために使用されるデータベースが、少なくともFIPS 140-2検証済みモジュールを使用して暗号化されていることを確認してください。
 
-Never escrow keys used for performing digital signatures, but consider the need to escrow keys that support encryption.
+デジタル署名の実行に使用される鍵は決してエスクローしませんが、暗号化をサポートする鍵をエスクローする必要性を検討してください。
 
-### Trust Store Security
+### トラストストアセキュリティ
 
-- Design controls to secure the trust store against injection of third-party root certificates
-- Implement integrity controls on objects stored in the trust store
-- Do not allow for export of keys held within the trust store without authentication and authorization
-- Setup strict policies and procedures for exporting key material
-- Implement a secure process for updating the trust store
+- サードパーティのルート証明書の注入に対してトラストストアを保護する制御を設計します
+- トラストストアに保存されているオブジェクトに整合性制御を実装します
+- 認証と認可なしでトラストストア内に保持されている鍵のエクスポートを許可しません
+- 鍵マテリアルのエクスポートのための厳格なポリシーと手順を設定します
+- トラストストアを更新するためのセキュアなプロセスを実装します
 
-### Key Security Requirements
+### 鍵セキュリティ要件
 
-- Generate keys only in FIPS 140-2 validated modules or HSMs
-- Use NIST-approved algorithms with appropriate key lengths
-- Never reuse keys for different cryptographic purposes
-- Implement key rotation and lifecycle management
-- Use ephemeral keys for Perfect Forward Secrecy
-- Monitor and audit all key access operations
-- Use only reputable crypto libraries that are well maintained and validated by third-party organizations
+- FIPS 140-2検証済みモジュールまたはHSMでのみ鍵を生成します
+- 適切な鍵長を持つNIST承認アルゴリズムを使用します
+- 異なる暗号化目的で鍵を再利用しないでください
+- 鍵のローテーションとライフサイクル管理を実装します
+- 完全前方秘匿性（Perfect Forward Secrecy）のためにエフェメラル鍵を使用します
+- すべての鍵アクセス操作を監視および監査します
+- サードパーティ組織によって適切に保守および検証されている評判の良い暗号化ライブラリのみを使用します

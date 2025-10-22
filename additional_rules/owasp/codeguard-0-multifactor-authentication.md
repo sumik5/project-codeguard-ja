@@ -1,5 +1,5 @@
 ---
-description: Multifactor Authentication Implementation
+description: 多要素認証実装
 languages:
 - c
 - go
@@ -14,123 +14,123 @@ languages:
 alwaysApply: false
 ---
 
-## Multifactor Authentication Guidelines
+## 多要素認証ガイドライン
 
-Essential practices for implementing secure multifactor authentication to protect against account compromise.
+アカウント侵害から保護するための安全な多要素認証を実装するための重要なプラクティス。
 
-### Understanding MFA Factors
+### MFA要素の理解
 
-True MFA requires at least two factors from different categories. Multiple instances of the same factor (password + PIN) does not constitute MFA:
+真のMFAには、異なるカテゴリーからの少なくとも2つの要素が必要です。同じ要素の複数のインスタンス（パスワード＋PIN）はMFAを構成しません：
 
-1. Something You Know: Passwords, PINs (avoid security questions - no longer acceptable per NIST SP 800-63)
-2. Something You Have: Hardware tokens, software OTP, U2F tokens, certificates, smart cards 
-3. Something You Are: Biometrics (fingerprints, facial recognition, iris scans)
-4. Somewhere You Are: Source IP address, geolocation, geofencing
-5. Something You Do: Behavioral profiling, keystroke dynamics (largely theoretical)
+1. あなたが知っているもの：パスワード、PIN（セキュリティ質問は避ける - NIST SP 800-63により受け入れられない）
+2. あなたが持っているもの：ハードウェアトークン、ソフトウェアOTP、U2Fトークン、証明書、スマートカード
+3. あなた自身：バイオメトリクス（指紋、顔認識、虹彩スキャン）
+4. あなたがいる場所：送信元IPアドレス、位置情報、ジオフェンシング
+5. あなたがすること：行動プロファイリング、キーストロークダイナミクス（主に理論的）
 
-### When to Require MFA
+### MFAを要求するタイミング
 
-Implement MFA for all critical authentication points:
-- User login (primary requirement)
-- Password changes or security question updates
-- Email address changes associated with the account
-- Disabling MFA
-- Elevating user session to administrative session
-- All API endpoints and mobile application authentication flows
+すべての重要な認証ポイントでMFAを実装：
+- ユーザーログイン（主要要件）
+- パスワード変更またはセキュリティ質問の更新
+- アカウントに関連するメールアドレスの変更
+- MFAの無効化
+- ユーザーセッションを管理セッションに昇格
+- すべてのAPIエンドポイントとモバイルアプリケーション認証フロー
 
-### MFA Method Recommendations
+### MFA方式の推奨事項
 
-#### Recommended (Most Secure)
-- Passkeys/FIDO2: Combines possession and biometric/PIN factors, resistant to phishing
-- Hardware U2F Tokens: Challenge-response authentication, phishing-resistant
-- Hardware OTP Tokens: Separate physical devices, nearly impossible to compromise remotely
-- Digital Certificates: Resistant to phishing, centrally manageable
+#### 推奨（最も安全）
+- Passkeys/FIDO2：所持とバイオメトリック/PIN要素を組み合わせ、フィッシング耐性
+- ハードウェアU2Fトークン：チャレンジレスポンス認証、フィッシング耐性
+- ハードウェアOTPトークン：別の物理デバイス、リモートで侵害することがほぼ不可能
+- デジタル証明書：フィッシング耐性、集中管理可能
 
-#### Acceptable with Caution
-- Software TOTP: Widely supported, cost-effective but vulnerable if device is compromised
-- Smart Cards: Strong when combined with PIN but require PKI infrastructure
+#### 注意して許容可能
+- ソフトウェアTOTP：広くサポートされ、コスト効果的だがデバイスが侵害された場合脆弱
+- スマートカード：PINと組み合わせると強力だがPKIインフラストラクチャが必要
 
-#### Avoid for Sensitive Applications
-- SMS/Phone Calls: Susceptible to SIM swapping, should not protect PII or financial data
-- Email Verification: Often same password as application, provides minimal additional security
-- Security Questions: No longer acceptable per NIST SP 800-63
+#### 機密性の高いアプリケーションでは避ける
+- SMS/電話：SIMスワッピングの影響を受けやすく、PIIや金融データを保護すべきでない
+- メール検証：多くの場合アプリケーションと同じパスワード、最小限の追加セキュリティを提供
+- セキュリティ質問：NIST SP 800-63により受け入れられない
 
-### Implementation Requirements
+### 実装要件
 
-#### Risk-Based Authentication
-Adjust MFA requirements based on context to improve user experience:
-- Require MFA for new devices or unusual locations
-- Use corporate IP ranges or geolocation as risk signals
-- Consider time of access and device fingerprinting
-- Implement behavioral profiling for continuous authentication
+#### リスクベース認証
+コンテキストに基づいてMFA要件を調整し、ユーザーエクスペリエンスを改善：
+- 新しいデバイスまたは通常と異なる場所にMFAを要求
+- 企業IPレンジまたは位置情報をリスクシグナルとして使用
+- アクセス時間とデバイスフィンガープリントを考慮
+- 継続的認証のため行動プロファイリングを実装
 
-Common risk signals:
-- Geolocation and IP reputation
-- Device fingerprinting
-- Unusual time of access
-- Known compromised credentials
+一般的なリスクシグナル：
+- 位置情報とIP評判
+- デバイスフィンガープリント
+- 通常と異なるアクセス時間
+- 侵害された既知の認証情報
 
-#### MFA Recovery Mechanisms
-Implement secure recovery without creating bypass opportunities:
-- Provide single-use recovery codes during MFA enrollment
-- Require users to set up multiple MFA types
-- Mail recovery codes to registered physical address
-- Implement rigorous identity verification through support team
-- Use trusted user vouching systems for corporate environments
+#### MFA復旧メカニズム
+バイパス機会を作らずに安全な復旧を実装：
+- MFA登録時に単一使用の復旧コードを提供
+- ユーザーに複数のMFAタイプの設定を要求
+- 登録された住所に復旧コードを郵送
+- サポートチームを通じた厳格な本人確認を実装
+- 企業環境のための信頼できるユーザー保証システムを使用
 
-#### Failed Authentication Handling
-When password succeeds but MFA fails:
-- Prompt user to try alternative MFA methods
-- Allow secure MFA reset process
-- Notify user of failed attempt with time, location, and device information
-- Display notification on next successful login
+#### 認証失敗処理
+パスワードは成功するがMFAが失敗する場合：
+- ユーザーに代替MFA方式を試すよう促す
+- 安全なMFAリセットプロセスを許可
+- 時間、場所、デバイス情報を含む失敗した試行をユーザーに通知
+- 次回のログイン成功時に通知を表示
 
-#### Security Controls
-- Rate limit authentication attempts to prevent brute force
-- Implement account lockout after multiple failed MFA attempts
-- Verify MFA state in all authenticated endpoints
-- Avoid "remember this device" for highly sensitive applications
-- Log and monitor all MFA-related events
+#### セキュリティ制御
+- ブルートフォースを防ぐため認証試行をレート制限
+- 複数回のMFA試行失敗後にアカウントロックアウトを実装
+- すべての認証済みエンドポイントでMFA状態を検証
+- 機密性の高いアプリケーションでは「このデバイスを記憶する」を避ける
+- すべてのMFA関連イベントをログおよび監視
 
-### Factor-Specific Considerations
+### 要素固有の考慮事項
 
-#### Hardware Tokens
-Pros: Extremely difficult to compromise remotely, work without mobile devices
-Cons: Expensive deployment, administrative overhead, can be stolen and used without PIN
+#### ハードウェアトークン
+長所：リモートで侵害することが非常に困難、モバイルデバイスなしで動作
+短所：展開コストが高い、管理オーバーヘッド、PINなしで盗まれて使用される可能性
 
-#### Software TOTP
-Pros: Cost-effective, easy deployment, widely supported standards
-Cons: Vulnerable if device compromised, may be on same device as authentication
+#### ソフトウェアTOTP
+長所：コスト効果的、簡単な展開、広くサポートされた標準
+短所：デバイスが侵害された場合脆弱、認証と同じデバイスにある可能性
 
-#### Biometrics
-Pros: Hard to spoof, fast and convenient
-Cons: Privacy concerns, expensive hardware, difficult to change if compromised
+#### バイオメトリクス
+長所：偽造が困難、高速で便利
+短所：プライバシーの懸念、高価なハードウェア、侵害された場合変更が困難
 
-#### Location-Based
-Pros: Transparent to users, minimal administrative overhead
-Cons: No protection against compromised systems or insider threats
+#### 位置ベース
+長所：ユーザーに透過的、最小限の管理オーバーヘッド
+短所：侵害されたシステムや内部脅威からの保護なし
 
-### Third-Party MFA Services
+### サードパーティMFAサービス
 
-Consider using established MFA providers to reduce implementation complexity:
-- Evaluate security practices and certifications of providers
-- Understand implications if third-party service is compromised
-- Ensure service meets compliance requirements for your industry
+実装の複雑さを減らすため、確立されたMFAプロバイダーの使用を検討：
+- プロバイダーのセキュリティプラクティスと認証を評価
+- サードパーティサービスが侵害された場合の影響を理解
+- サービスが業界のコンプライアンス要件を満たすことを確認
 
-### Regulatory Compliance
+### 規制コンプライアンス
 
-Many industries require MFA implementation:
-- Finance and healthcare sectors commonly mandate MFA
-- GDPR compliance often requires MFA for sensitive data
-- NIST SP 800-63 provides authoritative guidance on authentication factors
-- Verify specific regulatory requirements for your application domain
+多くの業界でMFA実装が必要：
+- 金融および医療セクターは一般的にMFAを義務化
+- GDPRコンプライアンスは機密データにMFAを要求することが多い
+- NIST SP 800-63は認証要素に関する権威あるガイダンスを提供
+- アプリケーションドメインの特定の規制要件を検証
 
-### Testing and Monitoring
+### テストと監視
 
-- Conduct penetration testing specifically targeting authentication flows
-- Test MFA bypass scenarios and recovery mechanisms
-- Monitor for unusual authentication patterns and failed attempts
-- Regularly audit MFA implementation against current threats
-- Ensure security features maintain usability to prevent user circumvention
+- 認証フローを特にターゲットとしたペネトレーションテストを実施
+- MFAバイパスシナリオと復旧メカニズムをテスト
+- 通常と異なる認証パターンと失敗した試行を監視
+- 現在の脅威に対してMFA実装を定期的に監査
+- ユーザーの回避を防ぐため、セキュリティ機能が使いやすさを維持することを確認
 
-Following these guidelines based on the OWASP Multifactor Authentication framework will significantly reduce the risk of account compromise while maintaining reasonable usability for legitimate users.
+OWASP多要素認証フレームワークに基づくこれらのガイドラインに従うことで、正規のユーザーに合理的な使いやすさを維持しながら、アカウント侵害のリスクを大幅に削減します。

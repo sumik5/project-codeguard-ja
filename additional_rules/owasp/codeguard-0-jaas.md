@@ -1,5 +1,5 @@
 ---
-description: JAAS Security Best Practices
+description: JAASセキュリティのベストプラクティス
 languages:
 - c
 - java
@@ -7,25 +7,25 @@ languages:
 alwaysApply: false
 ---
 
-## Introduction - What is JAAS authentication
+## はじめに - JAAS認証とは
 
-The process of verifying the identity of a user or another system is authentication.
+ユーザーまたは他のシステムの身元を確認するプロセスが認証です。
 
-JAAS, as an authentication framework manages the authenticated user's identity and credentials from login to logout.
+JAASは認証フレームワークとして、ログインからログアウトまで、認証されたユーザーの身元と認証情報を管理します。
 
-The JAAS authentication lifecycle:
+JAAS認証ライフサイクル：
 
-1. Create `LoginContext`.
-2. Read the configuration file for one or more `LoginModules` to initialize.
-3. Call `LoginContext.initialize()` for each LoginModule to initialize.
-4. Call `LoginContext.login()` for each LoginModule.
-5. If login successful then call `LoginContext.commit()` else call `LoginContext.abort()`
+1. `LoginContext`を作成。
+2. 初期化する1つ以上の`LoginModule`の設定ファイルを読み取る。
+3. 各LoginModuleを初期化するため`LoginContext.initialize()`を呼び出す。
+4. 各LoginModuleのため`LoginContext.login()`を呼び出す。
+5. ログイン成功の場合`LoginContext.commit()`を呼び出し、失敗の場合`LoginContext.abort()`を呼び出す
 
-## Configuration file
+## 設定ファイル
 
-The JAAS configuration file contains a `LoginModule` stanza for each `LoginModule` available for logging on to the application.
+JAAS設定ファイルには、アプリケーションへのログオンに利用可能な各`LoginModule`のための`LoginModule`スタンザが含まれています。
 
-A stanza from a JAAS configuration file:
+JAAS設定ファイルからのスタンザ：
 
 ```text
 Branches
@@ -36,38 +36,38 @@ Branches
 }
 ```
 
-Note the placement of the semicolons, terminating both `LoginModule` entries and stanzas.
+セミコロンの配置に注意してください。`LoginModule`エントリとスタンザの両方を終了します。
 
-The word required indicates the `LoginContext`'s `login()` method must be successful when logging in the user. The `LoginModule`-specific values `debug` and `succeeded` are passed to the `LoginModule`.
+requiredという単語は、ユーザーをログインする際に`LoginContext`の`login()`メソッドが成功する必要があることを示します。`LoginModule`固有の値`debug`と`succeeded`は`LoginModule`に渡されます。
 
-They are defined by the `LoginModule` and their usage is managed inside the `LoginModule`. Note, Options are Configured using key-value pairing such as `debug="true"` and the key and value should be separated by a `=` sign.
+これらは`LoginModule`によって定義され、その使用は`LoginModule`内で管理されます。オプションは`debug="true"`のようなキーバリューペアを使用して設定され、キーと値は`=`記号で区切られる必要があります。
 
-## Main.java (The client)
+## Main.java（クライアント）
 
-- Execution syntax:
+- 実行構文：
 
 ```text
 Java –Djava.security.auth.login.config==packageName/packageName.config
         packageName.Main Stanza1
 
-Where:
-    packageName is the directory containing the config file.
-    packageName.config specifies the config file in the Java package, packageName.
-    packageName.Main specifies Main.java in the Java package, packageName.
-    Stanza1 is the name of the stanza Main() should read from the config file.
+ここで：
+    packageNameは設定ファイルを含むディレクトリ。
+    packageName.configはJavaパッケージpackageName内の設定ファイルを指定。
+    packageName.MainはJavaパッケージpackageName内のMain.javaを指定。
+    Stanza1はMain()が設定ファイルから読み取るべきスタンザの名前。
 ```
 
-- When executed, the 1st command-line argument is the stanza from the config file. The Stanza names the `LoginModule` to be used. The 2nd argument is the `CallbackHandler`.
-- Create a new `LoginContext` with the arguments passed to `Main.java`.
+- 実行時、第1コマンドライン引数は設定ファイルからのスタンザです。スタンザは使用される`LoginModule`に名前を付けます。第2引数は`CallbackHandler`です。
+- Main.javaに渡された引数で新しい`LoginContext`を作成します。
     - `loginContext = new LoginContext (args[0], new AppCallbackHandler());`
-- Call the LoginContext.Login Module:
+- LoginContext.Login Moduleを呼び出します：
     - `loginContext.login();`
-- The value in succeeded Option is returned from `loginContext.login()`.
-- If the login was successful, a subject was created.
+- succeededオプションの値が`loginContext.login()`から返されます。
+- ログインが成功した場合、subjectが作成されました。
 
 ## LoginModule.java
 
-A `LoginModule` must have the following authentication methods:
+`LoginModule`には以下の認証メソッドが必要です：
 
 - `initialize()`
 - `login()`
@@ -77,53 +77,53 @@ A `LoginModule` must have the following authentication methods:
 
 ### initialize()
 
-In `Main()`, after the `LoginContext` reads the correct stanza from the config file, the `LoginContext` instantiates the `LoginModule` specified in the stanza.
+`Main()`内で、`LoginContext`が設定ファイルから正しいスタンザを読み取った後、`LoginContext`はスタンザで指定された`LoginModule`をインスタンス化します。
 
-- `initialize()` methods signature:
+- `initialize()`メソッドのシグネチャ：
     - `Public void initialize (Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options)`
-- The arguments above should be saved as follows:
+- 上記の引数は以下のように保存する必要があります：
     - `this.subject = subject;`
     - `this.callbackHandler = callbackHandler;`
     - `this.sharedState = sharedState;`
     - `this.options = options;`
-- What the `initialize()` method does:
-    - Builds a subject object of the `Subject` class contingent on a successful `login()`.
-    - Sets the `CallbackHandler` which interacts with the user to gather login information.
-    - If a `LoginContext` specifies 2 or more LoginModules, which is legal, they can share information via a `sharedState` map.
-    - Saves state information such as debug and succeeded in an options Map.
+- `initialize()`メソッドが行うこと：
+    - 成功した`login()`を条件とする`Subject`クラスのsubjectオブジェクトを構築します。
+    - ログイン情報を収集するためにユーザーと対話する`CallbackHandler`を設定します。
+    - `LoginContext`が2つ以上のLoginModuleを指定する場合、これは合法であり、`sharedState`マップを介して情報を共有できます。
+    - debugやsucceededなどの状態情報をoptionsマップに保存します。
 
 ### login()
 
-Captures user supplied login information. The code snippet below declares an array of two callback objects which, when passed to the `callbackHandler.handle` method in the `callbackHandler.java` program, will be loaded with a username and password provided interactively by the user:
+ユーザー提供のログイン情報をキャプチャします。以下のコードスニペットは、`callbackHandler.java`プログラムの`callbackHandler.handle`メソッドに渡されると、ユーザーによって対話的に提供されたユーザー名とパスワードで読み込まれる2つのコールバックオブジェクトの配列を宣言します：
 
 ```java
-NameCallback nameCB = new NameCallback("Username");
-PasswordCallback passwordCB = new PasswordCallback ("Password", false);
+ NameCallback nameCB = new NameCallback("Username");
+ PasswordCallback passwordCB = new PasswordCallback ("Password", false);
 Callback[] callbacks = new Callback[] { nameCB, passwordCB };
 callbackHandler.handle (callbacks);
 ```
 
-- Authenticates the user
-- Retrieves the user supplied information from the callback objects:
+- ユーザーを認証します
+- コールバックオブジェクトからユーザー提供情報を取得します：
     - `String ID = nameCallback.getName ();`
     - `char[] tempPW = passwordCallback.getPassword ();`
-- Compare `name` and `tempPW` to values stored in a repository such as LDAP.
-- Set the value of the variable succeeded and return to `Main()`.
+- `name`と`tempPW`をLDAPなどのリポジトリに保存された値と比較します。
+- 変数succeededの値を設定し、`Main()`に戻ります。
 
 ### commit()
 
-Once the users credentials are successfully verified during `login()`, the JAAS authentication framework associates the credentials, as needed, with the subject.
+`login()`中にユーザーの認証情報が正常に検証されると、JAAS認証フレームワークは必要に応じて認証情報をsubjectに関連付けます。
 
-There are two types of credentials, **Public** and **Private**:
+認証情報には**Public**と**Private**の2種類があります：
 
-- Public credentials include public keys.
-- Private credentials include passwords and public keys.
+- Public認証情報には公開鍵が含まれます。
+- Private認証情報にはパスワードと公開鍵が含まれます。
 
-Principals (i.e. Identities the subject has other than their login name) such as employee number or membership ID in a user group are added to the subject.
+Principals（つまりログイン名以外のsubjectが持つ身元）、例えば従業員番号やユーザーグループのメンバーシップIDは、subjectに追加されます。
 
-Below, is an example `commit()` method where first, for each group the authenticated user has membership in, the group name is added as a principal to the subject. The subject's username is then added to their public credentials.
+以下は、認証されたユーザーがメンバーシップを持つ各グループについて、最初にグループ名がprincipalとしてsubjectに追加される例の`commit()`メソッドです。次に、subjectのユーザー名がパブリック認証情報に追加されます。
 
-Code snippet setting then adding any principals and a public credentials to a subject:
+Principalsとパブリック認証情報をsubjectに設定して追加するコードスニペット：
 
 ```java
 public boolean commit() {
@@ -142,11 +142,11 @@ public boolean commit() {
 
 ### abort()
 
-The `abort()` method is called when authentication doesn't succeed. Before the `abort()` method exits the `LoginModule`, care should be taken to reset state including the username and password input fields.
+`abort()`メソッドは認証が成功しなかった場合に呼び出されます。`abort()`メソッドが`LoginModule`を終了する前に、ユーザー名やパスワード入力フィールドを含む状態をリセットするよう注意する必要があります。
 
 ### logout()
 
-The release of the users principals and credentials when `LoginContext.logout` is called:
+`LoginContext.logout`が呼び出されたときのユーザーのprincipalsと認証情報の解放：
 
 ```java
 public boolean logout() {
@@ -164,10 +164,10 @@ public boolean logout() {
 
 ## CallbackHandler.java
 
-The `callbackHandler` is in a source (`.java`) file separate from any single `LoginModule` so that it can service a multitude of LoginModules with differing callback objects:
+`callbackHandler`は、異なるコールバックオブジェクトを持つ多数のLoginModuleにサービスを提供できるように、単一の`LoginModule`とは別のソース（`.java`）ファイルにあります：
 
-- Creates instance of the `CallbackHandler` class and has only one method, `handle()`.
-- A `CallbackHandler` servicing a LoginModule requiring username & password to login:
+- `CallbackHandler`クラスのインスタンスを作成し、`handle()`メソッドのみを持ちます。
+- ログインにユーザー名とパスワードを必要とするLoginModuleにサービスを提供する`CallbackHandler`：
 
 ```java
 public void handle(Callback[] callbacks) {

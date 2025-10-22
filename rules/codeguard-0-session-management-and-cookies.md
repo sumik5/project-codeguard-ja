@@ -1,6 +1,5 @@
 ---
-description: Session management and secure cookies (rotation, fixation, timeouts,
-  theft detection)
+description: セッション管理とセキュアクッキー（ローテーション、固定化、タイムアウト、盗難検出）
 languages:
 - c
 - go
@@ -14,65 +13,65 @@ languages:
 alwaysApply: false
 ---
 
-## Session Management & Cookies
+## セッション管理とクッキー
 
-Implement robust, attack-resistant session handling that prevents fixation, hijacking, and theft while maintaining usability.
+固定化、ハイジャック、盗難を防ぎながら使いやすさを維持する、堅牢で攻撃に強いセッション処理を実装。
 
-### Session ID Generation and Properties
-- Generate session IDs with a CSPRNG; ≥64 bits of entropy (prefer 128+). Opaque, unguessable, and free of meaning.
-- Use generic cookie names (e.g., `id`) rather than framework defaults. Reject any incoming ID not created by the server.
-- Store all session data server-side; never embed PII or privileges in the token. If sensitive, encrypt server-side session store at rest.
+### セッションID生成とプロパティ
+- CSPRNGでセッションIDを生成。64ビット以上のエントロピー（128以上を推奨）。不透明で推測不可能、意味を持たない。
+- フレームワークのデフォルトではなく、汎用的なクッキー名（例：`id`）を使用。サーバーで作成されていない受信IDを拒否。
+- すべてのセッションデータをサーバー側に保存。PIIや権限をトークンに埋め込まない。機密性が高い場合、サーバー側セッションストアを保存時に暗号化。
 
-### Cookie Security Configuration
-- Set `Secure`, `HttpOnly`, `SameSite=Strict` (or `Lax` if necessary for flows) on session cookies.
-- Scope cookies narrowly with `Path` and `Domain`. Avoid cross-subdomain exposure.
-- Prefer non-persistent session cookies (no Expires/Max-Age). Require full HTTPS; enable HSTS site-wide.
+### クッキーセキュリティ設定
+- セッションクッキーに`Secure`、`HttpOnly`、`SameSite=Strict`（フローに必要な場合は`Lax`）を設定。
+- `Path`と`Domain`でクッキーのスコープを狭く設定。サブドメイン間の露出を避ける。
+- 非永続セッションクッキーを優先（Expires/Max-Ageなし）。完全なHTTPSを要求。サイト全体でHSTSを有効化。
 
-Example header:
+ヘッダーの例：
 ```
 Set-Cookie: id=<opaque>; Secure; HttpOnly; SameSite=Strict; Path=/
 ```
 
-### Session Lifecycle and Rotation
-- Create sessions only server-side; treat provided IDs as untrusted input.
-- Regenerate session ID on authentication, password changes, and any privilege elevation. Invalidate the prior ID.
-- Use distinct pre‑auth and post‑auth cookie names if framework patterns require it.
+### セッションライフサイクルとローテーション
+- セッションはサーバー側のみで作成。提供されたIDは信頼できない入力として扱う。
+- 認証、パスワード変更、権限昇格時にセッションIDを再生成。以前のIDを無効化。
+- フレームワークパターンで必要な場合、認証前と認証後で異なるクッキー名を使用。
 
-### Expiration and Logout
-- Idle timeout: 2–5 minutes for high-value, 15–30 minutes for lower risk. Absolute timeout: 4–8 hours.
-- Enforce timeouts server-side. Provide a visible logout button that fully invalidates the server session and clears the cookie client-side.
+### 有効期限とログアウト
+- アイドルタイムアウト：高価値の場合2〜5分、低リスクの場合15〜30分。絶対タイムアウト：4〜8時間。
+- タイムアウトをサーバー側で強制。サーバーセッションを完全に無効化し、クライアント側でクッキーをクリアする、視認可能なログアウトボタンを提供。
 
-### Transport and Caching
-- Enforce HTTPS for the entire session journey. Never mix HTTP/HTTPS in one session.
-- Send `Cache-Control: no-store` on responses containing session identifiers or sensitive data.
+### トランスポートとキャッシング
+- セッション全体のジャーニーでHTTPSを強制。1つのセッション内でHTTP/HTTPSを混在させない。
+- セッション識別子または機密データを含むレスポンスに`Cache-Control: no-store`を送信。
 
-### Cookie Theft Detection and Response
-- Fingerprint session context server-side at establishment (IP, User-Agent, Accept-Language, relevant `sec-ch-ua` where available).
-- Compare incoming requests to the stored fingerprint, allowing for benign drift (e.g., subnet changes, UA updates).
-- Risk-based responses:
-  - High risk: require re-authentication; rotate session ID.
-  - Medium risk: step-up verification (challenge); rotate session ID.
-  - Low risk: log suspicious activity.
-- Always regenerate the session ID when potential hijacking is detected.
+### クッキー盗難検出と対応
+- 確立時にサーバー側でセッションコンテキストをフィンガープリント（IP、User-Agent、Accept-Language、利用可能な場合は関連する`sec-ch-ua`）。
+- 受信リクエストを保存されたフィンガープリントと比較し、良性のずれ（例：サブネット変更、UA更新）を許容。
+- リスクベースの対応：
+  - 高リスク：再認証を要求。セッションIDをローテーション。
+  - 中リスク：段階的検証（チャレンジ）。セッションIDをローテーション。
+  - 低リスク：疑わしいアクティビティをログ記録。
+- 潜在的なハイジャックが検出された場合、常にセッションIDを再生成。
 
-### Client-Side Storage
-- Do not store session tokens in `localStorage`/`sessionStorage` due to XSS risk. Prefer HttpOnly cookies for transport.
-- If client-side storage is unavoidable for non-session secrets, isolate via Web Workers and never expose in page context.
+### クライアント側ストレージ
+- XSSリスクのため、セッショントークンを`localStorage`/`sessionStorage`に保存しない。トランスポートにはHttpOnlyクッキーを優先。
+- 非セッションシークレットのクライアント側ストレージが避けられない場合、Web Workerで分離し、ページコンテキストに決して公開しない。
 
-### Framework and Multi-Cookie Scenarios
-- Prefer built-in session frameworks; keep them updated and hardened.
-- Validate relationships when multiple cookies participate in session state; avoid same cookie names across paths/domains.
+### フレームワークと複数クッキーのシナリオ
+- 組み込みセッションフレームワークを優先。最新に保ち、ハードニング。
+- 複数のクッキーがセッション状態に参加する場合、関係性を検証。パス/ドメイン間で同じクッキー名を避ける。
 
-### Monitoring and Telemetry
-- Log session lifecycle events (creation, rotation, termination) using salted hashes of the session ID, not raw values.
-- Monitor for brute force of session IDs and anomalous concurrent usage.
+### 監視とテレメトリ
+- セッションID の生の値ではなく、ソルト付きハッシュを使用してセッションライフサイクルイベント（作成、ローテーション、終了）をログ記録。
+- セッションIDのブルートフォースと異常な同時使用を監視。
 
-### Implementation Checklist
-1) CSPRNG session IDs (≥64 bits entropy), opaque and server-issued only.
-2) Cookie flags: `Secure`, `HttpOnly`, `SameSite` set; tight domain/path.
-3) HTTPS-only with HSTS; no mixed content.
-4) Regenerate IDs on auth and privilege changes; invalidate old IDs.
-5) Idle and absolute timeouts enforced server-side; full logout implemented.
-6) `Cache-Control: no-store` for sensitive responses.
-7) Server-side fingerprinting and risk-based responses to anomalies.
-8) No client storage of session tokens; framework defaults hardened.
+### 実装チェックリスト
+1) CSPRNGセッションID（64ビット以上のエントロピー）、不透明でサーバー発行のみ。
+2) クッキーフラグ：`Secure`、`HttpOnly`、`SameSite`を設定。厳格なdomain/path。
+3) HSTSを伴うHTTPSのみ。混在コンテンツなし。
+4) 認証と権限変更時にIDを再生成。古いIDを無効化。
+5) アイドルと絶対タイムアウトをサーバー側で強制。完全なログアウトを実装。
+6) 機密レスポンスに`Cache-Control: no-store`を設定。
+7) サーバー側フィンガープリントと異常へのリスクベース対応。
+8) セッショントークンのクライアントストレージなし。フレームワークデフォルトをハードニング。

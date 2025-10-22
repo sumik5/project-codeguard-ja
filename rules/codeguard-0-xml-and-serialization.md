@@ -1,6 +1,5 @@
 ---
-description: XML security and safe deserialization (DTD/XXE hardening, schema validation,
-  no unsafe native deserialization)
+description: XMLセキュリティと安全なデシリアライゼーション（DTD/XXE強化、スキーマ検証、安全でないネイティブデシリアライゼーションの禁止）
 languages:
 - c
 - go
@@ -12,34 +11,34 @@ languages:
 alwaysApply: false
 ---
 
-## XML & Serialization Hardening
+## XML・シリアライゼーション強化
 
-Secure parsing and processing of XML and serialized data; prevent XXE, entity expansion, SSRF, DoS, and unsafe deserialization across platforms.
+XMLとシリアライズされたデータの安全な解析と処理；XXE、エンティティ展開、SSRF、DoS、プラットフォーム全体での安全でないデシリアライゼーションを防止。
 
-### XML Parser Hardening
-- Disable DTDs and external entities by default; reject DOCTYPE declarations.
-- Validate strictly against local, trusted XSDs; set explicit limits (size, depth, element counts).
-- Sandbox or block resolver access; no network fetches during parsing; monitor for unexpected DNS activity.
+### XMLパーサー強化
+- デフォルトでDTDと外部エンティティを無効化；DOCTYPE宣言を拒否。
+- ローカルの信頼されたXSDで厳格に検証；明示的な制限（サイズ、深さ、要素数）を設定。
+- リゾルバアクセスをサンドボックス化またはブロック；解析中のネットワークフェッチなし；予期しないDNSアクティビティを監視。
 
 #### Java
-General principle:
+一般原則：
 ```java
 factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 ```
 
-Disabling DTDs protects against XXE and Billion Laughs attacks. If DTDs cannot be disabled, disable external entities using parser-specific methods.
+DTDを無効化することで、XXEとBillion Laughs攻撃から保護。DTDを無効化できない場合、パーサー固有のメソッドで外部エンティティを無効化。
 
 ### Java
 
-Java parsers have XXE enabled by default.
+JavaパーサーはデフォルトでXXEが有効。
 
-DocumentBuilderFactory/SAXParserFactory/DOM4J:
+DocumentBuilderFactory/SAXParserFactory/DOM4J：
 
 ```java
 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 String FEATURE = null;
 try {
-    // PRIMARY defense - disallow DTDs completely
+    // 主要な防御 - DTDを完全に禁止
     FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
     dbf.setFeature(FEATURE, true);
     dbf.setXIncludeAware(false);
@@ -49,7 +48,7 @@ try {
 }
 ```
 
-If DTDs cannot be completely disabled:
+DTDを完全に無効化できない場合：
 
 ```java
 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -60,8 +59,8 @@ String[] featuresToDisable = {
 };
 
 for (String feature : featuresToDisable) {
-    try {    
-        dbf.setFeature(feature, false); 
+    try {
+        dbf.setFeature(feature, false);
     } catch (ParserConfigurationException e) {
         logger.info("ParserConfigurationException was thrown. The feature '" + feature
         + "' is probably not supported by your XML processor.");
@@ -82,27 +81,27 @@ var reader = XmlReader.Create(stream, settings);
 ```python
 from defusedxml import ElementTree as ET
 ET.parse('file.xml')
-# or lxml
+# または lxml
 from lxml import etree
 parser = etree.XMLParser(resolve_entities=False, no_network=True)
 tree = etree.parse('filename.xml', parser)
 ```
 
-### Secure XSLT/Transformer Usage
-- Set `ACCESS_EXTERNAL_DTD` and `ACCESS_EXTERNAL_STYLESHEET` to empty; avoid loading remote resources.
+### 安全なXSLT/Transformer使用
+- `ACCESS_EXTERNAL_DTD`と`ACCESS_EXTERNAL_STYLESHEET`を空に設定；リモートリソースの読み込みを避ける。
 
-### Deserialization Safety
-- Never deserialize untrusted native objects. Prefer JSON with schema validation.
-- Enforce size/structure limits before parsing. Reject polymorphic types unless strictly allow‑listed.
-- Language specifics:
-  - PHP: avoid `unserialize()`; use `json_decode()`.
-  - Python: avoid `pickle` and unsafe YAML (`yaml.safe_load` only).
-  - Java: override `ObjectInputStream#resolveClass` to allow‑list; avoid enabling default typing in Jackson; use XStream allow‑lists.
-  - .NET: avoid `BinaryFormatter`; prefer `DataContractSerializer` or `System.Text.Json` with `TypeNameHandling=None` for JSON.NET.
-- Sign and verify serialized payloads where applicable; log and alert on deserialization failures and anomalies.
+### デシリアライゼーション安全性
+- 信頼できないネイティブオブジェクトをデシリアライズしない。スキーマ検証付きJSONを優先。
+- 解析前にサイズ/構造制限を強制。厳格に許可リスト化されていない限り、ポリモーフィック型を拒否。
+- 言語固有：
+  - PHP：`unserialize()`を避ける；`json_decode()`を使用。
+  - Python：`pickle`と安全でないYAMLを避ける（`yaml.safe_load`のみ）。
+  - Java：許可リストのため`ObjectInputStream#resolveClass`をオーバーライド；Jacksonでデフォルト型付けを有効化しない；XStream許可リストを使用。
+  - .NET：`BinaryFormatter`を避ける；`DataContractSerializer`または`System.Text.Json`を優先（JSON.NETでは`TypeNameHandling=None`）。
+- 該当する場合、シリアライズされたペイロードに署名して検証；デシリアライゼーション失敗と異常をログに記録してアラート。
 
-### Implementation Checklist
-- DTDs off; external entities disabled; strict schema validation; parser limits set.
-- No network access during parsing; resolvers restricted; auditing in place.
-- No unsafe native deserialization; strict allow‑listing and schema validation for supported formats.
-- Regular library updates and tests with XXE/deserialization payloads.
+### 実装チェックリスト
+- DTDオフ；外部エンティティ無効化；厳格なスキーマ検証；パーサー制限設定。
+- 解析中のネットワークアクセスなし；リゾルバ制限；監査実施。
+- 安全でないネイティブデシリアライゼーションなし；サポートされている形式の厳格な許可リストとスキーマ検証。
+- 定期的なライブラリ更新とXXE/デシリアライゼーションペイロードのテスト。

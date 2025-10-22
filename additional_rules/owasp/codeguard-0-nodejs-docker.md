@@ -1,77 +1,77 @@
 ---
-description: Node.js Docker Security Best Practices
+description: Node.js Dockerセキュリティベストプラクティス
 languages:
 - d
 - javascript
 alwaysApply: false
 ---
 
-## Node.js Docker Security Guidelines
+## Node.js Dockerセキュリティガイドライン
 
-Essential security practices for building optimized and secure Node.js Docker images for production deployment.
+本番デプロイメント向けの最適化され安全なNode.js Dockerイメージを構築するための必須セキュリティプラクティス。
 
-### Use Explicit and Deterministic Base Images
+### 明示的で決定論的なベースイメージを使用
 
-Always use specific, pinned base image tags to ensure deterministic builds:
-- Avoid `FROM node` or `FROM node:latest` which introduces non-deterministic behavior
-- Use minimal base images to reduce attack surface and image size
-- Pin images with both tag and SHA256 digest for maximum security
+常に特定のピン留めされたベースイメージタグを使用して決定論的ビルドを確保：
+- `FROM node`または`FROM node:latest`を避ける（非決定論的動作を引き起こす）
+- 攻撃面とイメージサイズを削減するために最小限のベースイメージを使用
+- 最大のセキュリティのためにタグとSHA256ダイジェストの両方でイメージをピン留め
 
-Recommended pattern:
+推奨パターン:
 ```dockerfile
 FROM node:lts-alpine@sha256:b2da3316acdc2bec442190a1fe10dc094e7ba4121d029cb32075ff59bb27390a
 ```
 
-### Install Only Production Dependencies
+### 本番依存関係のみをインストール
 
-Use deterministic dependency installation that excludes development packages:
+開発パッケージを除外する決定論的な依存関係インストールを使用：
 ```dockerfile
 RUN npm ci --omit=dev
 ```
 
-This approach:
-- Prevents surprises in CI by halting if lockfile deviations exist
-- Reduces security risk from development dependencies
-- Decreases image size by excluding unnecessary packages
+このアプローチ：
+- lockfileの逸脱が存在する場合にCIを停止して驚きを防ぐ
+- 開発依存関係からのセキュリティリスクを削減
+- 不要なパッケージを除外してイメージサイズを削減
 
-### Optimize for Production Environment
+### 本番環境向けに最適化
 
-Set the production environment variable to enable framework optimizations:
+フレームワークの最適化を有効にするために本番環境変数を設定：
 ```dockerfile
 ENV NODE_ENV production
 ```
 
-Many frameworks like Express only enable performance and security optimizations when this variable is set to "production".
+Expressなどの多くのフレームワークは、この変数が"production"に設定されている場合にのみパフォーマンスとセキュリティの最適化を有効化します。
 
-### Run as Non-Root User
+### 非rootユーザーとして実行
 
-Follow the principle of least privilege to minimize security risks:
+セキュリティリスクを最小化するために最小権限の原則に従う：
 ```dockerfile
 COPY --chown=node:node . /usr/src/app
 USER node
 ```
 
-The official node images include a least-privileged `node` user. Ensure all copied files are owned by this user to prevent permission issues.
+公式nodeイメージには最小権限の`node`ユーザーが含まれています。権限の問題を防ぐために、すべてのコピーされたファイルがこのユーザーによって所有されることを確認してください。
 
-### Handle Process Signals Properly
+### プロセスシグナルを適切に処理
 
-Use a proper init system to handle process signals correctly:
+プロセスシグナルを正しく処理するために適切なinitシステムを使用：
 ```dockerfile
 RUN apk add dumb-init
 CMD ["dumb-init", "node", "server.js"]
 ```
 
-Avoid these problematic patterns:
-- `CMD "npm" "start"` - npm doesn't forward signals
-- `CMD "node" "server.js"` - Node.js as PID 1 doesn't handle signals properly
+これらの問題のあるパターンを避ける：
+- `CMD "npm" "start"` - npmはシグナルを転送しない
+- `CMD "node" "server.js"` - PID 1としてのNode.jsはシグナルを適切に処理しない
 
-### Implement Graceful Shutdown
+### グレースフルシャットダウンを実装
 
-Add signal handlers in your Node.js application code:
+Node.jsアプリケーションコードにシグナルハンドラーを追加：
 ```javascript
     async function closeGracefully(signal) {
        console.log(`*^!@4=> Received signal to terminate: ${signal}`)
-     
+
        await fastify.close()
        // await db.close() if we have a db connection in this app
        // await other things we should cleanup nicely
@@ -81,9 +81,9 @@ Add signal handlers in your Node.js application code:
     process.on('SIGTERM', closeGracefully)
 ```
 
-### Use Multi-Stage Builds
+### マルチステージビルドを使用
 
-Separate build and production stages to minimize final image size and prevent secret leakage:
+最終イメージサイズを最小化しシークレット漏洩を防ぐためにビルドステージと本番ステージを分離：
 
 ```dockerfile
 # --------------> The build image
@@ -103,9 +103,9 @@ COPY --chown=node:node . /usr/src/app
 CMD ["dumb-init", "node", "server.js"]
 ```
 
-### Use .dockerignore File
+### .dockerignoreファイルを使用
 
-Create a `.dockerignore` file to exclude unnecessary and sensitive files:
+不要で機密性の高いファイルを除外するために`.dockerignore`ファイルを作成：
 ```
 node_modules
 npm-debug.log
@@ -115,27 +115,27 @@ Dockerfile
 .npmrc
 ```
 
-This prevents:
-- Copying modified local `node_modules/` over the container-built version
-- Including sensitive files like credentials or local configuration
-- Cache invalidation from log files or temporary files
+これにより以下を防止：
+- 変更されたローカル`node_modules/`をコンテナビルド版にコピーすること
+- 認証情報やローカル設定などの機密ファイルを含めること
+- ログファイルや一時ファイルからのキャッシュ無効化
 
-### Mount Secrets Securely
+### シークレットを安全にマウント
 
-Use Docker BuildKit secrets to handle sensitive files like `.npmrc`:
+`.npmrc`などの機密ファイルを処理するためにDocker BuildKitシークレットを使用：
 ```dockerfile
 RUN --mount=type=secret,mode=0644,id=npmrc,target=/usr/src/app/.npmrc npm ci --omit=dev
 ```
 
-Build command:
+ビルドコマンド：
 ```bash
 docker build . -t nodejs-tutorial --secret id=npmrc,src=.npmrc
 ```
 
-This ensures secrets are never copied into the final Docker image layers.
+これにより、シークレットが最終Dockerイメージレイヤーにコピーされないことが保証されます。
 
-### Security Scanning
+### セキュリティスキャン
 
-Regularly scan your Docker images for vulnerabilities using static analysis tools and keep dependencies updated.
+静的分析ツールを使用してDockerイメージの脆弱性を定期的にスキャンし、依存関係を最新に保ちます。
 
-By following these practices, you'll create secure, optimized, and maintainable Node.js Docker images suitable for production deployment.
+これらのプラクティスに従うことで、本番デプロイメントに適した安全で最適化され保守可能なNode.js Dockerイメージを作成できます。

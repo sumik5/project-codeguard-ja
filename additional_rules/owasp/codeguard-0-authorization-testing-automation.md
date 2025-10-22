@@ -1,5 +1,5 @@
 ---
-description: Authorization Testing Automation Best Practices
+description: 認可テスト自動化のベストプラクティス
 languages:
 - go
 - java
@@ -12,32 +12,32 @@ languages:
 alwaysApply: false
 ---
 
-Enforce Automated Authorization Testing Using a Formal Authorization Matrix
+正式な認可マトリックスを使用した自動認可テストの強制
 
-Automate authorization tests driven by a formal authorization matrix to detect regressions early and ensure reliable access control enforcement.
+正式な認可マトリックスによって駆動される自動認可テストを実装し、リグレッションを早期に検出し、信頼性の高いアクセス制御の強制を保証します。
 
-  1. **Define a formal authorization matrix file** (preferably XML or YAML) that lists:
-    - All features/services/endpoints.
-    - Logical roles and data filters if applicable.
-    - Expected HTTP response codes for allowed and denied accesses.
-    - Optional test payloads per service for richer testing.
+  1. **正式な認可マトリックスファイルを定義**（XMLまたはYAMLが望ましい）：
+    - すべての機能/サービス/エンドポイント。
+    - 論理的ロールと、該当する場合データフィルター。
+    - 許可および拒否されたアクセスの期待されるHTTPレスポンスコード。
+    - よりリッチなテストのための、サービスごとのオプションのテストペイロード。
 
-  2. **Secure the authorization matrix**: Store matrix files encrypted at rest with appropriate access controls. Version control the matrix and restrict write access to authorized personnel only.
+  2. **認可マトリックスを保護**：マトリックスファイルを適切なアクセス制御で保存時暗号化します。マトリックスをバージョン管理し、書き込みアクセスを承認された担当者のみに制限します。
 
-  3. **Automate integration tests** to:
-    - Dynamically load and iterate over the matrix entries.
-    - Generate role-based access tokens (e.g., JWT) matching each logical role.
-    - Handle token lifecycle: refresh, expiration, and revocation scenarios.
-    - Call each service endpoint as each role.
-    - Validate actual HTTP response codes against expected allowed/denied codes from the matrix.
-    - Report any discrepancies immediately, specifying involved role, service, and unexpected response.
+  3. **統合テストを自動化**：
+    - マトリックスエントリを動的にロードして反復処理。
+    - 各論理的ロールに一致するロールベースアクセストークン（例：JWT）を生成。
+    - トークンライフサイクルを処理：リフレッシュ、有効期限、取り消しシナリオ。
+    - 各サービスエンドポイントを各ロールとして呼び出し。
+    - 実際のHTTPレスポンスコードをマトリックスからの期待される許可/拒否コードと検証。
+    - 不一致がある場合は直ちに報告し、関係するロール、サービス、予期しないレスポンスを指定。
 
-  4. **Environment-specific configuration**: Support different authorization matrices and token configurations for development, testing, and production environments.
+  4. **環境固有の設定**：開発、テスト、本番環境用の異なる認可マトリックスとトークン設定をサポート。
 
-  5. **Secure the test environment**: Isolate test environments, use dedicated test accounts, and ensure test tokens cannot access production resources.
+  5. **テスト環境を保護**：テスト環境を隔離し、専用のテストアカウントを使用し、テストトークンが本番リソースにアクセスできないことを保証。
 
-  6. Factorize test logic to centralize token creation, service calls, and response validation while isolating role-based POVs for clear error profiling.
+  6. 明確なエラープロファイリングのため、トークン作成、サービス呼び出し、レスポンス検証を集中化しながら、ロールベースのPOVを分離するためにテストロジックを因数分解します。
 
-  7. Maintain the authorization matrix as a living document alongside code; update it whenever authorization changes occur.
+  7. 認可マトリックスをコードと並行して生きたドキュメントとして維持；認可変更が発生するたびに更新します。
 
-  8. Provide a readable, auditable view of the authorization matrix (HTML via XSLT or similar) accessible to developers and auditors for verification.
+  8. 開発者と監査人が検証できるよう、認可マトリックスの読みやすく監査可能なビュー（XSLTなどによるHTML）を提供します。

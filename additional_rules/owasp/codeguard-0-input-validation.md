@@ -1,5 +1,5 @@
 ---
-description: Input Validation Security Best Practices
+description: 入力検証セキュリティのベストプラクティス
 languages:
 - c
 - go
@@ -14,54 +14,54 @@ languages:
 alwaysApply: false
 ---
 
-## Input Validation Security Guidelines
+## 入力検証セキュリティガイドライン
 
-This rule provides clear, actionable guidance for implementing robust input validation security functionality in applications.
+このルールは、アプリケーションで堅牢な入力検証セキュリティ機能を実装するための明確で実行可能なガイダンスを提供します。
 
-### Introduction
+### はじめに
 
-Input validation ensures only properly formed data enters the workflow, preventing malformed data from persisting in the database and triggering malfunction of downstream components. Input validation should happen as early as possible in the data flow.
+入力検証は、適切に形成されたデータのみがワークフローに入ることを保証し、不正な形式のデータがデータベースに永続化され、下流コンポーネントの誤動作を引き起こすことを防ぎます。入力検証はデータフローの可能な限り早い段階で行うべきです。
 
-Data from all potentially untrusted sources should be subject to input validation, including Internet-facing web clients and backend feeds from suppliers, partners, vendors or regulators.
+潜在的に信頼できないソースからのすべてのデータは入力検証の対象とすべきです。これには、インターネットに面したWebクライアントやサプライヤー、パートナー、ベンダー、規制当局からのバックエンドフィードが含まれます。
 
-Input Validation should not be used as the primary method of preventing XSS, SQL Injection and other attacks but can significantly contribute to reducing their impact if implemented properly.
+入力検証は、XSS、SQLインジェクション、その他の攻撃を防ぐ主要な方法として使用すべきではありませんが、適切に実装されれば、それらの影響を大幅に軽減することができます。
 
-### Input Validation Strategies
+### 入力検証戦略
 
-- Syntactic validation: enforce correct syntax of structured fields (e.g. SSN, date, currency symbol)
-- Semantic validation: enforce correctness of values in specific business context (e.g. start date before end date, price within expected range)
+- 構文検証：構造化フィールドの正しい構文を強制（例：SSN、日付、通貨記号）
+- 意味検証：特定のビジネスコンテキストにおける値の正確性を強制（例：開始日が終了日より前、価格が期待範囲内）
 
-### Implementing Input Validation
+### 入力検証の実装
 
-- Data type validators available in web application frameworks (Django Validators, Apache Commons Validators)
-- Validation against JSON Schema and XML Schema (XSD)
-- Type conversion with strict exception handling (Integer.parseInt() in Java, int() in Python)
-- Range checks for numerical parameters and length checks for strings
-- Array of allowed values for small sets of string parameters
-- Regular expressions covering the whole input string (^...$) avoiding "any character" wildcards
+- Webアプリケーションフレームワークで利用可能なデータ型バリデータ（Django Validators、Apache Commons Validators）
+- JSON SchemaおよびXML Schema（XSD）との照合検証
+- 厳格な例外処理を伴う型変換（JavaのInteger.parseInt()、Pythonのint()）
+- 数値パラメータの範囲チェックと文字列の長さチェック
+- 小さな文字列パラメータセットの許可値配列
+- 入力文字列全体をカバーする正規表現（^...$）、「任意の文字」ワイルドカードを避ける
 
-### Allowlist vs Denylist
+### 許可リスト vs 拒否リスト
 
-Allowlist validation defines exactly what IS authorized; everything else is not authorized. For structured data (dates, SSNs, zip codes, emails), define strong validation patterns using regular expressions. For fixed options (dropdowns, radio buttons), input must match exactly one offered value.
+許可リスト検証は、何が認可されているかを正確に定義します。それ以外はすべて認可されていません。構造化データ（日付、SSN、郵便番号、メール）には、正規表現を使用して強力な検証パターンを定義します。固定オプション（ドロップダウン、ラジオボタン）の場合、入力は提供される値の1つと正確に一致する必要があります。
 
-### Validating Free-form Unicode Text
+### 自由形式Unicodeテキストの検証
 
-- Normalization: Ensure canonical encoding across all text
-- Character category allowlisting: Use Unicode categories like "decimal digits" or "letters"
-- Individual character allowlisting: Allow specific characters like apostrophe for names
+- 正規化：すべてのテキストで正規エンコーディングを保証
+- 文字カテゴリ許可リスト：「10進数字」や「文字」などのUnicodeカテゴリを使用
+- 個別文字許可リスト：名前のアポストロフィなど特定の文字を許可
 
-### Regular Expressions (Regex)
+### 正規表現（Regex）
 
-Be aware of RegEx Denial of Service (ReDoS) attacks. Input validation should:
-- Be applied to all input data
-- Define allowed character sets
-- Define minimum and maximum length (e.g. {1,25})
+RegEx Denial of Service（ReDoS）攻撃に注意してください。入力検証は：
+- すべての入力データに適用されるべき
+- 許可文字セットを定義
+- 最小および最大長を定義（例：{1,25}）
 
-### Allow List Regular Expression Examples
+### 許可リスト正規表現の例
 
-U.S. Zip Code: `^\d{5}(-\d{4})?$`
+米国郵便番号：`^\d{5}(-\d{4})?$`
 
-Java Example:
+Javaの例：
 ```java
 private static final Pattern zipPattern = Pattern.compile("^\d{5}(-\d{4})?$");
 
@@ -69,7 +69,7 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) {
   try {
       String zipCode = request.getParameter("zip");
       if (!zipPattern.matcher(zipCode).matches()) {
-          throw new YourValidationException("Improper zipcode format.");
+          throw new YourValidationException("不適切な郵便番号形式。");
       }
   } catch(YourValidationException e) {
       response.sendError(response.SC_BAD_REQUEST, e.getMessage());
@@ -77,40 +77,40 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) {
 }
 ```
 
-### Client-side vs Server-side Validation
+### クライアントサイド vs サーバーサイド検証
 
-Input validation must be implemented on the server-side before data processing, as client-side validation can be circumvented by attackers.
+入力検証は、データ処理の前にサーバーサイドで実装する必要があります。クライアントサイド検証は攻撃者によって回避される可能性があります。
 
-### File Upload Validation
+### ファイルアップロード検証
 
-Upload Verification:
-- Validate filename uses expected extension type
-- Enforce maximum file size limits
-- Check ZIP files before extraction (target path, compression level, estimated size)
+アップロード検証：
+- ファイル名が期待される拡張子タイプを使用していることを検証
+- 最大ファイルサイズ制限を強制
+- 展開前にZIPファイルをチェック（ターゲットパス、圧縮レベル、推定サイズ）
 
-Upload Storage:
-- Use server-generated random filenames
-- Analyze uploaded files for malicious content
-- Server defines file paths, not client
+アップロードストレージ：
+- サーバー生成のランダムファイル名を使用
+- 悪意のあるコンテンツについてアップロードされたファイルを分析
+- サーバーがファイルパスを定義、クライアントではない
 
-Beware of dangerous file types:
+危険なファイルタイプに注意：
 - crossdomain.xml / clientaccesspolicy.xml
-- .htaccess and .htpasswd
-- Web executable scripts: aspx, asp, css, swf, jsp, js, php, cgi
+- .htaccessと.htpasswd
+- Web実行可能スクリプト：aspx、asp、css、swf、jsp、js、php、cgi
 
-Image Upload:
-- Use image rewriting libraries to verify and strip content
-- Set extension based on detected content type
-- Ensure content type is within defined image types
+画像アップロード：
+- 画像書き換えライブラリを使用してコンテンツを検証および除去
+- 検出されたコンテンツタイプに基づいて拡張子を設定
+- コンテンツタイプが定義された画像タイプ内にあることを確認
 
-### Email Address Validation
+### メールアドレス検証
 
-Syntactic Validation:
-- Contains two parts separated by @
-- No dangerous characters (backticks, quotes, null bytes)
-- Domain contains only letters, numbers, hyphens, periods
-- Length limits: local part ≤ 63 chars, total ≤ 254 chars
+構文検証：
+- @で区切られた2つの部分を含む
+- 危険な文字なし（バッククォート、引用符、nullバイト）
+- ドメインには文字、数字、ハイフン、ピリオドのみ
+- 長さ制限：ローカル部分≤63文字、合計≤254文字
 
-Semantic Validation:
-- Send verification email with secure token
-- Token requirements: ≥32 chars, cryptographically random, single-use, time-limited
+意味検証：
+- 安全なトークン付き検証メールを送信
+- トークン要件：≥32文字、暗号学的にランダム、単一使用、時間制限付き

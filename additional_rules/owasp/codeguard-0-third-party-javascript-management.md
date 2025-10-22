@@ -1,5 +1,5 @@
 ---
-description: Third Party JavaScript Management Security
+description: サードパーティJavaScript管理のセキュリティ
 languages:
 - c
 - javascript
@@ -7,34 +7,34 @@ languages:
 alwaysApply: false
 ---
 
-## Third Party JavaScript Management Security
+## サードパーティJavaScript管理のセキュリティ
 
-Secure third-party JavaScript tags to prevent arbitrary code execution, data leakage, and loss of application control.
+任意のコード実行、データ漏洩、アプリケーション制御の喪失を防ぐため、サードパーティJavaScriptタグをセキュアにします。
 
-### Major Risks
+### 主要なリスク
 
-Third-party JavaScript poses three critical risks:
-1. Loss of control over client application changes
-2. Execution of arbitrary code on client systems
-3. Disclosure of sensitive information to third parties
+サードパーティJavaScriptには3つの重大なリスクがあります：
+1. クライアントアプリケーション変更の制御喪失
+2. クライアントシステムでの任意のコード実行
+3. サードパーティへの機密情報の開示
 
-### Security Strategies
+### セキュリティ戦略
 
-#### Server Direct Data Layer (Recommended)
-Create controlled data layer that third-party scripts can access instead of direct DOM access.
+#### サーバーダイレクトデータレイヤー（推奨）
+サードパーティスクリプトが直接DOMアクセスする代わりにアクセスできる、制御されたデータレイヤーを作成します。
 
-Key principles:
-- Only first-party code populates the data layer
-- Third-party scripts read exclusively from sanitized data layer
-- Tag JavaScript can only access host data layer values, never URL parameters
+主要な原則：
+- ファーストパーティコードのみがデータレイヤーを設定
+- サードパーティスクリプトはサニタイズされたデータレイヤーから排他的に読み取り
+- タグJavaScriptはホストデータレイヤー値のみにアクセス可能で、URLパラメータにはアクセス不可
 
-Benefits:
-- Only your JavaScript executes on user browsers
-- Only validated data sent to vendors
-- Scalable for large sites with multiple vendor tags
+利点：
+- ユーザーのブラウザで実行されるのは自社のJavaScriptのみ
+- ベンダーに送信されるのは検証済みデータのみ
+- 複数のベンダータグを持つ大規模サイトにスケーラブル
 
-#### Subresource Integrity (SRI)
-Ensure only reviewed code executes by adding integrity metadata.
+#### サブリソース整合性（SRI）
+整合性メタデータを追加して、レビュー済みコードのみが実行されることを保証します。
 
 ```html
 <script src="https://analytics.vendor.com/v1.1/script.js"
@@ -43,13 +43,13 @@ Ensure only reviewed code executes by adding integrity metadata.
 </script>
 ```
 
-Requirements:
-- Vendor host must have CORS enabled
-- Monitor vendor JavaScript for changes regularly
-- Update integrity hashes when vendor updates scripts
+要件：
+- ベンダーホストでCORSが有効化されている必要がある
+- ベンダーJavaScriptの変更を定期的に監視
+- ベンダーがスクリプトを更新した場合は整合性ハッシュを更新
 
-#### Sandboxing with iframe
-Isolate vendor JavaScript to prevent direct DOM and cookie access.
+#### iframeによるサンドボックス化
+ベンダーJavaScriptを分離して、直接DOMおよびCookieアクセスを防止します。
 
 ```html
 <!-- Host page with sandboxed iframe -->
@@ -87,47 +87,47 @@ Isolate vendor JavaScript to prevent direct DOM and cookie access.
  </html>
 ```
 
-Communication requirements:
-- Use postMessage mechanism for secure data exchange
-- Validate event origins before processing messages
-- Consider Content Security Policy (CSP) for additional protection
+通信要件：
+- セキュアなデータ交換にpostMessageメカニズムを使用
+- メッセージを処理する前にイベント送信元を検証
+- 追加保護のためにコンテンツセキュリティポリシー（CSP）を検討
 
-#### Content Sanitization
-Clean DOM data before sending to third parties using:
-- DOMPurify: XSS sanitizer for HTML, MathML and SVG
-- MentalJS: JavaScript parser and sandbox
+#### コンテンツサニタイゼーション
+サードパーティに送信する前に以下を使用してDOMデータをクリーニング：
+- DOMPurify: HTML、MathML、SVG用のXSSサニタイザー
+- MentalJS: JavaScriptパーサーとサンドボックス
 
-#### Tag Manager Controls
-For tag management systems:
-- Restrict JavaScript access to data layer values only
-- Disable custom HTML tags and JavaScript code where possible
-- Verify tag manager security practices and access controls
-- Implement two-factor authentication for tag configuration
+#### タグマネージャー制御
+タグ管理システムの場合：
+- JavaScriptアクセスをデータレイヤー値のみに制限
+- 可能な場合はカスタムHTMLタグとJavaScriptコードを無効化
+- タグマネージャーのセキュリティプラクティスとアクセス制御を検証
+- タグ設定に二要素認証を実装
 
-### Operational Security
+### 運用セキュリティ
 
-#### Keep Libraries Updated
-- Regularly update JavaScript libraries to address vulnerabilities
-- Use tools like RetireJS to identify vulnerable libraries
+#### ライブラリを最新に保つ
+- 脆弱性に対処するため、JavaScriptライブラリを定期的に更新
+- RetireJSなどのツールを使用して脆弱なライブラリを特定
 
-#### Vendor Agreements
-Contractual controls:
-- Require evidence of secure coding practices and code integrity monitoring
-- Include penalties for serving malicious JavaScript
-- Mandate source code monitoring and change detection
+#### ベンダー契約
+契約による制御：
+- セキュアコーディングプラクティスとコード整合性監視の証拠を要求
+- 悪意のあるJavaScriptを提供した場合のペナルティを含める
+- ソースコード監視と変更検出を義務付ける
 
-#### Complete Prevention Strategy
-Most effective controls:
-1. Data layer architecture with API calls to marketing servers
-2. Subresource Integrity implementation
-3. Virtual frame containment deployment
+#### 完全な防止戦略
+最も効果的な制御：
+1. マーケティングサーバーへのAPI呼び出しを含むデータレイヤーアーキテクチャ
+2. サブリソース整合性の実装
+3. 仮想フレーム封じ込めの展開
 
-### Implementation Guidelines
+### 実装ガイドライン
 
-1. Implement server-direct data layer architecture for analytics tags
-2. Use Subresource Integrity for all external script requests
-3. Deploy iframe sandboxing for high-risk third-party scripts
-4. Sanitize all dynamic data before including in tag payloads
-5. Maintain updated JavaScript libraries and monitor for vulnerabilities
-6. Establish vendor agreements with security requirements
-7. Regularly audit and monitor third-party script changes
+1. アナリティクスタグ用にサーバーダイレクトデータレイヤーアーキテクチャを実装
+2. すべての外部スクリプトリクエストにサブリソース整合性を使用
+3. 高リスクなサードパーティスクリプトにiframeサンドボックス化を展開
+4. タグペイロードに含める前にすべての動的データをサニタイズ
+5. 更新されたJavaScriptライブラリを維持し、脆弱性を監視
+6. セキュリティ要件を含むベンダー契約を確立
+7. サードパーティスクリプトの変更を定期的に監査および監視

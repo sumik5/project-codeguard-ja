@@ -1,5 +1,5 @@
 ---
-description: Secure Application Logging
+description: セキュアアプリケーションロギング
 languages:
 - c
 - go
@@ -12,134 +12,134 @@ languages:
 alwaysApply: false
 ---
 
-## Application Logging Security Guidelines
+## アプリケーションロギングセキュリティガイドライン
 
-Essential practices for implementing secure application logging for security monitoring, incident response, and compliance.
+セキュリティ監視、インシデント対応、コンプライアンスのための安全なアプリケーションロギング実装の重要なプラクティス。
 
-### Purpose and Use Cases
+### 目的とユースケース
 
-Application logging provides critical data for both security and operational purposes beyond infrastructure logging alone.
+アプリケーションロギングは、インフラストラクチャロギング単独を超えて、セキュリティと運用目的の両方に重要なデータを提供します。
 
-**Security Use Cases**:
-- Anti-automation monitoring and identifying security incidents
-- Monitoring policy violations and audit trails
-- Compliance monitoring and data for investigations
-- Contributing application-specific data for incident investigation
-- Helping defend against vulnerability identification and exploitation
+**セキュリティユースケース**：
+- アンチオートメーション監視とセキュリティインシデントの識別
+- ポリシー違反と監査証跡の監視
+- コンプライアンス監視と調査用データ
+- インシデント調査用のアプリケーション固有データの提供
+- 脆弱性識別と悪用からの防御支援
 
-### Which Events to Log
+### ログに記録すべきイベント
 
-Always log these security-relevant events:
+常にこれらのセキュリティ関連イベントをログに記録します：
 
-**Input/Output Validation**:
-- Input validation failures (protocol violations, unacceptable encodings, invalid parameters)
-- Output validation failures (database record mismatches, invalid data encoding)
+**入力/出力検証**：
+- 入力検証失敗（プロトコル違反、受け入れられないエンコーディング、無効なパラメータ）
+- 出力検証失敗（データベースレコードの不一致、無効なデータエンコーディング）
 
-**Authentication and Authorization**:
-- Authentication successes and failures
-- Authorization (access control) failures
-- Session management failures (cookie modifications, suspicious JWT validation failures)
+**認証と認可**：
+- 認証の成功と失敗
+- 認可（アクセス制御）失敗
+- セッション管理失敗（Cookie変更、疑わしいJWT検証失敗）
 
-**System Events**:
-- Application errors and system events (syntax/runtime errors, connectivity problems)
-- Application start-ups, shut-downs, and logging initialization
-- Network connections and associated failures (backend TLS failures, certificate validation failures)
+**システムイベント**：
+- アプリケーションエラーとシステムイベント（構文/ランタイムエラー、接続問題）
+- アプリケーションの起動、シャットダウン、ログ記録初期化
+- ネットワーク接続と関連失敗（バックエンドTLS失敗、証明書検証失敗）
 
-**High-Risk Operations**:
-- User administration actions (user addition/deletion, privilege changes)
-- Use of administrative privileges or default/shared accounts
-- Access to sensitive data (payment cardholder data)
-- Encryption activities (cryptographic key use or rotation)
-- Data import/export and file uploads
-- Deserialization failures
+**高リスク操作**：
+- ユーザー管理アクション（ユーザー追加/削除、権限変更）
+- 管理者権限またはデフォルト/共有アカウントの使用
+- 機密データへのアクセス（支払いカード保有者データ）
+- 暗号化活動（暗号化キーの使用またはローテーション）
+- データインポート/エクスポートとファイルアップロード
+- デシリアライゼーション失敗
 
-**Business Logic Events**:
-- Legal opt-ins (permissions, terms of use, consent)
-- Suspicious business logic activities (bypassing flow control, exceeding limitations)
+**ビジネスロジックイベント**：
+- 法的オプトイン（権限、利用規約、同意）
+- 疑わしいビジネスロジック活動（フロー制御のバイパス、制限超過）
 
-### Event Attributes
+### イベント属性
 
-Each log entry must record "when, where, who and what" with sufficient detail:
+各ログエントリは十分な詳細で「いつ、どこで、誰が、何を」を記録する必要があります：
 
-**When**: Log date/time in international format, event timestamp, interaction identifier
-**Where**: Application identifier, address, service name, geolocation, code location
-**Who**: Source address, user identity (if authenticated), user type classification
-**What**: Event type, severity, security event flag, description, result status, reason
+**いつ**：ログ日時（国際形式）、イベントタイムスタンプ、インタラクション識別子
+**どこで**：アプリケーション識別子、アドレス、サービス名、地理位置、コード位置
+**誰が**：送信元アドレス、ユーザーアイデンティティ（認証済みの場合）、ユーザータイプ分類
+**何を**：イベントタイプ、深刻度、セキュリティイベントフラグ、説明、結果ステータス、理由
 
-### Data to Exclude
+### 除外すべきデータ
 
-Never log sensitive data directly - remove, mask, sanitize, hash, or encrypt:
+機密データを直接ログに記録しません - 削除、マスク、サニタイズ、ハッシュ化、または暗号化します：
 
-- Application source code and session identification values
-- Access tokens and authentication passwords
-- Database connection strings and encryption keys
-- Bank account or payment card holder data
-- Sensitive personal data and PII
-- Data of higher security classification than the logging system
-- Commercially-sensitive information
+- アプリケーションソースコードとセッション識別値
+- アクセストークンと認証パスワード
+- データベース接続文字列と暗号化キー
+- 銀行口座または支払いカード保有者データ
+- 機密個人データとPII
+- ログシステムより高いセキュリティ分類のデータ
+- 商業上機密情報
 
-### Event Collection Implementation
+### イベント収集実装
 
-Implement application-wide log handler with security controls:
+セキュリティ制御を伴うアプリケーション全体のログハンドラーを実装します：
 
-- Perform input validation on event data from other trust zones
-- Perform sanitization on all event data to prevent log injection attacks (CR, LF, delimiter characters)
-- Encode data correctly for the output format
-- Apply SQL injection prevention if writing to databases
-- Ensure logging failures don't prevent application operation or cause information leakage
-- Synchronize time across all servers and devices
+- 他の信頼ゾーンからのイベントデータに対して入力検証を実行
+- ログインジェクション攻撃を防ぐためすべてのイベントデータにサニタイゼーションを実行（CR、LF、区切り文字）
+- 出力形式に対してデータを正しくエンコード
+- データベースに書き込む場合、SQLインジェクション防止を適用
+- ログ記録失敗がアプリケーション操作を妨げたり情報漏洩を引き起こさないことを確保
+- すべてのサーバーとデバイス間で時刻を同期
 
-### Storage and Protection
+### ストレージと保護
 
-**File System Storage**:
-- Use separate partition from operating system and application files
-- Apply strict permissions on directories and files
-- Keep logs outside web-accessible locations
-- Configure with plain text MIME type if web-accessible
+**ファイルシステムストレージ**：
+- OSとアプリケーションファイルとは別のパーティションを使用
+- ディレクトリとファイルに厳格な権限を適用
+- ログをWebアクセス可能な場所の外に保持
+- Webアクセス可能な場合、プレーンテキストMIMEタイプで設定
 
-**Database Storage**:
-- Use separate database account only for writing log data
-- Apply very restrictive database, table, function and command permissions
+**データベースストレージ**：
+- ログデータの書き込み専用の別のデータベースアカウントを使用
+- 非常に制限的なデータベース、テーブル、関数、コマンド権限を適用
 
-**Data Protection**:
-- Use standard formats over secure protocols (CLFS, CEF over syslog)
-- Build in tamper detection for record modification/deletion
-- Store or copy log data to read-only media as soon as possible
-- Record and monitor all access to logs
-- Restrict and periodically review privileges to read log data
+**データ保護**：
+- セキュアプロトコル経由で標準フォーマットを使用（syslog経由のCLFS、CEF）
+- レコードの変更/削除に対する改ざん検出を組み込む
+- 可能な限り早く読み取り専用メディアにログデータを保存またはコピー
+- ログへのすべてのアクセスを記録・監視
+- ログデータ読み取り権限を制限し定期的にレビュー
 
-### Secure Transmission
+### セキュア送信
 
-When sending log data over untrusted networks:
-- Use secure transmission protocols
-- Consider whether origin of event data needs verification
-- Perform due diligence checks before sending to third parties
+信頼できないネットワーク経由でログデータを送信する場合：
+- セキュア送信プロトコルを使用
+- イベントデータの送信元検証が必要かどうかを検討
+- サードパーティに送信する前にデューデリジェンスチェックを実行
 
-### Verification and Testing
+### 検証とテスト
 
-Include logging in security verification processes:
-- Ensure logging works correctly and consistently
-- Test mechanisms are not susceptible to injection attacks
-- Ensure no unwanted side-effects when logging occurs
-- Test effect of logging failures (database connectivity loss, filesystem issues)
-- Verify access controls on event log data
-- Ensure logging cannot cause denial of service through resource depletion
+セキュリティ検証プロセスにロギングを含めます：
+- ロギングが正しく一貫して機能することを確保
+- メカニズムがインジェクション攻撃の影響を受けないことをテスト
+- ログ記録発生時に望ましくない副作用がないことを確保
+- ログ記録失敗の影響をテスト（データベース接続喪失、ファイルシステム問題）
+- イベントログデータのアクセス制御を検証
+- ロギングがリソース枯渇によるサービス拒否を引き起こさないことを確保
 
-### Monitoring and Operation
+### 監視と運用
 
-- Incorporate application logging into centralized log management systems
-- Enable alerting for serious events with immediate team notification
-- Detect when logging has stopped or has been tampered with
-- Share relevant event information with detection systems and intelligence gathering
-- Maintain proper log retention periods per legal/regulatory requirements
+- アプリケーションロギングを集中ログ管理システムに組み込む
+- 重大なイベントのアラートを有効化し、チームへの即座の通知を行う
+- ログ記録が停止したり改ざんされたことを検出
+- 検出システムとインテリジェンス収集と関連イベント情報を共有
+- 法的/規制要件に応じて適切なログ保持期間を維持
 
-### Protection Against Log Attacks
+### ログ攻撃に対する保護
 
-Logs may be targeted for attacks on:
+ログは以下の攻撃の標的となる可能性があります：
 
-**Confidentiality**: Unauthorized access to sensitive information stored in logs
-**Integrity**: Tampering with log data or leveraging logs for exploitation
-**Availability**: Flooding logs to exhaust resources or prevent further logging
-**Accountability**: Preventing log writes or causing wrong identity logging to cover tracks
+**機密性**：ログに保存された機密情報への不正アクセス
+**整合性**：ログデータの改ざんまたは悪用のためのログ活用
+**可用性**：ログをフラッディングしてリソースを枯渇させるか、さらなるログ記録を防止
+**説明責任**：ログ書き込みの防止または痕跡を隠すための誤ったアイデンティティロギングの引き起こし
 
-Implement appropriate controls to protect against these attack vectors while maintaining the logging system's security and reliability.
+ログシステムのセキュリティと信頼性を維持しながら、これらの攻撃ベクトルから保護するための適切な制御を実装します。

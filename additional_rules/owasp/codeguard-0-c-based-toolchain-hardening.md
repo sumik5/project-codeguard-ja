@@ -1,61 +1,61 @@
 ---
-description: C/C++ Toolchain Hardening Best Practices
+description: C/C++ツールチェーンハードニングのベストプラクティス
 languages:
 - c
 - matlab
 alwaysApply: false
 ---
 
-The security of your compiled application depends heavily on the options you pass to your C/C++ compiler and linker. Modern toolchains provide a powerful set of features to harden your binaries against common exploitation techniques.
+コンパイルされたアプリケーションのセキュリティは、C/C++コンパイラとリンカーに渡すオプションに大きく依存します。最新のツールチェーンは、一般的なエクスプロイト技術に対してバイナリをハードニングする強力な機能セットを提供します。
 
-### 1. Compiler Flags for Hardening
+### 1. ハードニングのためのコンパイラフラグ
 
-These flags should be a standard part of your release build configuration. **Note**: Some flags have platform-specific support.
+これらのフラグはリリースビルド設定の標準的な一部であるべきです。**注意**：一部のフラグはプラットフォーム固有のサポートがあります。
 
-*   **Enable All Warnings:** Warnings often point to latent bugs. Start with a strong baseline.
+*   **すべての警告を有効化：** 警告はしばしば潜在的なバグを指摘します。強力なベースラインから開始します。
     *   **GCC/Clang:** `-Wall -Wextra -Wconversion`
-*   **Stack Smashing Protection:** This adds a "canary" to the stack to detect buffer overflows before they can be exploited.
+*   **スタックスマッシング保護：** スタックに「カナリア」を追加して、エクスプロイトされる前にバッファオーバーフローを検出します。
     *   **GCC/Clang:** `-fstack-protector-all`
-*   **Position-Independent Executables (PIE):** This allows the operating system to load the application at a random memory address (ASLR), making it much harder for attackers to predict memory layouts.
-    *   **Compiler:** `-fPIE` (Linux/Windows), `-fpie` (macOS)
-    *   **Linker:** `-pie`
-*   **Fortify Source:** This adds checks to common library functions (like `strcpy`, `printf`) to prevent buffer overflows.
-    *   **GCC/Clang:** `-D_FORTIFY_SOURCE=2` (Note: requires optimization `-O1` or higher).
-*   **Control Flow Integrity (CFI):** Guards against ROP/JOP attacks (Clang 3.5+).
-    *   **Clang:** `-fsanitize=cfi` (requires `-flto`)
+*   **位置独立実行形式（PIE）：** これにより、OSがアプリケーションをランダムなメモリアドレスにロード（ASLR）でき、攻撃者がメモリレイアウトを予測するのがはるかに困難になります。
+    *   **コンパイラ:** `-fPIE`（Linux/Windows）、`-fpie`（macOS）
+    *   **リンカー:** `-pie`
+*   **Fortify Source：** 一般的なライブラリ関数（`strcpy`、`printf`など）にチェックを追加して、バッファオーバーフローを防ぎます。
+    *   **GCC/Clang:** `-D_FORTIFY_SOURCE=2`（注：最適化`-O1`以上が必要）。
+*   **制御フロー整合性（CFI）：** ROP/JOP攻撃から保護します（Clang 3.5以降）。
+    *   **Clang:** `-fsanitize=cfi`（`-flto`が必要）
 
-### 2. Linker Flags for Hardening
+### 2. ハードニングのためのリンカーフラグ
 
-These flags control how your final executable is constructed.
+これらのフラグは最終的な実行形式の構築方法を制御します。
 
-*   **Relocation Read-Only (RELRO):** This makes parts of the binary read-only after the dynamic linker has done its work, preventing certain exploitation techniques like GOT overwrites.
-    *   **GCC/Clang Linker:** `-Wl,-z,relro,-z,now`
-*   **Non-Executable Stack (NX):** This prevents code from being executed from the stack, a hallmark of many exploits.
-    *   **GCC/Clang Linker:** `-Wl,-z,noexecstack`
-*   **Additional Runtime Protections:**
-    *   **Linux:** `-Wl,-z,noexecheap` (prevent heap execution)
-    *   **Windows:** `/NXCOMPAT /DYNAMICBASE` (DEP and ASLR support)
+*   **再配置読み取り専用（RELRO）：** 動的リンカーが作業を完了した後、バイナリの一部を読み取り専用にし、GOT上書きなどの特定のエクスプロイト技術を防ぎます。
+    *   **GCC/Clangリンカー:** `-Wl,-z,relro,-z,now`
+*   **実行不可スタック（NX）：** スタックからのコード実行を防ぎます。これは多くのエクスプロイトの特徴です。
+    *   **GCC/Clangリンカー:** `-Wl,-z,noexecstack`
+*   **追加のランタイム保護：**
+    *   **Linux:** `-Wl,-z,noexecheap`（ヒープ実行を防止）
+    *   **Windows:** `/NXCOMPAT /DYNAMICBASE`（DEPとASLRサポート）
 
-### 3. Build Configurations: Debug vs. Release
+### 3. ビルド設定：デバッグ vs リリース
 
-Maintain separate, distinct build configurations for development and production.
+開発と本番用に別個の明確なビルド設定を維持します。
 
-*   **Debug Builds:**
-    *   Disable optimizations (`-O0`) and enable full debugging information (`-g3`).
-    *   Define the `DEBUG` macro (`-DDEBUG`) and do **not** define `NDEBUG`.
-    *   Use sanitizers to detect memory errors at runtime (e.g., `-fsanitize=address,undefined,leak`).
-    *	**Linux only:** Create a separate build with `fsanitize=memory` added to the compiler and linker flags. Do **not** add other sanitizers to this build.
+*   **デバッグビルド：**
+    *   最適化を無効化（`-O0`）し、完全なデバッグ情報を有効化（`-g3`）。
+    *   `DEBUG`マクロを定義（`-DDEBUG`）し、`NDEBUG`を定義**しない**。
+    *   サニタイザーを使用して実行時にメモリエラーを検出（例：`-fsanitize=address,undefined,leak`）。
+    *	**Linuxのみ：** コンパイラとリンカーフラグに`fsanitize=memory`を追加した別個のビルドを作成します。このビルドに他のサニタイザーを追加**しない**でください。
 
-*   **Release Builds:**
-    *   Enable optimizations (e.g., `-O2`).
-    *   Define the `NDEBUG` macro (`-DNDEBUG`) to disable assertions and debugging code. Do **not** define `DEBUG`.
-    *   Include all the hardening flags mentioned above.
+*   **リリースビルド：**
+    *   最適化を有効化（例：`-O2`）。
+    *   `NDEBUG`マクロを定義（`-DNDEBUG`）してアサーションとデバッグコードを無効化。`DEBUG`を定義**しない**。
+    *   上記のすべてのハードニングフラグを含める。
 
-### 4. Using Assertions Effectively
+### 4. アサーションの効果的な使用
 
-Assertions are a powerful tool for catching bugs early.
+アサーションは早期にバグを捉えるための強力なツールです。
 
-*   **Best Practice:** Use `assert()` liberally in your code to check for pre-conditions, post-conditions, and invariants. Assertions are automatically disabled in release builds (when `NDEBUG` is defined), so they have no performance impact on your production code.
+*   **ベストプラクティス：** コードで`assert()`を自由に使用して、事前条件、事後条件、不変条件をチェックします。アサーションはリリースビルドで自動的に無効化される（`NDEBUG`が定義されている場合）ため、本番コードのパフォーマンスに影響しません。
 
     ```c
     void process_data(char *data, size_t len) {
@@ -64,11 +64,11 @@ Assertions are a powerful tool for catching bugs early.
     }
     ```
 
-### 5. CI/CD Integration
+### 5. CI/CD統合
 
-Enforce security flags in your build pipeline:
+ビルドパイプラインでセキュリティフラグを強制します：
 
-**CMakeLists.txt example:**
+**CMakeLists.txtの例：**
 ```cmake
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(${PROJECT_NAME} PRIVATE
@@ -78,18 +78,18 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 ```
 
-**Verification:** Add security checks to CI pipeline:
+**検証：** CIパイプラインにセキュリティチェックを追加：
 ```bash
-# Linux: Verify hardening flags were applied
+# Linux: ハードニングフラグが適用されたことを検証
 checksec --file=./your_binary || exit 1
 ```
 
-### 6. Verifying Your Binary
+### 6. バイナリの検証
 
-Don't just trust that the flags worked. Use a tool to check the security properties of your final executable.
+フラグが機能したことを信頼するだけではいけません。ツールを使用して最終実行形式のセキュリティプロパティをチェックします。
 
-*   **Linux:** Use the `checksec` tool.
-*   **Windows:** Use Microsoft's BinScope.
-*   **Dependency Security:** Regularly audit third-party libraries with tools like `npm audit` or OWASP Dependency-Check.
+*   **Linux:** `checksec`ツールを使用。
+*   **Windows:** MicrosoftのBinScopeを使用。
+*   **依存関係セキュリティ：** `npm audit`やOWASP Dependency-Checkなどのツールで定期的にサードパーティライブラリを監査。
 
-By integrating these toolchain hardening practices into your CI/CD pipeline, you can significantly raise the bar for attackers and build more resilient and secure C/C++ applications.
+これらのツールチェーンハードニングプラクティスをCI/CDパイプラインに統合することで、攻撃者のハードルを大幅に上げ、より堅牢で安全なC/C++アプリケーションを構築できます。

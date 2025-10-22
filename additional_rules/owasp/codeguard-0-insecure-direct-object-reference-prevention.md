@@ -1,5 +1,5 @@
 ---
-description: Insecure Direct Object Reference Prevention
+description: 安全でない直接オブジェクト参照（IDOR）の防止
 languages:
 - c
 - go
@@ -14,25 +14,25 @@ languages:
 alwaysApply: false
 ---
 
-## Insecure Direct Object Reference Prevention Guidelines
+## 安全でない直接オブジェクト参照（IDOR）の防止ガイドライン
 
-This rule provides actionable guidance for preventing IDOR vulnerabilities by implementing proper access control checks around direct object references.
+このルールは、直接オブジェクト参照に対する適切なアクセス制御チェックを実装することで、IDOR脆弱性を防ぐための実行可能なガイダンスを提供します。
 
-### Introduction
+### 概要
 
-Insecure Direct Object Reference (IDOR) is a vulnerability that arises when attackers can access or modify objects by manipulating identifiers used in a web application's URLs or parameters. It occurs due to missing access control checks, which fail to verify whether a user should be allowed to access specific data.
+安全でない直接オブジェクト参照（IDOR）は、攻撃者がWebアプリケーションのURLやパラメータで使用される識別子を操作することでオブジェクトにアクセスまたは変更できる脆弱性です。これは、ユーザーが特定のデータへのアクセスを許可されるべきかどうかを検証しないアクセス制御チェックの欠如によって発生します。
 
-### Examples
+### 例
 
-For instance, when a user accesses their profile, the application might generate a URL like this:
+たとえば、ユーザーが自分のプロフィールにアクセスすると、アプリケーションは次のようなURLを生成する可能性があります：
 
 ```
 https://example.org/users/123
 ```
 
-The 123 in the URL is a direct reference to the user's record in the database, often represented by the primary key. If an attacker changes this number to 124 and gains access to another user's information, the application is vulnerable to Insecure Direct Object Reference.
+URL内の123は、データベース内のユーザーレコードへの直接参照であり、多くの場合、主キーによって表されます。攻撃者がこの番号を124に変更して他のユーザーの情報にアクセスできる場合、アプリケーションは安全でない直接オブジェクト参照に対して脆弱です。
 
-In some cases, the identifier may not be in the URL, but rather in the POST body:
+場合によっては、識別子はURLではなくPOSTボディに含まれることがあります：
 
 ```html
 <form action="/update_profile" method="post">
@@ -41,27 +41,27 @@ In some cases, the identifier may not be in the URL, but rather in the POST body
 </form>
 ```
 
-In this example, attackers can manipulate the "user_id" field to modify profiles of other users without authorization.
+この例では、攻撃者は認可なしに他のユーザーのプロフィールを変更するために"user_id"フィールドを操作できます。
 
-### Identifier Complexity
+### 識別子の複雑性
 
-In some cases, using more complex identifiers like GUIDs can make it practically impossible for attackers to guess valid values. However, even with complex identifiers, access control checks are essential. If attackers obtain URLs for unauthorized objects, the application should still block their access attempts.
+場合によっては、GUIDのようなより複雑な識別子を使用することで、攻撃者が有効な値を推測することを実質的に不可能にできます。しかし、複雑な識別子を使用していても、アクセス制御チェックは不可欠です。攻撃者が認可されていないオブジェクトのURLを取得した場合でも、アプリケーションはそのアクセス試行をブロックする必要があります。
 
-### Mitigation
+### 緩和策
 
-To mitigate IDOR, implement access control checks for each object that users try to access. Web frameworks often provide ways to facilitate this. Additionally, use complex identifiers as a defense-in-depth measure, but remember that access control is crucial even with these identifiers.
+IDORを緩和するには、ユーザーがアクセスしようとする各オブジェクトに対してアクセス制御チェックを実装します。Webフレームワークは多くの場合、これを容易にする方法を提供しています。さらに、多層防御の手段として複雑な識別子を使用しますが、これらの識別子を使用する場合でもアクセス制御が重要であることを忘れないでください。
 
-Avoid exposing identifiers in URLs and POST bodies if possible. Instead, determine the currently authenticated user from session information. When using multi-step flows, pass identifiers in the session to prevent tampering.
+可能であれば、URLやPOSTボディに識別子を公開しないようにします。代わりに、セッション情報から現在認証されているユーザーを特定します。マルチステップフローを使用する場合は、改ざんを防ぐためセッション内で識別子を渡します。
 
-When looking up objects based on primary keys, use datasets that users have access to. For example, in Ruby on Rails:
+主キーに基づいてオブジェクトを検索する場合は、ユーザーがアクセスできるデータセットを使用します。たとえば、Ruby on Railsでは：
 
 ```ruby
-// vulnerable, searches all projects
+// 脆弱、すべてのプロジェクトを検索
 @project = Project.find(params[:id])
-// secure, searches projects related to the current user
+// 安全、現在のユーザーに関連するプロジェクトを検索
 @project = @current_user.projects.find(params[:id])
 ```
 
-Verify the user's permission every time an access attempt is made. Implement this structurally using the recommended approach for your web framework.
+アクセス試行が行われるたびにユーザーの権限を検証します。Webフレームワークの推奨アプローチを使用して、これを構造的に実装します。
 
-As an additional defense-in-depth measure, replace enumerable numeric identifiers with more complex, random identifiers. You can achieve this by adding a column with random strings in the database table and using those strings in the URLs instead of numeric primary keys. Another option is to use UUIDs or other long random values as primary keys. Avoid encrypting identifiers as it can be challenging to do so securely.
+追加の多層防御手段として、列挙可能な数値識別子をより複雑なランダム識別子に置き換えます。これは、データベーステーブルにランダム文字列を含む列を追加し、数値主キーの代わりにURLでそれらの文字列を使用することで実現できます。もう1つの方法は、主キーとしてUUIDまたは他の長いランダム値を使用することです。識別子の暗号化は安全に行うことが難しいため避けてください。

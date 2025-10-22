@@ -1,5 +1,5 @@
 ---
-description: Deserialization Security Best Practices
+description: デシリアライゼーションセキュリティベストプラクティス
 languages:
 - c
 - java
@@ -11,49 +11,49 @@ languages:
 alwaysApply: false
 ---
 
-## Avoid Unsafe Deserialization of Untrusted Data
+## 信頼できないデータの安全でないデシリアライゼーションを避ける
 
-Deserialization of untrusted input can lead to critical vulnerabilities such as remote code execution, denial of service, and privilege escalation. This rule ensures developers follow best practices to safely handle serialization and deserialization operations.
+信頼できない入力のデシリアライゼーションは、リモートコード実行、サービス拒否、権限昇格などの重大な脆弱性につながる可能性があります。このルールは、開発者がシリアライゼーションとデシリアライゼーション操作を安全に処理するためのベストプラクティスに従うことを保証します。
 
-Requirements:
+要件：
 
-- Always treat incoming serialized data from untrusted sources as hostile.
-- Validate input size, structure, and content before deserialization.
-- Prefer standardized, safe data formats like JSON or XML without type metadata over native serialization formats.
-- For XML: disable DTDs and external entities to prevent XXE attacks.
-- Avoid using unsafe native serialization APIs on untrusted input, such as:
-  - PHP: avoid `unserialize()`, use `json_decode()`/`json_encode()` instead.
-  - Python: avoid `pickle.loads`, `yaml.load` (use `safe_load`), and `jsonpickle` on untrusted data.
-  - Java: override `ObjectInputStream#resolveClass()` to allowlist classes; mark sensitive fields `transient`; avoid polymorphic deserialization unless strictly allowlisted.
-  - .NET: avoid `BinaryFormatter`; use `DataContractSerializer` or `XmlSerializer`; set `TypeNameHandling = None` in JSON.Net; never trust deserialized types blindly.
-- Sign serialized data and verify signatures to ensure integrity before deserialization.
-- Configure serialization libraries securely:
-  - Jackson: `mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL)` is dangerous
-  - fastjson: Enable safemode, disable autotype
-  - XStream: Use allowlists with `XStream.allowTypes()`
-  - SnakeYAML: Use `yaml.safe_load()` instead of `yaml.load()`
-  - Keep dependencies updated to fixed versions.
-- Reject or safely handle polymorphic or complex objects deserialization from untrusted sources.
-- Use hardened deserialization agents/tools (e.g., SerialKiller, hardened ObjectInputStream subclasses, JVM agents).
-- Log deserialization attempts and monitor for suspicious activity.
-- Regularly scan code and dependencies for unsafe deserialization patterns using static and dynamic analysis tools.
+- 信頼できないソースからの受信シリアライズデータは常に敵対的なものとして扱います。
+- デシリアライゼーション前に入力サイズ、構造、内容を検証します。
+- ネイティブシリアライゼーション形式よりも、型メタデータのないJSONやXMLのような標準化された安全なデータ形式を優先します。
+- XMLの場合：XXE攻撃を防ぐためDTDと外部エンティティを無効化します。
+- 信頼できない入力に対する安全でないネイティブシリアライゼーションAPIの使用を避けます：
+  - PHP：`unserialize()`を避け、代わりに`json_decode()`/`json_encode()`を使用します。
+  - Python：`pickle.loads`、`yaml.load`（`safe_load`を使用）、`jsonpickle`を信頼できないデータに対して避けます。
+  - Java：`ObjectInputStream#resolveClass()`をオーバーライドしてクラスを許可リスト化、機密フィールドを`transient`としてマーク、厳密に許可リスト化しない限り多態的デシリアライゼーションを避けます。
+  - .NET：`BinaryFormatter`を避ける、`DataContractSerializer`または`XmlSerializer`を使用、JSON.Netで`TypeNameHandling = None`を設定、デシリアライズされた型を盲目的に信頼しません。
+- シリアライズされたデータに署名し、デシリアライゼーション前に署名を検証して整合性を確保します。
+- シリアライゼーションライブラリを安全に設定します：
+  - Jackson：`mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL)`は危険
+  - fastjson：セーフモードを有効化、autotypeを無効化
+  - XStream：`XStream.allowTypes()`で許可リストを使用
+  - SnakeYAML：`yaml.load()`の代わりに`yaml.safe_load()`を使用
+  - 依存関係を修正バージョンに最新化します。
+- 信頼できないソースからの多態的または複雑なオブジェクトのデシリアライゼーションを拒否または安全に処理します。
+- 堅牢化されたデシリアライゼーションエージェント/ツール（例：SerialKiller、堅牢化されたObjectInputStreamサブクラス、JVMエージェント）を使用します。
+- デシリアライゼーション試行をログに記録し、疑わしい活動を監視します。
+- 静的および動的解析ツールを使用して、安全でないデシリアライゼーションパターンをコードと依存関係で定期的にスキャンします。
 
-Security Impact:
+セキュリティへの影響：
 
-Deserialization attacks are a frequently exploited vector leading to severe security impacts. Following these practices prevents attackers from injecting malicious objects or payloads that the application may execute.
+デシリアライゼーション攻撃は、深刻なセキュリティ影響をもたらす頻繁に悪用されるベクトルです。これらのプラクティスに従うことで、攻撃者がアプリケーションが実行する可能性のある悪意のあるオブジェクトやペイロードを注入することを防ぎます。
 
-Examples:
+例：
 
-Avoid:
-- PHP: calling `unserialize($data)` on external input.
-- Java: deserializing classes without strict allowlisting or type validation.
-- Python: loading YAML with `yaml.load()` on untrusted data.
-- .NET: using `BinaryFormatter.Deserialize()` on untrusted input.
-- XML: processing XML with DTDs enabled or external entity resolution.
+避けるべき：
+- PHP：外部入力に対して`unserialize($data)`を呼び出す。
+- Java：厳密な許可リストや型検証なしでクラスをデシリアライズする。
+- Python：信頼できないデータに対して`yaml.load()`でYAMLを読み込む。
+- .NET：信頼できない入力に対して`BinaryFormatter.Deserialize()`を使用する。
+- XML：DTDが有効または外部エンティティ解決でXMLを処理する。
 
-Recommended:
-- PHP: use `json_decode()` and validate JSON schema.
-- Java: Override `resolveClass()` to allowlist safe classes:
+推奨：
+- PHP：`json_decode()`を使用し、JSONスキーマを検証する。
+- Java：安全なクラスを許可リスト化するため`resolveClass()`をオーバーライドする：
   ```java
   @Override
   protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
@@ -63,37 +63,37 @@ Recommended:
       return super.resolveClass(desc);
   }
   ```
-- Python: Use safe YAML loading:
+- Python：安全なYAML読み込みを使用する：
   ```python
   import yaml
-  data = yaml.safe_load(input)  # Safe
-  # Never: yaml.load(input)     # Dangerous
+  data = yaml.safe_load(input)  # 安全
+  # 決してしないこと：yaml.load(input)     # 危険
   ```
-- .NET: Use DataContractSerializer with type control:
+- .NET：型制御を伴うDataContractSerializerを使用する：
   ```csharp
-  // Safe approach
+  // 安全なアプローチ
   var serializer = new DataContractSerializer(typeof(SafeType));
   var obj = serializer.ReadObject(stream);
-  
-  // JSON.NET safety
+
+  // JSON.NETの安全性
   JsonConvert.DeserializeObject<SafeType>(json, new JsonSerializerSettings {
       TypeNameHandling = TypeNameHandling.None
   });
   ```
-- XML: Configure parsers safely:
+- XML：パーサーを安全に設定する：
   ```java
-  // Java: Disable DTDs and external entities
+  // Java：DTDと外部エンティティを無効化
   factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
   factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
   ```
   ```csharp
-  // .NET: Disable DTD processing
+  // .NET：DTD処理を無効化
   XmlReaderSettings settings = new XmlReaderSettings();
   settings.DtdProcessing = DtdProcessing.Prohibit;
   ```
 
-Monitoring Requirements:
-- Log all deserialization attempts with data size and type information
-- Alert on deserialization failures or unexpected data patterns
-- Monitor for known malicious payloads (e.g., `AC ED 00 05`, `rO0`, `AAEAAAD`)
-- Track deserialization performance to detect "billion laughs" attacks
+監視要件：
+- データサイズと型情報を含むすべてのデシリアライゼーション試行をログに記録
+- デシリアライゼーション失敗または予期しないデータパターンにアラート
+- 既知の悪意のあるペイロード（例：`AC ED 00 05`、`rO0`、`AAEAAAD`）を監視
+- 「billion laughs」攻撃を検出するためデシリアライゼーションパフォーマンスを追跡

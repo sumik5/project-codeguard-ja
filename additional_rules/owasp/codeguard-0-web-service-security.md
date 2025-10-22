@@ -1,5 +1,5 @@
 ---
-description: Web Service Security
+description: Webサービスセキュリティ
 languages:
 - c
 - go
@@ -13,72 +13,72 @@ languages:
 alwaysApply: false
 ---
 
-## Web Service Security
+## Webサービスセキュリティ
 
-Secure web services through transport protection, authentication, input validation, and XML attack prevention.
+トランスポート保護、認証、入力検証、XML攻撃防止を通じてWebサービスを保護します。
 
-### Transport Security
+### トランスポートセキュリティ
 
-All web service communications with sensitive features or data must use well-configured TLS. TLS provides confidentiality, integrity protection, replay defenses, and server authentication.
+機密機能やデータを扱うすべてのWebサービス通信は、適切に設定されたTLSを使用する必要があります。TLSは機密性、完全性保護、リプレイ攻撃防御、およびサーバー認証を提供します。
 
-Server certificate validation requirements:
-- Issued by trusted provider
-- Not expired or revoked
-- Matches service domain name
-- Proven private key ownership
+サーバー証明書検証要件:
+- 信頼できるプロバイダーによって発行されている
+- 有効期限切れや失効していない
+- サービスのドメイン名と一致する
+- 秘密鍵の所有権が証明されている
 
-### Authentication
+### 認証
 
-- Avoid Basic Authentication; use Client Certificate Authentication with Mutual-TLS when appropriate
-- Enforce consistent encoding styles between client and server
+- Basic認証は避けてください。適切な場合はMutual-TLSによるクライアント証明書認証を使用してください
+- クライアントとサーバー間で一貫したエンコーディングスタイルを強制してください
 
-### Message Protection
+### メッセージ保護
 
-For XML data requiring integrity beyond TLS:
-- Use XML digital signatures with sender's private key
-- Encrypt sensitive data with strong ciphers for both transport and at-rest protection when required
+TLSを超える完全性が必要なXMLデータの場合:
+- 送信者の秘密鍵によるXMLデジタル署名を使用してください
+- 必要に応じて、転送時と保管時の両方の保護のために強力な暗号で機密データを暗号化してください
 
-### Authorization
+### 認可
 
-- Authorize clients for every web service method and request
-- Check privileges for requested resources on every request
-- Separate administrative functions from regular service endpoints
-- Add challenge-response mechanisms for sensitive operations (password changes, contact details, payment instructions)
+- すべてのWebサービスメソッドとリクエストに対してクライアントを認可してください
+- すべてのリクエストで要求されたリソースの権限を確認してください
+- 管理機能を通常のサービスエンドポイントから分離してください
+- 機密操作（パスワード変更、連絡先情報、支払い指示）にはチャレンジ-レスポンスメカニズムを追加してください
 
-### Input Validation
+### 入力検証
 
-Schema validation:
-- Validate SOAP payloads against XML schema definition (XSD)
-- Define maximum length and character sets for all parameters
-- Use strong allow-list patterns for fixed format parameters (zip codes, phone numbers)
+スキーマ検証:
+- XMLスキーマ定義（XSD）に対してSOAPペイロードを検証してください
+- すべてのパラメータに対して最大長と文字セットを定義してください
+- 固定形式のパラメータ（郵便番号、電話番号）には強力なホワイトリストパターンを使用してください
 
-Content validation for XML input:
-- Validate against malformed XML entities
-- Validate against XML Bomb attacks
-- Use strong allowlists for input validation
-- Validate against external entity attacks
+XML入力のコンテンツ検証:
+- 不正なXMLエンティティに対して検証してください
+- XML Bomb攻撃に対して検証してください
+- 入力検証には強力なホワイトリストを使用してください
+- 外部エンティティ攻撃に対して検証してください
 
-### XML Attack Protection
+### XML攻撃防止
 
-Configure XML parsers to protect against:
-- Recursive payloads
-- Oversized payloads
-- XML entity expansion
-- Overlong element names (SOAP Actions)
+以下に対する保護のためにXMLパーサーを設定してください:
+- 再帰的なペイロード
+- 過大なペイロード
+- XMLエンティティ展開
+- 過長な要素名（SOAPアクション）
 
-Build test cases to verify parser resistance to these attacks.
+これらの攻撃に対するパーサーの耐性を検証するテストケースを構築してください。
 
-### Output Protection
+### 出力保護
 
-Apply proper output encoding to prevent XSS when web service data is consumed by web clients.
+WebサービスデータがWebクライアントによって消費される際にクロスサイトスクリプティング（XSS）を防ぐために、適切な出力エンコーディングを適用してください。
 
-### Resource Protection
+### リソース保護
 
-- Limit SOAP message sizes to prevent DoS attacks
-- Limit CPU cycles, memory usage, and simultaneous connections
-- Optimize configuration for maximum message throughput
-- Implement virus scanning for SOAP attachments before storage
+- DoS攻撃を防ぐためにSOAPメッセージサイズを制限してください
+- CPUサイクル、メモリ使用量、および同時接続数を制限してください
+- 最大メッセージスループットのために設定を最適化してください
+- 保存前にSOAP添付ファイルのウイルススキャンを実装してください
 
-### Compliance
+### コンプライアンス
 
-Ensure compliance with Web Services-Interoperability (WS-I) Basic Profile for security baseline.
+セキュリティベースラインのためにWeb Services-Interoperability（WS-I）Basic Profileに準拠していることを確認してください。

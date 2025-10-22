@@ -1,120 +1,120 @@
 ---
-description: Certificate Best Practices
+description: 証明書のベストプラクティス
 languages: []
 alwaysApply: true
 ---
 
-When you encounter data that appears to be an X.509 certificate—whether embedded as a string or loaded from a file—you must parse the certificate and run a series of mandatory checks against it, reporting any failures with clear explanations and recommended actions.
+X.509証明書と思われるデータに遭遇した場合（文字列として埋め込まれているか、ファイルから読み込まれているか）、証明書を解析し、一連の必須チェックを実行し、明確な説明と推奨アクションを含む失敗を報告する必要があります。
 
-### 1. How to Identify Certificate Data
+### 1. 証明書データの識別方法
 
-Actively scan for certificate data using the following heuristics:
+以下のヒューリスティックを使用して証明書データを積極的にスキャンします：
 
-- PEM-Encoded Strings: Identify multi-line string literals or constants that begin with `-----BEGIN CERTIFICATE-----` and end with `-----END CERTIFICATE-----`.
+- PEMエンコード文字列：`-----BEGIN CERTIFICATE-----`で始まり`-----END CERTIFICATE-----`で終わる複数行の文字列リテラルまたは定数を識別。
 
-- File Operations: Pay close attention to file read operations on files with common certificate extensions, such as `.pem`, `.crt`, `.cer`, and `.der`.
+- ファイル操作：`.pem`、`.crt`、`.cer`、`.der`などの一般的な証明書拡張子を持つファイルに対するファイル読み込み操作に細心の注意を払う。
 
-- Library Function Calls: Recognize the usage of functions from cryptographic libraries used to load or parse certificates (e.g., OpenSSL's `PEM_read_X509`, Python's `cryptography.x509.load_pem_x509_certificate`, Java's `CertificateFactory`).
-
-
-### 2. Mandatory Sanity Checks
-
-Once certificate data is identified, you must perform the following validation steps and report the results.
-
-#### Check 1: Expiration Status
-
-- Condition: The certificate's `notAfter` (expiration) date is before June 23, 2025.
-
-- Severity: CRITICAL VULNERABILITY
-
-- Report Message: `This certificate expired on [YYYY-MM-DD]. It is no longer valid and will be rejected by clients, causing connection failures. It must be renewed and replaced immediately.`
-
-- Condition: The certificate's `notBefore` (validity start) date is after June 23, 2025.
-
-- Severity: Warning
-
-- Report Message: `This certificate is not yet valid. Its validity period begins on [YYYY-MM-DD].`
+- ライブラリ関数呼び出し：証明書をロードまたは解析するために使用される暗号化ライブラリの関数の使用を認識（例：OpenSSLの`PEM_read_X509`、Pythonの`cryptography.x509.load_pem_x509_certificate`、Javaの`CertificateFactory`）。
 
 
-#### Check 2: Public Key Strength
+### 2. 必須の健全性チェック
 
-- Condition: The public key algorithm or size is weak.
+証明書データが識別されたら、以下の検証ステップを実行し、結果を報告する必要があります。
 
-    - Weak Keys: RSA keys with a modulus smaller than 2048 bits. Elliptic Curve (EC) keys using curves with less than a 256-bit prime modulus (e.g., `secp192r1`, `P-192`, `P-224`).
+#### チェック1：有効期限ステータス
 
-- Severity: High-Priority Warning
+- 条件：証明書の`notAfter`（有効期限）日付が2025年6月23日より前である。
 
-- Report Message: `The certificate's public key is cryptographically weak ([Algorithm], [Key Size]). Keys of this strength are vulnerable to factorization or discrete logarithm attacks. The certificate should be re-issued using at least an RSA 2048-bit key or an ECDSA key on a P-256 (or higher) curve.`
+- 重大度：重大な脆弱性
 
+- 報告メッセージ：`この証明書は[YYYY-MM-DD]に期限切れになりました。もはや有効ではなく、クライアントによって拒否され、接続失敗を引き起こします。直ちに更新・交換する必要があります。`
 
-#### Check 3: Signature Algorithm
+- 条件：証明書の`notBefore`（有効期間開始）日付が2025年6月23日より後である。
 
-- Condition: The algorithm used to sign the certificate is insecure.
+- 重大度：警告
 
-    - Insecure Algorithms: Any signature algorithm using MD5 or SHA-1 (e.g., `md5WithRSAEncryption`, `sha1WithRSAEncryption`).
-
-- Severity: High-Priority Warning
-
-- Report Message: `The certificate is signed with the insecure algorithm '[Algorithm]'. This makes it vulnerable to collision attacks, potentially allowing for certificate forgery. It must be re-issued using a signature based on the SHA-2 family (e.g., sha256WithRSAEncryption).`
+- 報告メッセージ：`この証明書はまだ有効ではありません。有効期間は[YYYY-MM-DD]から始まります。`
 
 
-#### Check 4: Issuer Type (Self-Signed Check)
+#### チェック2：公開鍵強度
 
-- Condition: The certificate's `Issuer` and `Subject` fields are identical.
+- 条件：公開鍵アルゴリズムまたはサイズが弱い。
 
-- Severity: Informational
+    - 弱い鍵：2048ビット未満のモジュラスを持つRSA鍵。256ビット未満の素数モジュラスを使用する楕円曲線（EC）鍵（例：`secp192r1`、`P-192`、`P-224`）。
 
-- Report Message: `This is a self-signed certificate. Ensure this is intentional and only used for development, testing, or internal services where trust is explicitly configured. Self-signed certificates should never be used for public-facing production systems as they will not be trusted by browsers or standard clients.`
+- 重大度：高優先度の警告
+
+- 報告メッセージ：`証明書の公開鍵は暗号化的に弱いです（[アルゴリズム]、[鍵サイズ]）。この強度の鍵は因数分解または離散対数攻撃に脆弱です。証明書は少なくともRSA 2048ビット鍵またはP-256（以上）曲線上のECDSA鍵を使用して再発行される必要があります。`
 
 
-### 3. Actionable Examples
+#### チェック3：署名アルゴリズム
 
-Your feedback should be direct and easy to understand.
+- 条件：証明書に署名するために使用されたアルゴリズムが安全でない。
 
-Example 1: Flagging an Expired, In-line Certificate
+    - 安全でないアルゴリズム：MD5またはSHA-1を使用する署名アルゴリズム（例：`md5WithRSAEncryption`、`sha1WithRSAEncryption`）。
 
-- Code Snippet:
+- 重大度：高優先度の警告
+
+- 報告メッセージ：`証明書は安全でないアルゴリズム'[アルゴリズム]'で署名されています。これにより、衝突攻撃に脆弱となり、証明書の偽造が可能になる可能性があります。SHA-2ファミリー（例：sha256WithRSAEncryption）に基づく署名を使用して再発行する必要があります。`
+
+
+#### チェック4：発行者タイプ（自己署名チェック）
+
+- 条件：証明書の`Issuer`と`Subject`フィールドが同一である。
+
+- 重大度：情報提供
+
+- 報告メッセージ：`これは自己署名証明書です。これが意図的であり、信頼が明示的に設定されている開発、テスト、または内部サービスにのみ使用されていることを確認してください。自己署名証明書は、ブラウザや標準クライアントによって信頼されないため、公開されている本番システムには決して使用しないでください。`
+
+
+### 3. 実行可能な例
+
+フィードバックは直接的で理解しやすいものである必要があります。
+
+例1：期限切れのインライン証明書のフラグ付け
+
+- コードスニペット：
 
     ```
-    # Certificate for connecting to legacy_service
+    # legacy_serviceへの接続用証明書
     LEGACY_CERT = """
     -----BEGIN CERTIFICATE-----
-    MIIC... (data for a certificate that expired on 2024-12-01) ...
+    MIIC...（2024-12-01に期限切れになった証明書のデータ）...
     -----END CERTIFICATE-----
     """
     ```
 
-- Your Analysis and Report:
+- 分析と報告：
 
-    > CRITICAL VULNERABILITY: The certificate stored in the `LEGACY_CERT` variable is invalid.
+    > 重大な脆弱性：`LEGACY_CERT`変数に保存されている証明書は無効です。
     >
-    > - Reason: It expired on 2024-12-01.
+    > - 理由：2024-12-01に期限切れになりました。
     >
-    > - Impact: Any TLS connection attempting to use this certificate will fail.
+    > - 影響：この証明書を使用しようとするTLS接続は失敗します。
     >
-    > - Action: This certificate must be renewed and the variable updated with the new PEM data immediately.
+    > - 対策：この証明書を直ちに更新し、変数を新しいPEMデータで更新する必要があります。
     >
 
 
-Example 2: Flagging a Weak Key in a Loaded Certificate
+例2：読み込まれた証明書の弱い鍵のフラグ付け
 
-- Code Snippet:
+- コードスニペット：
 
     ```
-    // Load the server certificate from disk
+    // ディスクからサーバー証明書をロード
     cert, err := tls.LoadX509KeyPair("server.crt", "server.key")
-    // Assume server.crt contains a 1024-bit RSA key.
+    // server.crtが1024ビットRSA鍵を含むと仮定。
     ```
 
-- Your Analysis and Report:
+- 分析と報告：
 
-    > High-Priority Warning: The certificate being loaded from `server.crt` is using a weak public key.
+    > 高優先度の警告：`server.crt`から読み込まれている証明書は弱い公開鍵を使用しています。
     >
-    > - Reason: It uses an RSA key with a 1024-bit modulus.
+    > - 理由：1024ビットモジュラスのRSA鍵を使用しています。
     >
-    > - Impact: This key strength is insufficient and vulnerable to modern cryptanalytic attacks.
+    > - 影響：この鍵強度は不十分で、現代の暗号解析攻撃に脆弱です。
     >
-    > - Action: A new certificate and key must be generated with at least a 2048-bit RSA key or a modern elliptic curve.
+    > - 対策：少なくとも2048ビットRSA鍵または最新の楕円曲線で新しい証明書と鍵を生成する必要があります。
 
 
-You must always explain how this rule was applied and why it was applied.
+このルールがどのように適用されたか、なぜ適用されたかを常に説明する必要があります。

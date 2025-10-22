@@ -1,6 +1,5 @@
 ---
-description: Authorization and access control (RBAC/ABAC/ReBAC, IDOR, mass assignment,
-  transaction auth)
+description: 認可とアクセス制御（RBAC/ABAC/ReBAC、IDOR、マスアサインメント、トランザクション認可）
 languages:
 - c
 - go
@@ -14,46 +13,46 @@ languages:
 alwaysApply: false
 ---
 
-## Authorization & Access Control
+## 認可とアクセス制御
 
-Enforce least privilege and precise access decisions for every request and resource, prevent IDOR and mass assignment, and provide strong transaction authorization where necessary.
+すべてのリクエストとリソースに対して最小権限と正確なアクセス決定を強制し、IDORとマスアサインメントを防止し、必要に応じて強力なトランザクション認可を提供します。
 
-### Core Principles
-1.  Deny by Default: The default for any access request should be 'deny'. Explicitly grant permissions to roles or users rather than explicitly denying them. When no allow rule matches, return HTTP 403 Forbidden.
-2.  Principle of Least Privilege: Grant users the minimum level of access required to perform their job functions. Regularly audit permissions to ensure they are not excessive.
-3.  Validate Permissions on Every Request: Check authorization for every single request, regardless of source (AJAX, API, direct). Use middleware/filters to ensure consistent enforcement.
-4.  Prefer ABAC/ReBAC over RBAC: Use Attribute-Based Access Control (ABAC) or Relationship-Based Access Control (ReBAC) for fine-grained permissions instead of simple role-based access control.
+### 基本原則
+1.  デフォルトで拒否：任意のアクセスリクエストのデフォルトは「拒否」とします。明示的に拒否するのではなく、ロールまたはユーザーに権限を明示的に付与します。許可ルールが一致しない場合、HTTP 403 Forbiddenを返します。
+2.  最小権限の原則：ユーザーには職務を遂行するために必要な最小限のアクセスレベルを付与します。権限が過剰でないことを確認するため、定期的に監査します。
+3.  すべてのリクエストで権限を検証：ソースに関係なく（AJAX、API、直接）、すべてのリクエストで認可をチェックします。ミドルウェア/フィルターを使用して一貫した強制を確保します。
+4.  RBACよりABAC/ReBACを優先：シンプルなロールベースアクセス制御の代わりに、属性ベースアクセス制御（ABAC）または関係ベースアクセス制御（ReBAC）を使用して詳細な権限を実現します。
 
-### Systemic Controls
-- Centralize authorization at service boundaries via middleware/policies/filters.
-- Model permissions at the resource level (ownership/tenancy) and enforce scoping in data queries.
-- Return generic 403/404 responses to avoid leaking resource existence.
-- Log all denials with user, action, resource identifier (non-PII), and rationale code.
+### システム制御
+- サービス境界でミドルウェア/ポリシー/フィルターを介して認可を集中化。
+- リソースレベルで権限をモデル化（所有権/テナンシー）し、データクエリでスコーピングを強制。
+- リソースの存在を漏らさないよう、汎用的な403/404レスポンスを返す。
+- ユーザー、アクション、リソース識別子（非PII）、理由コードですべての拒否をログ。
 
-### Preventing IDOR
-- Never trust user-supplied identifiers alone. Always verify access to each object instance.
-- Resolve resources through user-scoped queries or server-side lookups. Example: `currentUser.projects.find(id)` instead of `Project.find(id)`.
-- Use non-enumerable identifiers (UUIDs/random) as defense-in-depth. Do not rely on obscurity alone.
+### IDORの防止
+- ユーザー提供の識別子を単独で信頼しない。常に各オブジェクトインスタンスへのアクセスを検証。
+- ユーザースコープのクエリまたはサーバーサイドルックアップを通じてリソースを解決。例：`Project.find(id)`の代わりに`currentUser.projects.find(id)`。
+- 防御の深層として、列挙不可能な識別子（UUID/ランダム）を使用。曖昧さのみに依存しない。
 
-### Preventing Mass Assignment
-- Do not bind request bodies directly to domain objects containing sensitive fields.
-- Expose only safe, editable fields via DTOs. Maintain explicit allow-lists for patch/update.
-- Use framework features to block-list sensitive fields if allow-listing is infeasible.
+### マスアサインメントの防止
+- リクエストボディを機密フィールドを含むドメインオブジェクトに直接バインドしない。
+- DTOを介して安全で編集可能なフィールドのみを公開。パッチ/更新用の明示的な許可リストを維持。
+- 許可リストが実現不可能な場合、フレームワーク機能を使用して機密フィールドをブロックリスト化。
 
-### Transaction Authorization (Step-Up)
-- Require a second factor for sensitive actions (wire transfers, privilege elevation, data export). Apply What‑You‑See‑Is‑What‑You‑Sign: show critical fields for user confirmation.
-- Use unique, time‑limited authorization credentials per transaction; reject on data changes mid‑flow.
-- Enforce the chosen authorization method server-side; prevent client‑side downgrades.
-- Protect against brute-force with throttling and complete flow restarts after failures.
+### トランザクション認可（ステップアップ）
+- 機密性の高いアクション（送金、権限昇格、データエクスポート）には第2要素を要求。What-You-See-Is-What-You-Signを適用：ユーザー確認のため重要フィールドを表示。
+- トランザクションごとに一意で時間制限された認可資格情報を使用；フロー途中でのデータ変更時には拒否。
+- 選択した認可方式をサーバーサイドで強制；クライアントサイドのダウングレードを防止。
+- スロットリングと失敗後の完全なフロー再開で、ブルートフォース攻撃から保護。
 
-### Testing and Automation
-- Maintain an authorization matrix (YAML/JSON) listing endpoints/resources, roles/attributes, and expected outcomes.
-- Automate integration tests that iterate the matrix, mint role tokens, and assert allow/deny results—including token expiry/revocation cases.
-- Exercise negative tests: swapped IDs, downgraded roles, missing scopes, and bypass attempts.
+### テストと自動化
+- エンドポイント/リソース、ロール/属性、期待される結果をリストした認可マトリックス（YAML/JSON）を維持。
+- マトリックスを反復処理し、ロールトークンを生成し、許可/拒否結果（トークン有効期限/取り消しケースを含む）を検証する統合テストを自動化。
+- ネガティブテストを実施：IDの交換、ロールのダウングレード、スコープの欠落、バイパス試行。
 
-### Implementation Checklist
-- Middleware/policies enforce deny-by-default and resource checks on every endpoint.
-- Query scoping ensures users only access permitted rows/objects.
-- DTOs and allow-lists prevent mass assignment; sensitive fields never bindable.
-- Step-up authorization in place for sensitive operations with unique, short-lived credentials.
-- Authorization matrix drives CI tests; failures block merges.
+### 実装チェックリスト
+- ミドルウェア/ポリシーがデフォルト拒否とすべてのエンドポイントでのリソースチェックを強制。
+- クエリスコーピングにより、ユーザーが許可された行/オブジェクトのみにアクセスできることを保証。
+- DTOと許可リストでマスアサインメントを防止；機密フィールドは決してバインド不可。
+- 一意で短命の資格情報を用いた機密操作のステップアップ認可を実施。
+- 認可マトリックスがCIテストを駆動；失敗はマージをブロック。

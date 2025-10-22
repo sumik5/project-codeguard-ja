@@ -1,20 +1,20 @@
 ---
-description: Bean Validation Security Best Practices
+description: Bean Validationセキュリティベストプラクティス
 languages:
 - java
 - xml
 alwaysApply: false
 ---
 
-Using a declarative, centralized approach to validation is crucial for security and maintainability. The Java Bean Validation standard (now Jakarta Validation) and its primary implementation, Hibernate Validator, provide a powerful way to handle this.
+セキュリティと保守性のために、宣言的で集中化されたバリデーションアプローチを使用することが重要です。Java Bean Validation標準（現Jakarta Validation）とその主要実装であるHibernate Validatorは、これを処理する強力な方法を提供します。
 
-### Why Use Bean Validation?
+### Bean Validationを使用する理由
 
-Instead of scattering validation logic throughout your business layer, you define validation rules directly on your domain models (your "beans"). This keeps your validation logic in one place, making it consistent and easy to manage.
+ビジネスレイヤー全体にバリデーションロジックを散在させる代わりに、ドメインモデル（「Bean」）に直接バリデーションルールを定義します。これにより、バリデーションロジックが一箇所に保たれ、一貫性があり管理しやすくなります。
 
-### 1. Setting Up Your Project
+### 1. プロジェクトのセットアップ
 
-Add Hibernate Validator to your `pom.xml`:
+`pom.xml`にHibernate Validatorを追加します：
 
 ```xml
 <dependency>
@@ -24,13 +24,13 @@ Add Hibernate Validator to your `pom.xml`:
 </dependency>
 ```
 
-If you're using Spring Boot, the `spring-boot-starter-web` dependency includes Hibernate Validator automatically.
+Spring Bootを使用している場合、`spring-boot-starter-web`依存関係に自動的にHibernate Validatorが含まれています。
 
-### 2. Annotating Your Beans
+### 2. Beanのアノテーション
 
-Apply standard validation annotations directly to the fields of your model classes. **Always combine @NotNull/@NotBlank with @Size constraints for sensitive fields.**
+モデルクラスのフィールドに直接標準バリデーションアノテーションを適用します。**機密フィールドには必ず@NotNull/@NotBlankと@Size制約を組み合わせてください。**
 
-**Example (`UserForm.java`):**
+**例（`UserForm.java`）：**
 ```java
 public class UserForm {
 
@@ -48,11 +48,11 @@ public class UserForm {
 }
 ```
 
-### 3. Triggering Validation
+### 3. バリデーションのトリガー
 
-In a web context (like a Spring MVC controller), use the `@Valid` annotation on your model attribute to trigger the validation process automatically.
+Webコンテキスト（Spring MVCコントローラーなど）では、モデル属性に`@Valid`アノテーションを使用してバリデーションプロセスを自動的にトリガーします。
 
-**Example (Spring Controller):**
+**例（Springコントローラー）：**
 ```java
 @RestController
 public class UserController {
@@ -70,11 +70,11 @@ public class UserController {
 }
 ```
 
-### 4. Validating Nested Objects
+### 4. ネストされたオブジェクトの検証
 
-If your model contains other objects that also need validation, just annotate them with `@Valid`.
+モデルに他の検証が必要なオブジェクトが含まれている場合は、それらを`@Valid`でアノテーションするだけです。
 
-**Example:**
+**例：**
 ```java
 public class Order {
     @Valid @NotNull
@@ -82,10 +82,10 @@ public class Order {
 }
 ```
 
-### Best Practices Summary
+### ベストプラクティスの概要
 
-*   **Centralize Rules:** Define validation constraints on your domain models.
-*   **Use Standard Annotations:** Leverage the rich set of built-in annotations (`@NotNull`, `@Size`, `@Pattern`, `@Min`, `@Max`, `@Email`, etc.).
-*   **Automate with `@Valid`:** Let your framework trigger validation automatically in your controllers.
-*   **Handle Errors Gracefully:** Use `BindingResult` to capture validation errors and return a meaningful `400 Bad Request` response. Never expose sensitive system information in error messages.
-*   **Create Custom Constraints:** For complex business rules that aren't covered by standard annotations, create your own custom validation constraints.
+*   **ルールを集中化：** ドメインモデルにバリデーション制約を定義します。
+*   **標準アノテーションを使用：** 組み込みアノテーションの豊富なセット（`@NotNull`、`@Size`、`@Pattern`、`@Min`、`@Max`、`@Email`等）を活用します。
+*   **`@Valid`で自動化：** フレームワークにコントローラーでバリデーションを自動的にトリガーさせます。
+*   **エラーを適切に処理：** `BindingResult`を使用してバリデーションエラーをキャプチャし、意味のある`400 Bad Request`レスポンスを返します。エラーメッセージに機密システム情報を露出しません。
+*   **カスタム制約の作成：** 標準アノテーションでカバーされない複雑なビジネスルールには、独自のカスタムバリデーション制約を作成します。

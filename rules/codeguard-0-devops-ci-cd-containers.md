@@ -1,6 +1,5 @@
 ---
-description: DevOps, CI/CD, and containers (pipeline hardening, artifacts, Docker/K8s
-  images, virtual patching, toolchain)
+description: DevOps、CI/CD、コンテナ（パイプラインハードニング、成果物、Docker/K8sイメージ、仮想パッチ、ツールチェーン）
 languages:
 - docker
 - javascript
@@ -11,53 +10,53 @@ languages:
 alwaysApply: false
 ---
 
-## DevOps, CI/CD, and Containers
+## DevOps、CI/CD、コンテナ
 
-Secure the build, packaging, and deployment supply chain: protect pipelines and artifacts, harden containers, and use virtual patching and toolchain flags when necessary.
+ビルド、パッケージング、デプロイのサプライチェーンを保護：パイプラインと成果物を保護し、コンテナをハードニングし、必要に応じて仮想パッチとツールチェーンフラグを使用。
 
-### CI/CD Pipeline Security
-- Repos: protected branches; mandatory reviews; signed commits.
-- Secrets: never hardcode; fetch at runtime from vault/KMS; mask in logs.
-- Least privilege: ephemeral, isolated runners with minimal permissions.
-- Security gates in CI: SAST, SCA, DAST, IaC scanning; block on criticals.
-- Dependencies: pin via lockfiles; verify integrity; use private registries.
-- Sign everything: commits and artifacts (containers/jars) and verify prior to deploy; adopt SLSA provenance.
+### CI/CDパイプラインセキュリティ
+- リポジトリ：保護されたブランチ、必須レビュー、署名付きコミット。
+- シークレット：ハードコーディングしない。実行時にvault/KMSから取得。ログでマスク。
+- 最小権限：最小限の権限を持つエフェメラルで分離されたランナーを使用。
+- CIのセキュリティゲート：SAST、SCA、DAST、IaCスキャンを実施。クリティカルな問題でブロック。
+- 依存関係：ロックファイルで固定。整合性を検証。プライベートレジストリを使用。
+- すべてに署名：コミットと成果物（コンテナ/jar）に署名し、デプロイ前に検証。SLSAプロビナンスを採用。
 
-### Docker and Container Hardening
-- User: run as non‑root; set `USER` in Dockerfile
-- Use `--security-opt=no-new-privileges` to prevent privilege escalation.
-- Capabilities: `--cap-drop all` and add only what you need; never `--privileged`.
-- Daemon socket: never mount `/var/run/docker.sock`
-- DO NOT enable TCP Docker daemon socket (`-H tcp://0.0.0.0:XXX`) without TLS.
-- Avoid `- "/var/run/docker.sock:/var/run/docker.sock"` in docker-compose files.
-- Filesystems: read‑only root, tmpfs for temp write; resource limits (CPU/mem).
-- Networks: avoid host network; define custom networks; limit exposed ports.
-- Images: minimal base (distroless/alpine), pin tags and digests; remove package managers and tools from final image; add `HEALTHCHECK`.
-- Secrets: Docker/Kubernetes secrets; never in layers/env; mount via runtime secrets.
-- Scanning: scan images on build and admission; block high‑severity vulns.
+### Dockerとコンテナのハードニング
+- ユーザー：非rootで実行。Dockerfileで`USER`を設定。
+- `--security-opt=no-new-privileges`を使用して権限昇格を防止。
+- ケーパビリティ：`--cap-drop all`を使用し、必要なものだけを追加。`--privileged`は使用しない。
+- デーモンソケット：`/var/run/docker.sock`をマウントしない。
+- TLSなしでTCP Dockerデーモンソケット（`-H tcp://0.0.0.0:XXX`）を有効化しない。
+- docker-composeファイルで`- "/var/run/docker.sock:/var/run/docker.sock"`を使用しない。
+- ファイルシステム：読み取り専用ルート、一時書き込みにはtmpfsを使用。リソース制限（CPU/メモリ）を設定。
+- ネットワーク：ホストネットワークを避ける。カスタムネットワークを定義。公開ポートを制限。
+- イメージ：最小限のベース（distroless/alpine）、タグとダイジェストを固定。最終イメージからパッケージマネージャーとツールを削除。`HEALTHCHECK`を追加。
+- シークレット：Docker/Kubernetesシークレットを使用。レイヤー/環境変数に含めない。ランタイムシークレットでマウント。
+- スキャン：ビルド時とアドミッション時にイメージをスキャン。高深刻度の脆弱性をブロック。
 
-### Node.js in Containers
-- Deterministic builds: `npm ci --omit=dev`; pin base image with digest.
-- Production env: `ENV NODE_ENV=production`.
-- Non‑root: copy with correct ownership and drop to `USER node`.
-- Signals: use an init (e.g., `dumb-init`) and implement graceful shutdown handlers.
-- Multi‑stage builds: separate build and runtime; mount secrets via BuildKit; use `.dockerignore`.
+### コンテナ内のNode.js
+- 決定論的ビルド：`npm ci --omit=dev`を使用。ダイジェスト付きベースイメージを固定。
+- 本番環境：`ENV NODE_ENV=production`を設定。
+- 非root：正しい所有権でコピーし、`USER node`に切り替え。
+- シグナル：init（例：`dumb-init`）を使用し、グレースフルシャットダウンハンドラーを実装。
+- マルチステージビルド：ビルドとランタイムを分離。BuildKitでシークレットをマウント。`.dockerignore`を使用。
 
-### Virtual Patching (Temporary Mitigation)
-- Use WAF/IPS/ModSecurity for immediate protection when code fixes are not yet possible.
-- Prefer positive security rules (allow‑list) for accuracy; avoid exploit‑specific signatures.
-- Process: prepare tooling in advance; analyze CVEs; implement patches in log‑only first, then enforce; track and retire after code fix.
+### 仮想パッチ（一時的な緩和策）
+- コード修正がまだ不可能な場合、WAF/IPS/ModSecurityを使用して即座に保護。
+- 精度のためにポジティブセキュリティルール（許可リスト）を優先。エクスプロイト固有のシグネチャは避ける。
+- プロセス：事前にツールを準備。CVEを分析。最初はログのみでパッチを実装し、その後強制。コード修正後に廃止し追跡。
 
-### C/C++ Toolchain Hardening (when applicable)
-- Compiler: `-Wall -Wextra -Wconversion`, `-fstack-protector-all`, PIE (`-fPIE`/`-pie`), `_FORTIFY_SOURCE=2`, CFI (`-fsanitize=cfi` with LTO).
-- Linker: RELRO/now, noexecstack, NX/DEP and ASLR.
-- Debug vs Release: enable sanitizers in debug; enable hardening flags in release; assert in debug only.
-- CI checks: verify flags (`checksec`) and fail builds if protections missing.
+### C/C++ツールチェーンハードニング（該当する場合）
+- コンパイラ：`-Wall -Wextra -Wconversion`、`-fstack-protector-all`、PIE（`-fPIE`/`-pie`）、`_FORTIFY_SOURCE=2`、CFI（LTOで`-fsanitize=cfi`）。
+- リンカー：RELRO/now、noexecstack、NX/DEPとASLR。
+- デバッグ vs リリース：デバッグでサニタイザーを有効化。リリースでハードニングフラグを有効化。アサートはデバッグのみ。
+- CIチェック：フラグを検証（`checksec`）し、保護が欠けている場合はビルドを失敗させる。
 
-### Implementation Checklist
-- Pipeline: secrets in vault; ephemeral runners; security scans; signed artifacts with provenance.
-- Containers: non‑root, least privilege, read‑only FS, resource limits; no daemon socket mounts.
-- Images: minimal, pinned, scanned; healthchecks; `.dockerignore` maintained.
-- Node images: `npm ci`, `NODE_ENV=production`, proper init and shutdown.
-- Virtual patching: defined process; accurate rules; logs; retirement after fix.
-- Native builds: hardening flags enabled and verified in CI.
+### 実装チェックリスト
+- パイプライン：シークレットをvaultに保存。エフェメラルランナー。セキュリティスキャン。プロビナンス付き署名済み成果物。
+- コンテナ：非root、最小権限、読み取り専用FS、リソース制限。デーモンソケットマウントなし。
+- イメージ：最小限、固定、スキャン済み。ヘルスチェック。`.dockerignore`をメンテナンス。
+- Nodeイメージ：`npm ci`、`NODE_ENV=production`、適切なinitとシャットダウン。
+- 仮想パッチ：定義されたプロセス。正確なルール。ログ。修正後の廃止。
+- ネイティブビルド：ハードニングフラグを有効化し、CIで検証。

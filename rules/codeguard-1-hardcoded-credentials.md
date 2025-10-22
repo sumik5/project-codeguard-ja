@@ -1,42 +1,42 @@
 ---
-description: No Hardcoded Credentials
+description: ハードコードされた認証情報の禁止
 languages: []
 alwaysApply: true
 ---
 
-# No Hardcoded Credentials
+# ハードコードされた認証情報の禁止
 
-NEVER store secrets, passwords, API keys, tokens or any other credentials directly in source code.
+機密情報、パスワード、APIキー、トークン、その他の認証情報をソースコードに直接保存することを決して行わないでください。
 
-Treat your codebase as public and untrusted. Any credential that appears in source code is compromised and must be handled through secure alternatives.
+コードベースをパブリックで信頼できないものとして扱います。ソースコードに現れる認証情報は侵害されたものとして扱い、安全な代替手段を通じて処理する必要があります。
 
-#### NEVER hardcode these types of values:
+#### これらの種類の値を決してハードコードしないでください：
 
-Passwords and Authentication:
-- Database passwords, user passwords, admin passwords
-- API keys, secret keys, access tokens, refresh tokens
-- Private keys, certificates, signing keys
-- Connection strings containing credentials
-- OAuth client secrets, webhook secrets
-- Any other credentials that could be used to access external services
+パスワードと認証：
+- データベースパスワード、ユーザーパスワード、管理者パスワード
+- APIキー、シークレットキー、アクセストークン、リフレッシュトークン
+- 秘密鍵、証明書、署名鍵
+- 認証情報を含む接続文字列
+- OAuthクライアントシークレット、Webhookシークレット
+- 外部サービスへのアクセスに使用できるその他の認証情報
 
 
-#### Recognition Patterns - Learn to Spot These Formats
+#### 認識パターン - これらの形式を見つける方法を学ぶ
 
-Common Secret Formats You Must NEVER Hardcode:
+決してハードコードしてはいけない一般的なシークレット形式：
 
-- AWS Keys: Start with `AKIA`, `AGPA`, `AIDA`, `AROA`, `AIPA`, `ANPA`, `ANVA`, `ASIA`
-- Stripe Keys: Start with `sk_live_`, `pk_live_`, `sk_test_`, `pk_test_`
-- Google API: Start with `AIza` followed by 35 characters
-- GitHub Tokens: Start with `ghp_`, `gho_`, `ghu_`, `ghs_`, `ghr_`
-- JWT Tokens: Three base64 sections separated by dots, starts with `eyJ`
-- Private Key Blocks: Any text between `-----BEGIN` and `-----END PRIVATE KEY-----`
-- Connection Strings: URLs with credentials like `mongodb://user:pass@host`
+- AWSキー：`AKIA`、`AGPA`、`AIDA`、`AROA`、`AIPA`、`ANPA`、`ANVA`、`ASIA`で始まる
+- Stripeキー：`sk_live_`、`pk_live_`、`sk_test_`、`pk_test_`で始まる
+- Google API：`AIza`で始まり35文字続く
+- GitHubトークン：`ghp_`、`gho_`、`ghu_`、`ghs_`、`ghr_`で始まる
+- JWTトークン：ドットで区切られた3つのbase64セクション、`eyJ`で始まる
+- 秘密鍵ブロック：`-----BEGIN`と`-----END PRIVATE KEY-----`の間のテキスト
+- 接続文字列：`mongodb://user:pass@host`のような認証情報を含むURL
 
-Warning Signs in Your Code:
-- Variable names containing: `password`, `secret`, `key`, `token`, `auth`
-- Long random-looking strings that are not clear what they are
-- Base64 encoded strings near authentication code
-- Any string that grants access to external services
+コード内の警告サイン：
+- 以下を含む変数名：`password`、`secret`、`key`、`token`、`auth`
+- 何であるか明確でない長いランダムに見える文字列
+- 認証コード近くのBase64エンコード文字列
+- 外部サービスへのアクセスを許可する文字列
 
-You must always explain how this rule was applied and why it was applied.
+このルールがどのように適用されたか、なぜ適用されたかを常に説明する必要があります。

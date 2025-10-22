@@ -1,5 +1,5 @@
 ---
-description: XML External Entity Prevention
+description: XML外部エンティティ（XXE）防止
 languages:
 - c
 - java
@@ -11,21 +11,21 @@ languages:
 alwaysApply: false
 ---
 
-## XML External Entity Prevention
+## XML外部エンティティ（XXE）防止
 
-Prevent XXE attacks by disabling DTDs and external entities in XML parsers. Safest approach: disable DTDs completely.
+XMLパーサーでDTDと外部エンティティを無効にすることでXML外部エンティティ（XXE）攻撃を防止します。最も安全なアプローチ: DTDを完全に無効化します。
 
-### General Principle
+### 一般原則
 
 ```java
 factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 ```
 
-Disabling DTDs protects against XXE and Billion Laughs attacks. If DTDs cannot be disabled, disable external entities using parser-specific methods.
+DTDを無効にすることで、XXE攻撃とBillion Laughs攻撃から保護されます。DTDを無効にできない場合は、パーサー固有のメソッドを使用して外部エンティティを無効にしてください。
 
 ### Java
 
-Java parsers have XXE enabled by default.
+JavaパーサーはデフォルトでXXEが有効になっています。
 
 DocumentBuilderFactory/SAXParserFactory/DOM4J:
 
@@ -33,7 +33,7 @@ DocumentBuilderFactory/SAXParserFactory/DOM4J:
 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 String FEATURE = null;
 try {
-    // PRIMARY defense - disallow DTDs completely
+    // 主要な防御 - DTDを完全に無効化
     FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
     dbf.setFeature(FEATURE, true);
     dbf.setXIncludeAware(false);
@@ -43,7 +43,7 @@ try {
 }
 ```
 
-If DTDs cannot be completely disabled:
+DTDを完全に無効化できない場合:
 
 ```java
 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -54,8 +54,8 @@ String[] featuresToDisable = {
 };
 
 for (String feature : featuresToDisable) {
-    try {    
-        dbf.setFeature(feature, false); 
+    try {
+        dbf.setFeature(feature, false);
     } catch (ParserConfigurationException e) {
         logger.info("ParserConfigurationException was thrown. The feature '" + feature
         + "' is probably not supported by your XML processor.");
@@ -69,7 +69,7 @@ dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 XMLInputFactory (StAX):
 ```java
 xmlInputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-// Or if DTDs needed:
+// またはDTDが必要な場合:
 xmlInputFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 xmlInputFactory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
 ```
@@ -108,11 +108,11 @@ xmlReader.setEntityResolver(new NoOpEntityResolver());
 documentBuilder.setEntityResolver(new NoOpEntityResolver());
 ```
 
-Never use java.beans.XMLDecoder on untrusted content - it can execute arbitrary code.
+信頼できないコンテンツに対してjava.beans.XMLDecoderを絶対に使用しないでください - 任意のコードを実行できます。
 
 ### .NET
 
-XmlReader (.NET 4.5.2+ safe by default):
+XmlReader (.NET 4.5.2以降はデフォルトで安全):
 ```csharp
 XmlReaderSettings settings = new XmlReaderSettings();
 settings.DtdProcessing = DtdProcessing.Prohibit;
@@ -120,26 +120,26 @@ settings.XmlResolver = null;
 XmlReader reader = XmlReader.Create(stream, settings);
 ```
 
-XmlTextReader (prior to .NET 4.0):
+XmlTextReader (.NET 4.0以前):
 ```csharp
 XmlTextReader reader = new XmlTextReader(stream);
-reader.ProhibitDtd = true;  
+reader.ProhibitDtd = true;
 ```
 
 XmlTextReader (.NET 4.0 - 4.5.2):
 ```csharp
 XmlTextReader reader = new XmlTextReader(stream);
-reader.DtdProcessing = DtdProcessing.Prohibit;  
+reader.DtdProcessing = DtdProcessing.Prohibit;
 ```
 
-XmlDocument (prior to 4.5.2):
+XmlDocument (4.5.2以前):
 ```csharp
 XmlDocument xmlDoc = new XmlDocument();
 xmlDoc.XmlResolver = null;
 xmlDoc.LoadXml(xml);
 ```
 
-XPathNavigator (prior to 4.5.2):
+XPathNavigator (4.5.2以前):
 ```csharp
 XmlReader reader = XmlReader.Create("example.xml");
 XPathDocument doc = new XPathDocument(reader);
@@ -149,7 +149,7 @@ string xml = nav.InnerXml.ToString();
 
 ### C/C++
 
-libxml2: Avoid XML_PARSE_NOENT and XML_PARSE_DTDLOAD options.
+libxml2: XML_PARSE_NOENTとXML_PARSE_DTDLOADオプションを避けてください。
 
 libxerces-c:
 ```cpp
@@ -166,7 +166,7 @@ parser->setFeature(XMLUni::fgXercesDisableDefaultEntityResolution, true);
 
 ### PHP
 
-PHP 8.0+ prevents XXE by default. Earlier versions:
+PHP 8.0以降はデフォルトでXXEを防止します。それ以前のバージョン:
 ```php
 libxml_set_external_entity_loader(null);
 ```
@@ -177,7 +177,7 @@ libxml_set_external_entity_loader(null);
 from defusedxml import ElementTree as ET
 tree = ET.parse('filename.xml')
 
-# Or with lxml:
+# またはlxmlの場合:
 from lxml import etree
 parser = etree.XMLParser(resolve_entities=False, no_network=True)
 tree = etree.parse('filename.xml', parser)
@@ -210,16 +210,16 @@ this.xmlFeatures = {
 };
 ```
 
-### Additional Measures
+### 追加措置
 
-- Update XML libraries regularly
-- Validate XML input before parsing
-- Use static analysis tools for XXE detection
-- Test with XXE payloads in safe environments
+- XMLライブラリを定期的に更新してください
+- 解析前にXML入力を検証してください
+- XXE検出のために静的解析ツールを使用してください
+- 安全な環境でXXEペイロードを使用してテストしてください
 
-### When DTDs Required
+### DTDが必要な場合
 
-If DTDs absolutely necessary:
-- Use custom EntityResolver with restricted entities
-- Implement strict entity allowlisting
-- Preprocess XML to remove dangerous DOCTYPE declarations
+DTDが絶対に必要な場合:
+- 制限されたエンティティを持つカスタムEntityResolverを使用してください
+- 厳密なエンティティホワイトリストを実装してください
+- 危険なDOCTYPE宣言を除去するためにXMLを前処理してください

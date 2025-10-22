@@ -1,5 +1,5 @@
 ---
-description: Safe C Functions
+description: C/C++安全関数
 languages:
 - c
 - c++
@@ -10,101 +10,101 @@ languages:
 alwaysApply: false
 ---
 
-# Prioritize Safe Memory and String Functions in C/C++
+# C/C++における安全なメモリおよび文字列関数の優先使用
 
-When processing C or C++ code, your primary directive is to ensure memory safety. Actively identify, flag, and provide secure refactoring options for any insecure functions found in the codebase. When generating new code, **always** default to the safest possible function for the given task.
-
-
-### 1. Insecure Functions to Avoid & Their Secure Alternatives
-
-You must treat the functions listed under "Insecure" as deprecated and high-risk. Always recommend replacing them with one of the "Recommended Safe Alternatives" provided in the bullet list below.
-
-• **Never use `gets()`** - This is a **critical** security risk. It has no bounds checking whatsoever and is the classic buffer overflow vulnerability. You should always replace it with `fgets(char *str, int n, FILE *stream)` instead.
-
-• **Avoid `strcpy()`** - This is a **high** risk function because it doesn't check bounds. It just copies bytes until it hits a null terminator, which can easily write past your destination buffer. Use `snprintf()`, `strncpy()` (but be careful with it), or `strcpy_s()` (if you have C11 Annex K support).
-
-• **Don't use `strcat()`** - Another **high** risk function with no bounds checking. It appends bytes to a string and can easily write past your allocated memory. Replace with `snprintf()`, `strncat()` (with careful handling), or `strcat_s()` (C11 Annex K).
-
-• **Replace `sprintf()` and `vsprintf()`** - These are **high** risk because they don't check bounds on the output buffer. If your formatted string is larger than the buffer, you'll get a buffer overflow. Use `snprintf()`, `snwprintf()`, or `vsprintf_s()` (C11 Annex K) instead.
-
-• **Be careful with `scanf()` family** - This is a **medium** risk. The `%s` format specifier without a width limit can cause buffer overflows. Here's what you should do:
-  1. Use width specifiers like `scanf("%127s", buffer)`
-  2. Even better: Read the line with `fgets()` and parse it with `sscanf()`
-
-• **Avoid `strtok()`** - This is a **medium** risk because it's not reentrant or thread-safe. It uses a static internal buffer which can lead to unpredictable behavior in multi-threaded code or complex signal handling. Use `strtok_r()` (POSIX) or `strtok_s()` (C11 Annex K) instead.
-
-• **Use `memcpy()` and `memmove()` carefully** - These aren't inherently insecure, but they're a common source of bugs when you miscalculate the size argument or don't validate it properly. Here's what you should do:
-  1. Double-check your size calculations
-  2. Prefer `memcpy_s()` (C11 Annex K) when available
-  3. Use `memmove()` if source and destination buffers might overlap
-
-### 2. Actionable Implementation Guidelines
-
-#### For New Code Generation:
-
-- **NEVER** generate code that uses `gets()`, `strcpy()`, `strcat()`, or `sprintf()`.
-
-- **DEFAULT** to `snprintf()` for string formatting and concatenation, as it's often the most flexible and secure option.
-
-- **DEFAULT** to `fgets()` for reading string input from files or standard input.
+CまたはC++コードを処理する際、メモリ安全性を確保することが主要な指令です。コードベースで見つかった安全でない関数を積極的に識別、フラグ付け、安全なリファクタリングオプションを提供してください。新しいコードを生成する場合、**常に**与えられたタスクに対して可能な限り最も安全な関数をデフォルトとしてください。
 
 
-#### For Code Analysis and Refactoring:
+### 1. 避けるべき安全でない関数と安全な代替案
 
-1. **Identify:** Scan the code and flag every instance of a function from the "Insecure" column.
+以下の「安全でない」リストにある関数は非推奨で高リスクとして扱う必要があります。常にこれらを下記の箇条書きリストに記載された「推奨される安全な代替案」のいずれかで置き換えることを推奨してください。
 
-2. **Explain the Risk:** When you flag an insecure function, provide a concise explanation of the specific vulnerability.
+• **`gets()`は決して使用しない** - これは**重大な**セキュリティリスクです。境界チェックが一切なく、古典的なバッファオーバーフロー脆弱性です。常に代わりに`fgets(char *str, int n, FILE *stream)`で置き換えてください。
 
-    - _Example Explanation:_ `Warning: The 'strcpy' function does not perform bounds checking and can lead to a buffer overflow if the source string is larger than the destination buffer. This is a common security vulnerability.`
+• **`strcpy()`を避ける** - これは境界をチェックしないため**高**リスク関数です。ヌルターミネータに到達するまでバイトをコピーするだけで、簡単に宛先バッファを越えて書き込む可能性があります。`snprintf()`、`strncpy()`（ただし注意して）、または`strcpy_s()`（C11 Annex Kサポートがある場合）を使用してください。
 
-3. **Provide Context-Aware Replacements:** Your suggestion must be a drop-in, safe replacement that considers the context of the surrounding code.
+• **`strcat()`を使用しない** - 境界チェックがない別の**高**リスク関数です。文字列にバイトを追加し、割り当てられたメモリを簡単に越えて書き込む可能性があります。`snprintf()`、`strncat()`（慎重な処理で）、または`strcat_s()`（C11 Annex K）で置き換えてください。
+
+• **`sprintf()`と`vsprintf()`を置き換える** - これらは出力バッファの境界をチェックしないため**高**リスクです。フォーマットされた文字列がバッファより大きい場合、バッファオーバーフローが発生します。代わりに`snprintf()`、`snwprintf()`、または`vsprintf_s()`（C11 Annex K）を使用してください。
+
+• **`scanf()`ファミリに注意** - これは**中**リスクです。幅制限のない`%s`フォーマット指定子はバッファオーバーフローを引き起こす可能性があります。以下を行うべきです：
+  1. `scanf("%127s", buffer)`のように幅指定子を使用
+  2. さらに良い方法：`fgets()`で行を読み取り、`sscanf()`で解析
+
+• **`strtok()`を避ける** - これはリエントラントでもスレッドセーフでもないため**中**リスクです。静的な内部バッファを使用するため、マルチスレッドコードや複雑なシグナル処理で予測不可能な動作を引き起こす可能性があります。代わりに`strtok_r()`（POSIX）または`strtok_s()`（C11 Annex K）を使用してください。
+
+• **`memcpy()`と`memmove()`を慎重に使用** - これらは本質的に安全ではありませんが、サイズ引数を誤って計算したり適切に検証しない場合にバグの一般的な原因です。以下を行うべきです：
+  1. サイズ計算を再確認
+  2. 利用可能な場合は`memcpy_s()`（C11 Annex K）を優先
+  3. ソースと宛先バッファが重複する可能性がある場合は`memmove()`を使用
+
+### 2. 実行可能な実装ガイドライン
+
+#### 新しいコード生成用：
+
+- **決して**`gets()`、`strcpy()`、`strcat()`、`sprintf()`を使用するコードを生成しない。
+
+- 文字列のフォーマットと連結には、最も柔軟で安全なオプションであることが多い`snprintf()`を**デフォルト**とする。
+
+- ファイルまたは標準入力から文字列入力を読み取るには`fgets()`を**デフォルト**とする。
 
 
-#### Use Compiler Flags:
+#### コード分析とリファクタリング用：
 
-Enable these protective compiler flags to catch buffer overflow vulnerabilities at compile time and runtime:
+1. **識別：** コードをスキャンし、「安全でない」列の関数のすべてのインスタンスをフラグ付けします。
 
-- **Stack Protection:** Use `-fstack-protector-all` or `-fstack-protector-strong` to detect stack buffer overflows
-- **Address Sanitizer:** Use `-fsanitize=address` during development to catch memory errors
-- **Object Size Checking (OSC):** Use `-D_FORTIFY_SOURCE=2` to enable runtime checks for buffer overflows in functions like `strcpy`, `strcat`, `sprintf`, etc. This adds bounds checking to many of the unsafe functions mentioned above
-- **Format String Protection:** Use `-Wformat -Wformat-security` to catch format string vulnerabilities
+2. **リスクを説明：** 安全でない関数をフラグ付けする際、特定の脆弱性について簡潔な説明を提供します。
 
-### 3. Refactoring Examples
+    - _説明の例：_ `警告: 'strcpy'関数は境界チェックを実行せず、ソース文字列が宛先バッファより大きい場合にバッファオーバーフローを引き起こす可能性があります。これは一般的なセキュリティ脆弱性です。`
 
-Your suggestions should be concrete and actionable.
+3. **コンテキストを考慮した置き換えを提供：** 提案は、周囲のコードのコンテキストを考慮したドロップイン可能な安全な置き換えである必要があります。
 
-**Example 1: Replacing `strcpy`**
 
-- **Original Unsafe Code:**
+#### コンパイラフラグの使用：
+
+コンパイル時および実行時にバッファオーバーフロー脆弱性を検出するため、これらの保護的なコンパイラフラグを有効にします：
+
+- **スタック保護：** `-fstack-protector-all`または`-fstack-protector-strong`を使用してスタックバッファオーバーフローを検出
+- **アドレスサニタイザ：** 開発中に`-fsanitize=address`を使用してメモリエラーを検出
+- **オブジェクトサイズチェック（OSC）：** `-D_FORTIFY_SOURCE=2`を使用して`strcpy`、`strcat`、`sprintf`などの関数のバッファオーバーフローに対する実行時チェックを有効化。これは上記で言及された多くの安全でない関数に境界チェックを追加します
+- **フォーマット文字列保護：** `-Wformat -Wformat-security`を使用してフォーマット文字列脆弱性を検出
+
+### 3. リファクタリング例
+
+提案は具体的で実行可能である必要があります。
+
+**例1: `strcpy`の置き換え**
+
+- **元の安全でないコード：**
 
     ```
     char destination[64];
     strcpy(destination, source_string);
     ```
 
-- **Your Suggested Refactoring:**
+- **提案するリファクタリング：**
 
     ```
     char destination[64];
     snprintf(destination, sizeof(destination), "%s", source_string);
     ```
 
-- **Your Explanation:** `Replaced 'strcpy' with 'snprintf' to ensure that no more than 63 characters plus a null terminator are written to the destination buffer, preventing a potential buffer overflow.`
+- **説明：** `'strcpy'を'snprintf'で置き換え、63文字以下とヌルターミネータのみが宛先バッファに書き込まれることを確保し、潜在的なバッファオーバーフローを防止しました。`
 
 
-**Example 2: Correcting `strncpy` Usage**
+**例2: `strncpy`使用の修正**
 
-The `strncpy` function is a common but imperfect replacement. It may not null-terminate the destination buffer. If you must use it or see it used, you must enforce correct handling.
+`strncpy`関数は一般的ですが不完全な置き換えです。宛先バッファをヌル終端しない可能性があります。これを使用する必要がある、またはこれが使用されているのを見た場合、正しい処理を強制する必要があります。
 
-- **Original (Potentially Unsafe) `strncpy`:**
+- **元の（潜在的に安全でない）`strncpy`：**
 
     ```
-    // This is unsafe if strlen(source) >= 10
+    // strlen(source) >= 10 の場合、これは安全ではありません
     char dest[10];
     strncpy(dest, source, sizeof(dest));
     ```
 
-- **Your Corrected Suggestion:**
+- **修正された提案：**
 
     ```
     char dest[10];
@@ -112,12 +112,12 @@ The `strncpy` function is a common but imperfect replacement. It may not null-te
     dest[sizeof(dest) - 1] = '\0';
     ```
 
-- **Your Explanation:** `Added an explicit null termination for 'strncpy'. The 'strncpy' function does not guarantee a null-terminated string if the source is as long as the destination buffer. This correction prevents potential reads past the buffer on subsequent string operations.`
+- **説明：** `'strncpy'に明示的なヌル終端を追加しました。'strncpy'関数は、ソースが宛先バッファと同じ長さの場合、ヌル終端文字列を保証しません。この修正により、後続の文字列操作でバッファを越えた読み取りを防止します。`
 
 
-**Example 3: Securing `scanf`**
+**例3: `scanf`のセキュア化**
 
-- **Original Unsafe Code:**
+- **元の安全でないコード：**
 
     ```
     char user_name[32];
@@ -125,17 +125,17 @@ The `strncpy` function is a common but imperfect replacement. It may not null-te
     scanf("%s", user_name);
     ```
 
-- **Your Suggested Refactoring:**
+- **提案するリファクタリング：**
 
     ```
     char user_name[32];
     printf("Enter your name: ");
     if (fgets(user_name, sizeof(user_name), stdin)) {
-        // Optional: Remove trailing newline character from fgets
+        // オプション: fgetsから末尾の改行文字を削除
         user_name[strcspn(user_name, "\n")] = 0;
     }
     ```
 
-- **Your Explanation:** `Replaced 'scanf("%s", ...)' with 'fgets()' to read user input. 'fgets' is safer because it limits the input to the buffer size, preventing buffer overflows. The original 'scanf' had no such protection.`
+- **説明：** `'scanf("%s", ...)'を'fgets()'で置き換えてユーザー入力を読み取りました。'fgets'は入力をバッファサイズに制限するため、バッファオーバーフローを防止し、より安全です。元の'scanf'にはそのような保護がありませんでした。`
 
-You must always explain how this rule was applied and why it was applied.
+このルールがどのように適用されたか、なぜ適用されたかを常に説明する必要があります。

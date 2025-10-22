@@ -1,5 +1,5 @@
 ---
-description: DOM-based XSS Prevention Best Practices
+description: DOMベースXSS防止のベストプラクティス
 languages:
 - c
 - html
@@ -10,67 +10,67 @@ languages:
 alwaysApply: false
 ---
 
-## DOM-based XSS Prevention Security Rule
+## DOMベースXSS防止セキュリティルール
 
-**RULE ENFORCEMENT:** This rule prevents DOM-based XSS vulnerabilities where untrusted data from user-controllable sources is inserted into DOM sinks without proper encoding or sanitization.
+**ルール適用：** このルールは、ユーザー制御可能なソースからの信頼できないデータが、適切なエンコーディングやサニタイゼーションなしにDOMシンクに挿入されることで発生するDOMベースXSS脆弱性を防ぎます。
 
-## Rule 1: DOM Sink Restrictions by Context
+## ルール1：コンテキスト別のDOMシンク制限
 
-**YOU MUST secure DOM sinks** based on risk level:
+**DOMシンクを保護する必要があります**。リスクレベルに基づいて：
 
-### High-Risk HTML Sinks
+### 高リスクHTMLシンク
 
 ```javascript
-// VIOLATION: Direct assignment to HTML sinks
-element.innerHTML = userInput;           // DANGEROUS
-element.outerHTML = userInput;           // DANGEROUS
-document.write(userInput);               // DANGEROUS
+// 違反：HTMLシンクへの直接代入
+element.innerHTML = userInput;           // 危険
+element.outerHTML = userInput;           // 危険
+document.write(userInput);               // 危険
 
-// REQUIRED: Use safe alternatives
-element.textContent = userInput;         // SAFE
-element.innerHTML = DOMPurify.sanitize(userInput); // SAFE
+// 必須：安全な代替を使用
+element.textContent = userInput;         // 安全
+element.innerHTML = DOMPurify.sanitize(userInput); // 安全
 ```
 
-### Critical JavaScript Execution Sinks
+### 重大なJavaScript実行シンク
 
 ```javascript
-// VIOLATION: Code execution sinks
-eval(userInput);                         // CRITICAL VULNERABILITY
-new Function(userInput);                 // CRITICAL VULNERABILITY
-setTimeout(userInput, 100);              // CRITICAL VULNERABILITY
+// 違反：コード実行シンク
+eval(userInput);                         // 重大な脆弱性
+new Function(userInput);                 // 重大な脆弱性
+setTimeout(userInput, 100);              // 重大な脆弱性
 
-// REQUIRED: Safe alternatives
-setTimeout(() => processData(userInput), 100);  // SAFE
-JSON.parse(userInput);                   // SAFE for JSON
+// 必須：安全な代替
+setTimeout(() => processData(userInput), 100);  // 安全
+JSON.parse(userInput);                   // JSONには安全
 ```
 
-### Medium-Risk URL/Event Sinks
+### 中リスクURL/イベントシンク
 
 ```javascript
-// VIOLATION: Unvalidated assignments
-location.href = userInput;               // DANGEROUS
-element.onclick = userInput;             // DANGEROUS
+// 違反：未検証の代入
+location.href = userInput;               // 危険
+element.onclick = userInput;             // 危険
 
-// REQUIRED: Validate and use safe patterns
+// 必須：検証し、安全なパターンを使用
 if (/^https?:\/\/trusted-domain\.com/.test(userInput)) {
   location.href = encodeURI(userInput);
 }
 element.addEventListener('click', () => handleClick(userInput));
 ```
 
-## Rule 2: Mandatory CSP and Trusted Types
+## ルール2：必須のCSPとTrusted Types
 
-**YOU MUST implement strict CSP:**
+**厳格なCSPを実装する必要があります：**
 
 ```http
-Content-Security-Policy: 
+Content-Security-Policy:
   script-src 'self' 'nonce-{random}';
   object-src 'none';
   base-uri 'self';
   require-trusted-types-for 'script';
 ```
 
-**YOU MUST use Trusted Types:**
+**Trusted Typesを使用する必要があります：**
 
 ```javascript
 const policy = trustedTypes.createPolicy('dom-xss-prevention', {
@@ -82,63 +82,63 @@ const policy = trustedTypes.createPolicy('dom-xss-prevention', {
 element.innerHTML = policy.createHTML(userInput);
 ```
 
-## Rule 3: Server-Side Validation Requirements
+## ルール3：サーバーサイド検証要件
 
-**YOU MUST validate all user input server-side:**
+**すべてのユーザー入力をサーバーサイドで検証する必要があります：**
 
 ```javascript
 function validateInput(input, context) {
-  if (input.length > 1000) throw new Error('Input too long');
-  
+  if (input.length > 1000) throw new Error('入力が長すぎます');
+
   const patterns = {
     html: /<script|javascript:|on\w+\s*=/i,
     url: /^https?:\/\/[a-zA-Z0-9.-]+/,
     text: /<[^>]*>/g
   };
-  
+
   if (patterns[context] && patterns[context].test(input)) {
-    throw new Error('Invalid input detected');
+    throw new Error('無効な入力が検出されました');
   }
   return input;
 }
 ```
 
-## Rule 4: Context-Aware Encoding
+## ルール4：コンテキストを意識したエンコーディング
 
-**YOU MUST apply proper encoding by context:**
+**コンテキストに応じた適切なエンコーディングを適用する必要があります：**
 
 ```javascript
-// HTML Context
+// HTMLコンテキスト
 function encodeHTML(str) {
   return str.replace(/[&<>"'\/]/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;'
   })[char]);
 }
 
-// JavaScript Context  
+// JavaScriptコンテキスト
 function encodeJS(str) {
   return str.replace(/[\\'"<>/\n\r\t]/g, char => ({
-    '\\': '\\\\', "'": "\\'", '"': '\\"', '<': '\\u003C', 
+    '\\': '\\\\', "'": "\\'", '"': '\\"', '<': '\\u003C',
     '>': '\\u003E', '/': '\\u002F', '\n': '\\n', '\r': '\\r', '\t': '\\t'
   })[char]);
 }
 
-// URL Context
+// URLコンテキスト
 function encodeURL(str) {
-  return encodeURIComponent(str).replace(/['"<>]/g, char => 
+  return encodeURIComponent(str).replace(/['"<>]/g, char =>
     '%' + char.charCodeAt(0).toString(16).toUpperCase());
 }
 ```
 
-## Rule 5: Safe DOM API Usage
+## ルール5：安全なDOM API使用
 
-**YOU MUST use safe DOM construction:**
+**安全なDOM構築を使用する必要があります：**
 
 ```javascript
 function createSafeElement(tagName, textContent, attributes = {}) {
   const element = document.createElement(tagName);
   if (textContent) element.textContent = textContent;
-  
+
   const safeAttrs = ['class', 'id', 'title', 'alt', 'src', 'href', 'role'];
   for (const [key, value] of Object.entries(attributes)) {
     if (safeAttrs.includes(key.toLowerCase())) {
@@ -149,23 +149,23 @@ function createSafeElement(tagName, textContent, attributes = {}) {
 }
 ```
 
-## Rule 6: Source Validation
+## ルール6：ソース検証
 
-**YOU MUST validate untrusted data sources:**
+**信頼できないデータソースを検証する必要があります：**
 
-### URL Parameters & PostMessage
+### URLパラメータとPostMessage
 
 ```javascript
-// URL parameter validation
+// URLパラメータ検証
 function getURLParam(name) {
   const value = new URLSearchParams(location.search).get(name);
   if (!value || value.length > 100 || /<script|javascript:/i.test(value)) {
-    throw new Error('Invalid parameter');
+    throw new Error('無効なパラメータ');
   }
   return value;
 }
 
-// PostMessage validation
+// PostMessage検証
 window.addEventListener('message', (event) => {
   const allowedOrigins = ['https://trusted-domain.com'];
   if (!allowedOrigins.includes(event.origin)) return;
@@ -173,12 +173,12 @@ window.addEventListener('message', (event) => {
 });
 ```
 
-## Rule 7: Framework Integration
+## ルール7：フレームワーク統合
 
-**Framework-specific safe patterns:**
+**フレームワーク固有の安全なパターン：**
 
 ```javascript
-// React: Safe HTML rendering
+// React：安全なHTMLレンダリング
 function SafeComponent({ htmlContent }) {
   const clean = DOMPurify.sanitize(htmlContent, {
     ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br']
@@ -186,7 +186,7 @@ function SafeComponent({ htmlContent }) {
   return <div dangerouslySetInnerHTML={{ __html: clean }} />;
 }
 
-// Vue: Safe directive
+// Vue：安全なディレクティブ
 Vue.directive('safe-html', {
   update: (el, binding) => {
     el.innerHTML = DOMPurify.sanitize(binding.value, {
@@ -196,39 +196,39 @@ Vue.directive('safe-html', {
 });
 ```
 
-## Violation Detection Patterns
+## 違反検出パターン
 
-**These patterns will trigger security violations:**
+**これらのパターンはセキュリティ違反をトリガーします：**
 
 ```javascript
-// VIOLATION: Direct DOM manipulation
+// 違反：直接的なDOM操作
 element.innerHTML = userInput;
 eval(userData);
 setTimeout(userData, 100);
 location.href = userUrl;
 element.onclick = userHandler;
 
-// VIOLATION: Unescaped template literals
+// 違反：エスケープされていないテンプレートリテラル
 const html = `<div>${userInput}</div>`;
 
-// VIOLATION: Missing validation
+// 違反：検証の欠如
 window.addEventListener('message', (e) => processMessage(e.data));
 ```
 
-## Mandatory Compliance Checks
+## 必須コンプライアンスチェック
 
 
-✅ **DOMPurify imported and used for HTML insertion**
-✅ **No innerHTML/outerHTML without sanitization**
-✅ **No eval(), new Function(), setTimeout/setInterval with strings**
-✅ **CSP implemented with script-src 'self'**
-✅ **Trusted Types policy implemented**
-✅ **URL validation before location assignments**
-✅ **Origin validation for postMessage**
+✅ **DOMPurifyがインポートされ、HTML挿入に使用されている**
+✅ **サニタイゼーションなしのinnerHTML/outerHTMLが使用されていない**
+✅ **eval()、new Function()、文字列を伴うsetTimeout/setIntervalが使用されていない**
+✅ **script-src 'self'を含むCSPが実装されている**
+✅ **Trusted Typesポリシーが実装されている**
+✅ **location代入前のURL検証**
+✅ **postMessageのオリジン検証**
 
-**VIOLATION CONSEQUENCES:** DOM-based XSS vulnerabilities allow arbitrary JavaScript execution, leading to account compromise, data theft, and malicious user actions.
+**違反の結果：** DOMベースXSS脆弱性は、任意のJavaScript実行を許可し、アカウント侵害、データ窃取、悪意のあるユーザー操作につながります。
 
-**TEST PAYLOADS:** Code must safely handle:
+**テストペイロード：** コードは以下を安全に処理する必要があります：
 - `<script>alert('XSS')</script>`
 - `javascript:alert('XSS')`
 - `"><script>alert('XSS')</script>`

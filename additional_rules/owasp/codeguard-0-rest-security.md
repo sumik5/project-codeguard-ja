@@ -1,5 +1,5 @@
 ---
-description: REST API Security Guidelines
+description: REST APIセキュリティガイドライン
 languages:
 - c
 - go
@@ -14,162 +14,162 @@ languages:
 alwaysApply: false
 ---
 
-## REST API Security Guidelines
+## REST APIセキュリティガイドライン
 
-Essential security practices for developing secure RESTful web services, covering transport security, authentication, input validation, and proper error handling.
+トランスポートセキュリティ、認証、入力検証、適切なエラー処理をカバーする、安全なRESTful Webサービス開発のための必須セキュリティプラクティス。
 
-### Core REST Security Principles
+### REST APIの基本セキュリティ原則
 
-REST APIs are stateless - each request must contain all necessary information for processing. State refers to resource state, not session state. Avoid passing client state to backend as this creates replay and impersonation attack vectors.
+REST APIはステートレスです。各リクエストには処理に必要なすべての情報が含まれている必要があります。状態はリソース状態を指し、セッション状態ではありません。クライアント状態をバックエンドに渡すことは避けてください。これはリプレイおよびなりすまし攻撃のベクトルを作成します。
 
-Each REST endpoint must independently verify authorization for the requested operation on the specific resource.
+各RESTエンドポイントは、特定のリソースに対する要求された操作の認可を独立して検証する必要があります。
 
-### HTTPS Requirements
+### HTTPS要件
 
-Secure REST services must only provide HTTPS endpoints to protect:
-- Authentication credentials (passwords, API keys, JSON Web Tokens)
-- Data integrity and confidentiality
-- Client authentication of the service
+安全なRESTサービスは、以下を保護するためにHTTPSエンドポイントのみを提供する必要があります:
+- 認証クレデンシャル（パスワード、APIキー、JSON Web Token）
+- データの整合性と機密性
+- サービスのクライアント認証
 
-Consider mutually authenticated client-side certificates for highly privileged web services.
+高度に特権的なWebサービスには、相互認証されたクライアント側証明書を検討してください。
 
-### Access Control
+### アクセス制御
 
-Non-public REST services must perform access control at each API endpoint:
-- Take access control decisions locally at REST endpoints to minimize latency
-- Use centralized Identity Provider (IdP) for user authentication that issues access tokens
-- Avoid relying on global session state across distributed services
+非公開のRESTサービスは、各APIエンドポイントでアクセス制御を実行する必要があります:
+- レイテンシを最小限に抑えるため、RESTエンドポイントでローカルにアクセス制御の決定を行う
+- アクセストークンを発行する集中型アイデンティティプロバイダー（IdP）をユーザー認証に使用
+- 分散サービス間でのグローバルセッション状態に依存しない
 
-### JWT Security
+### JWTセキュリティ
 
-When using JSON Web Tokens for security tokens:
+セキュリティトークンにJSON Web Tokenを使用する場合:
 
-Essential Requirements:
-- Ensure JWTs are integrity protected by signature or MAC
-- Never allow unsecured JWTs with `{"alg":"none"}`
-- Prefer signatures over MACs for integrity protection
-- Verify JWT integrity based on local configuration, not JWT header information
+必須要件:
+- JWTが署名またはMACによって整合性が保護されていることを確認
+- `{"alg":"none"}`の安全でないJWTを許可しない
+- 整合性保護にはMACよりも署名を優先
+- JWTヘッダー情報ではなく、ローカル設定に基づいてJWT整合性を検証
 
-Standard Claims Validation:
-- `iss` (issuer): Verify trusted issuer and signing key ownership
-- `aud` (audience): Confirm relying party is in target audience
-- `exp` (expiration): Validate current time is before token expiration
-- `nbf` (not before): Validate current time is after token validity start
+標準クレームの検証:
+- `iss`（発行者）: 信頼できる発行者と署名鍵の所有権を検証
+- `aud`（オーディエンス）: 依拠当事者がターゲットオーディエンスに含まれることを確認
+- `exp`（有効期限）: 現在時刻がトークン有効期限前であることを検証
+- `nbf`（開始時刻）: 現在時刻がトークン有効性開始後であることを検証
 
-Token Revocation:
-- Implement JWT denylist for explicit session termination
-- Submit hash of revoked JWTs to denylist until natural expiration
+トークン失効:
+- 明示的なセッション終了のためのJWT拒否リストを実装
+- 自然な有効期限まで失効したJWTのハッシュを拒否リストに送信
 
-### API Keys
+### APIキー
 
-For public REST services requiring access control:
-- Require API keys for every request to protected endpoints
-- Return `429 Too Many Requests` for rate limit violations
-- Revoke API keys for usage agreement violations
-- Do not rely exclusively on API keys for sensitive or high-value resources
+アクセス制御が必要な公開RESTサービスの場合:
+- 保護されたエンドポイントへのすべてのリクエストにAPIキーが必要
+- レート制限違反には`429 Too Many Requests`を返す
+- 利用規約違反のAPIキーを失効
+- 機密性の高いリソースや高価値のリソースにはAPIキーのみに依存しない
 
-### HTTP Method Restrictions
+### HTTPメソッド制限
 
-- Apply allowlist of permitted HTTP methods (GET, POST, PUT, DELETE)
-- Reject unauthorized methods with `405 Method not allowed`
-- Verify caller authorization for specific HTTP method on resource
-- Be especially careful with Java EE HTTP verb tampering vulnerabilities
+- 許可されたHTTPメソッドの許可リスト（GET、POST、PUT、DELETE）を適用
+- 許可されていないメソッドを`405 Method not allowed`で拒否
+- リソースに対する特定のHTTPメソッドの呼び出し者認可を検証
+- Java EE HTTPバーブタンパリング脆弱性には特に注意
 
-### Input Validation
+### 入力検証
 
-Never trust input parameters or objects:
-- Validate input length, range, format, and type
-- Use strong types (numbers, booleans, dates) for implicit validation
-- Constrain string inputs with regular expressions
-- Reject unexpected or illegal content
-- Define appropriate request size limits, return `413 Request Entity Too Large`
-- Log input validation failures for attack detection
-- Use secure parsers resistant to XXE and similar attacks
+入力パラメータやオブジェクトを決して信頼しない:
+- 入力の長さ、範囲、形式、タイプを検証
+- 暗黙的な検証に強い型（数値、ブール値、日付）を使用
+- 正規表現で文字列入力を制約
+- 予期しないまたは不正なコンテンツを拒否
+- 適切なリクエストサイズ制限を定義し、`413 Request Entity Too Large`を返す
+- 攻撃検出のために入力検証失敗をログ記録
+- XXEおよび類似の攻撃に耐性のある安全なパーサーを使用
 
-### Content Type Validation
+### コンテンツタイプ検証
 
-Request Validation:
-- Reject requests with unexpected or missing Content-Type headers (`406 Unacceptable` or `415 Unsupported Media Type`)
-- Allow missing Content-Type only for Content-Length: 0 requests
-- Explicitly define supported content types in framework configurations
-- Ensure XML parser hardening against XXE attacks
+リクエスト検証:
+- 予期しないまたは欠落しているContent-Typeヘッダーを持つリクエストを拒否（`406 Unacceptable`または`415 Unsupported Media Type`）
+- Content-Length: 0のリクエストに対してのみContent-Typeの欠落を許可
+- フレームワーク設定でサポートされるコンテンツタイプを明示的に定義
+- XXE攻撃に対するXMLパーサーの強化を確保
 
-Response Security:
-- Never copy Accept header directly to Content-Type response header
-- Reject requests with unsupported Accept headers (`406 Not Acceptable`)
-- Send intended content type headers matching response body content
+レスポンスセキュリティ:
+- AcceptヘッダーをContent-Typeレスポンスヘッダーに直接コピーしない
+- サポートされていないAcceptヘッダーを持つリクエストを拒否（`406 Not Acceptable`）
+- レスポンスボディコンテンツに一致する意図されたコンテンツタイプヘッダーを送信
 
-### Management Endpoints
+### 管理エンドポイント
 
-- Avoid exposing management endpoints via Internet
-- Require strong authentication (multi-factor) if Internet-accessible
-- Use different HTTP ports, hosts, or network interfaces
-- Restrict access via firewall rules or access control lists
+- インターネット経由で管理エンドポイントを公開しない
+- インターネットアクセス可能な場合は強力な認証（多要素）が必要
+- 異なるHTTPポート、ホスト、またはネットワークインターフェースを使用
+- ファイアウォールルールまたはアクセス制御リストでアクセスを制限
 
-### Error Handling
+### エラー処理
 
-- Respond with generic error messages
-- Never reveal technical details (call stacks, internal hints) to clients
-- Avoid exposing system information that aids attackers
+- 一般的なエラーメッセージで応答
+- クライアントに技術的な詳細（コールスタック、内部ヒント）を決して明らかにしない
+- 攻撃者を助けるシステム情報の公開を避ける
 
-### Audit Logging
+### 監査ログ
 
-- Write audit logs before and after security-related events
-- Log token validation errors for attack detection
-- Sanitize log data to prevent log injection attacks
+- セキュリティ関連イベントの前後に監査ログを書き込む
+- 攻撃検出のためにトークン検証エラーをログ記録
+- ログインジェクション攻撃を防ぐためにログデータをサニタイズ
 
-### Security Headers
+### セキュリティヘッダー
 
-Include these headers in all API responses:
+すべてのAPIレスポンスにこれらのヘッダーを含める:
 
-Required Headers:
-- `Cache-Control: no-store`: Prevents sensitive information caching
-- `Content-Security-Policy: frame-ancestors 'none'`: Prevents clickjacking
-- `Content-Type`: Specify correct content type to prevent MIME sniffing
-- `Strict-Transport-Security`: Enforce HTTPS-only access
-- `X-Content-Type-Options: nosniff`: Prevent MIME type confusion
-- `X-Frame-Options: DENY`: Additional clickjacking protection
+必須ヘッダー:
+- `Cache-Control: no-store`: 機密情報のキャッシングを防止
+- `Content-Security-Policy: frame-ancestors 'none'`: クリックジャッキングを防止
+- `Content-Type`: MIMEスニッフィングを防ぐために正しいコンテンツタイプを指定
+- `Strict-Transport-Security`: HTTPS専用アクセスを強制
+- `X-Content-Type-Options: nosniff`: MIMEタイプの混乱を防止
+- `X-Frame-Options: DENY`: 追加のクリックジャッキング保護
 
-### CORS Configuration
+### CORS設定
 
-- Disable CORS headers if cross-domain calls are not required
-- Be as specific as possible when setting allowed origins
-- Avoid wildcard origins in production environments
+- クロスドメイン呼び出しが不要な場合はCORSヘッダーを無効化
+- 許可されたオリジンを設定する際は可能な限り具体的にする
+- 本番環境でワイルドカードオリジンを避ける
 
-### Sensitive Information Protection
+### 機密情報の保護
 
-Never include sensitive data in URLs:
-- Use request body or headers for POST/PUT sensitive data
-- Use HTTP headers for GET request sensitive data
-- Avoid query parameters for passwords, tokens, or API keys
-- URLs may be logged by web servers, proxies, and browsers
+URLに機密データを決して含めない:
+- POST/PUTの機密データにはリクエストボディまたはヘッダーを使用
+- GETリクエストの機密データにはHTTPヘッダーを使用
+- パスワード、トークン、またはAPIキーにはクエリパラメータを避ける
+- URLはWebサーバー、プロキシ、ブラウザによってログ記録される可能性がある
 
-### HTTP Status Codes
+### HTTPステータスコード
 
-Use semantically appropriate status codes:
-- `200 OK`: Successful operations
-- `201 Created`: Resource creation with Location header
-- `400 Bad Request`: Malformed requests
-- `401 Unauthorized`: Authentication required
-- `403 Forbidden`: Authorization failed
-- `404 Not Found`: Resource not found
-- `405 Method Not Allowed`: HTTP method not supported
-- `406 Not Acceptable`: Unsupported Accept header
-- `413 Payload Too Large`: Request size exceeded
-- `415 Unsupported Media Type`: Unsupported Content-Type
-- `429 Too Many Requests`: Rate limiting triggered
-- `500 Internal Server Error`: Generic server error (no details)
+意味的に適切なステータスコードを使用:
+- `200 OK`: 成功した操作
+- `201 Created`: Locationヘッダーを伴うリソース作成
+- `400 Bad Request`: 不正な形式のリクエスト
+- `401 Unauthorized`: 認証が必要
+- `403 Forbidden`: 認可失敗
+- `404 Not Found`: リソースが見つからない
+- `405 Method Not Allowed`: HTTPメソッドがサポートされていない
+- `406 Not Acceptable`: サポートされていないAcceptヘッダー
+- `413 Payload Too Large`: リクエストサイズが超過
+- `415 Unsupported Media Type`: サポートされていないContent-Type
+- `429 Too Many Requests`: レート制限がトリガー
+- `500 Internal Server Error`: 一般的なサーバーエラー（詳細なし）
 
-### Implementation Summary
+### 実装まとめ
 
-Secure REST API development requires:
-- HTTPS-only endpoints with proper certificate validation
-- Stateless design with per-endpoint authorization
-- Secure JWT handling with proper validation and revocation
-- Comprehensive input validation and content type enforcement
-- Protected management interfaces with strong authentication
-- Generic error responses without information disclosure
-- Complete audit logging with injection prevention
-- Appropriate security headers for defense in depth
-- Careful CORS configuration and sensitive data handling
-- Semantically correct HTTP status codes for proper client behavior
+安全なREST API開発には以下が必要:
+- 適切な証明書検証を伴うHTTPS専用エンドポイント
+- エンドポイントごとの認可を持つステートレス設計
+- 適切な検証と失効を伴う安全なJWT処理
+- 包括的な入力検証とコンテンツタイプの強制
+- 強力な認証を伴う保護された管理インターフェース
+- 情報漏洩のない一般的なエラーレスポンス
+- インジェクション防止を伴う完全な監査ログ
+- 多層防御のための適切なセキュリティヘッダー
+- 慎重なCORS設定と機密データの取り扱い
+- 適切なクライアント動作のための意味的に正しいHTTPステータスコード

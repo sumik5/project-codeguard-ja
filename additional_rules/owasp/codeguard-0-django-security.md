@@ -1,65 +1,65 @@
 ---
-description: Django Security Best Practices
+description: Djangoセキュリティベストプラクティス
 languages:
 - c
 - python
 alwaysApply: false
 ---
 
-## Django Security Guidelines
+## Djangoセキュリティガイドライン
 
-This rule advises on critical Django security practices to prevent common web vulnerabilities:
+このルールは、一般的なWeb脆弱性を防ぐための重要なDjangoセキュリティプラクティスを示します。
 
-- General Security Configuration
-  - Never set `DEBUG = True` in production environments.
-  - Keep Django and dependencies up-to-date regularly.
-  - Use rate limiting packages like `django_ratelimit` or `django-axes` for brute-force protection.
+- 一般的なセキュリティ設定
+  - 本番環境で`DEBUG = True`を設定しません。
+  - Djangoと依存関係を定期的に最新に保ちます。
+  - ブルートフォース保護のため`django_ratelimit`または`django-axes`などのレート制限パッケージを使用します。
 
-- Authentication System
-  - Include `django.contrib.auth`, `django.contrib.contenttypes`, and `django.contrib.sessions` in `INSTALLED_APPS`.
-  - Use `@login_required` decorator to protect views requiring authentication.
-  - Configure `AUTH_PASSWORD_VALIDATORS` with appropriate validators for password policies.
-  - Use `make_password()` and `check_password()` functions for password hashing and verification.
+- 認証システム
+  - `INSTALLED_APPS`に`django.contrib.auth`、`django.contrib.contenttypes`、`django.contrib.sessions`を含めます。
+  - 認証が必要なビューを保護するため`@login_required`デコレータを使用します。
+  - パスワードポリシーのため`AUTH_PASSWORD_VALIDATORS`を適切なバリデータで設定します。
+  - パスワードハッシュ化と検証には`make_password()`と`check_password()`関数を使用します。
 
-- Secret Key Management
-  - Generate `SECRET_KEY` with at least 50 characters containing letters, digits, and symbols.
-  - Use `get_random_secret_key()` function for key generation.
-  - Store `SECRET_KEY` in environment variables, never hardcode in source.
-  - Rotate keys regularly and immediately upon exposure.
+- シークレットキー管理
+  - 文字、数字、記号を含む少なくとも50文字で`SECRET_KEY`を生成します。
+  - キー生成には`get_random_secret_key()`関数を使用します。
+  - `SECRET_KEY`を環境変数に保存し、ソースにハードコーディングしません。
+  - キーを定期的にローテーションし、露出時には即座に行います。
 
-- Security Middleware Configuration
-  - Include `django.middleware.security.SecurityMiddleware` in `MIDDLEWARE` settings.
-  - Include `django.middleware.clickjacking.XFrameOptionsMiddleware` in `MIDDLEWARE` settings.
-  - Set `SECURE_CONTENT_TYPE_NOSNIFF = True` for MIME type protection.
-  - Configure `SECURE_HSTS_SECONDS` with positive integer for HTTPS enforcement.
-  - Set `X_FRAME_OPTIONS = 'DENY'` or `'SAMEORIGIN'` for clickjacking protection.
+- セキュリティミドルウェア設定
+  - `MIDDLEWARE`設定に`django.middleware.security.SecurityMiddleware`を含めます。
+  - `MIDDLEWARE`設定に`django.middleware.clickjacking.XFrameOptionsMiddleware`を含めます。
+  - MIMEタイプ保護のため`SECURE_CONTENT_TYPE_NOSNIFF = True`を設定します。
+  - HTTPS強制のため`SECURE_HSTS_SECONDS`を正の整数で設定します。
+  - クリックジャッキング保護のため`X_FRAME_OPTIONS = 'DENY'`または`'SAMEORIGIN'`を設定します。
 
-- Cookie Security
-  - Set `SESSION_COOKIE_SECURE = True` to send session cookies over HTTPS only.
-  - Set `CSRF_COOKIE_SECURE = True` to send CSRF cookies over HTTPS only.
-  - Use `secure=True` parameter when setting custom cookies with `HttpResponse.set_cookie()`.
+- Cookie セキュリティ
+  - HTTPS経由でのみセッションCookieを送信するため`SESSION_COOKIE_SECURE = True`を設定します。
+  - HTTPS経由でのみCSRF Cookieを送信するため`CSRF_COOKIE_SECURE = True`を設定します。
+  - `HttpResponse.set_cookie()`でカスタムCookieを設定する際は`secure=True`パラメータを使用します。
 
-- CSRF Protection
-  - Include `django.middleware.csrf.CsrfViewMiddleware` in `MIDDLEWARE` settings.
-  - Use `{% csrf_token %}` template tag in all forms.
-  - Extract CSRF token properly for AJAX calls.
+- CSRF保護
+  - `MIDDLEWARE`設定に`django.middleware.csrf.CsrfViewMiddleware`を含めます。
+  - すべてのフォームで`{% csrf_token %}`テンプレートタグを使用します。
+  - AJAX呼び出しのためCSRFトークンを適切に抽出します。
 
-- XSS Protection
-  - Use Django's built-in template system with automatic HTML escaping.
-  - Avoid `safe` filter and `mark_safe` function unless input is from trusted sources.
-  - Use `json_script` template filter for passing data to JavaScript.
+- XSS保護
+  - 自動HTMLエスケープを伴うDjangoの組み込みテンプレートシステムを使用します。
+  - 信頼できるソースからの入力でない限り、`safe`フィルターと`mark_safe`関数を避けます。
+  - JavaScriptにデータを渡すため`json_script`テンプレートフィルターを使用します。
 
-- HTTPS Configuration
-  - Set `SECURE_SSL_REDIRECT = True` to redirect HTTP requests to HTTPS.
-  - Configure `SECURE_PROXY_SSL_HEADER` when behind proxy or load balancer.
+- HTTPS設定
+  - HTTPリクエストをHTTPSにリダイレクトするため`SECURE_SSL_REDIRECT = True`を設定します。
+  - プロキシまたはロードバランサーの背後にある場合、`SECURE_PROXY_SSL_HEADER`を設定します。
 
-- Admin Panel Security
-  - Change default admin URL from `/admin/` to custom path in `urls.py`.
+- 管理パネルセキュリティ
+  - `urls.py`でデフォルトの管理URLを`/admin/`からカスタムパスに変更します。
 
-Code Examples (from OWASP):
+コード例（OWASPから）：
 
 ```python
-# Authentication setup
+# 認証のセットアップ
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -68,9 +68,9 @@ INSTALLED_APPS = [
 
 @login_required
 def my_view(request):
-    # Your view logic
+    # ビューロジック
 
-# Password validation
+# パスワード検証
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -83,20 +83,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Secret key from environment
+# 環境変数からのシークレットキー
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
-# Cookie security
+# Cookieセキュリティ
 response.set_cookie('my_cookie', 'cookie_value', secure=True)
 ```
 
 ```html
-<!-- CSRF in forms -->
+<!-- フォームのCSRF -->
 <form method="post">
     {% csrf_token %}
-    <!-- Your form fields here -->
+    <!-- ここにフォームフィールド -->
 </form>
 ```
 
-Summary:  
-Configure Django securely by disabling debug mode in production, using proper authentication settings, securing secret keys, enabling security middleware, setting secure cookie attributes, implementing CSRF protection, preventing XSS, enforcing HTTPS, and securing admin access.
+まとめ：
+本番環境でデバッグモードを無効化し、適切な認証設定を使用し、シークレットキーを安全に保ち、セキュリティミドルウェアを有効化し、安全なCookie属性を設定し、CSRF保護を実装し、XSSを防止し、HTTPSを強制し、管理者アクセスを保護することでDjangoを安全に設定します。

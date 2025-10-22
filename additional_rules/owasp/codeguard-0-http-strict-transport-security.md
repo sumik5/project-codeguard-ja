@@ -1,5 +1,5 @@
 ---
-description: HTTP Strict Transport Security Best Practices
+description: HTTP Strict Transport Securityのベストプラクティス
 languages:
 - c
 - go
@@ -12,81 +12,81 @@ languages:
 alwaysApply: false
 ---
 
-## HTTP Strict Transport Security Guidelines
+## HTTP Strict Transport Securityガイドライン
 
-This rule enforces secure configuration of HTTP Strict Transport Security (HSTS) headers to protect users by ensuring all communications occur over HTTPS.
+このルールは、すべての通信がHTTPS経由で行われることを保証することでユーザーを保護するため、HTTP Strict Transport Security（HSTS）ヘッダーの安全な設定を強制します。
 
-### Introduction
+### 導入
 
-HTTP Strict Transport Security (HSTS) is an opt-in security enhancement specified by a web application through a special response header. Once a supported browser receives this header, it prevents any communications from being sent over HTTP to the specified domain and instead sends all communications over HTTPS. It also prevents HTTPS click through prompts on browsers.
+HTTP Strict Transport Security（HSTS）は、特別なレスポンスヘッダーを通じてWebアプリケーションによって指定されるオプトインのセキュリティ強化です。サポートされているブラウザがこのヘッダーを受信すると、指定されたドメインへのHTTP経由での通信の送信を防ぎ、代わりにすべての通信をHTTPS経由で送信します。また、ブラウザでのHTTPSクリックスループロンプトも防ぎます。
 
-Critical Requirement: The Strict-Transport-Security header is only honored over HTTPS connections and is completely ignored when sent over HTTP, per RFC 6797.
+重要な要件：Strict-Transport-SecurityヘッダーはHTTPS接続経由でのみ尊重され、RFC 6797に従い、HTTP経由で送信された場合は完全に無視されます。
 
-### Threats Addressed
+### 対処される脅威
 
-HSTS protects against:
-- Man-in-the-middle attacks when users bookmark or manually type `http://example.com`
-- Web applications inadvertently containing HTTP links or serving content over HTTP
-- Man-in-the-middle attackers using invalid certificates (HSTS prevents users from accepting bad certificates)
+HSTSは以下から保護します：
+- ユーザーが`http://example.com`をブックマークまたは手動で入力した場合の中間者攻撃
+- WebアプリケーションがHTTPリンクを誤って含むか、HTTP経由でコンテンツを提供する場合
+- 無効な証明書を使用する中間者攻撃者（HSTSはユーザーが不正な証明書を受け入れることを防ぎます）
 
-### Required Configuration
+### 必須設定
 
-1. Basic HSTS Header (testing phase):
+1. 基本HSTSヘッダー（テストフェーズ）：
    ```
    Strict-Transport-Security: max-age=86400; includeSubDomains
    ```
 
-2. Production HSTS Header (1 year minimum):
+2. 本番HSTSヘッダー（最小1年）：
    ```
    Strict-Transport-Security: max-age=31536000; includeSubDomains
    ```
 
-3. Preload-Ready HSTS Header:
+3. プリロード対応HSTSヘッダー：
    ```
    Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
    ```
 
-### Phased Rollout Requirements
+### 段階的ロールアウト要件
 
-1. Phase 1 - Testing (recommended first step):
-   - Use short max-age (600-86400 seconds) for initial testing
-   - Monitor for any HTTP content or functionality issues
+1. フェーズ1 - テスト（推奨される最初のステップ）：
+   - 初期テストには短いmax-age（600-86400秒）を使用
+   - HTTPコンテンツまたは機能の問題を監視
 
-2. Phase 2 - Production:
-   - Increase max-age to minimum 1 year (31536000 seconds)
-   - Add `includeSubDomains` only if all subdomains support HTTPS
+2. フェーズ2 - 本番：
+   - max-ageを最小1年（31536000秒）に増加
+   - すべてのサブドメインがHTTPSをサポートする場合のみ`includeSubDomains`を追加
 
-3. Phase 3 - Preload (optional):
-   - Add `preload` directive only after thorough testing
-   - Submit domain to HSTS preload list at hstspreload.org
-   - Warning: Preload is effectively permanent and affects all subdomains
+3. フェーズ3 - プリロード（オプション）：
+   - 徹底的なテスト後にのみ`preload`ディレクティブを追加
+   - hstspreload.orgでドメインをHSTSプリロードリストに提出
+   - 警告：プリロードは事実上永続的であり、すべてのサブドメインに影響します
 
-### Implementation Examples
+### 実装例
 
-Simple example using 1 year max-age (dangerous without includeSubDomains):
+1年のmax-ageを使用したシンプルな例（includeSubDomainsなしでは危険）：
 ```
 Strict-Transport-Security: max-age=31536000
 ```
 
-Secure example with subdomain protection:
+サブドメイン保護を伴う安全な例：
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains
 ```
 
-Short max-age for initial rollout testing:
+初期ロールアウトテスト用の短いmax-age：
 ```
 Strict-Transport-Security: max-age=86400; includeSubDomains
 ```
 
-### Monitoring and Validation
+### 監視と検証
 
-Required post-deployment actions:
-- Verify HSTS header presence in all HTTPS responses
-- Monitor browser console for mixed content warnings
-- Audit all internal links and redirects for HTTP references
-- Test subdomain HTTPS availability before enabling includeSubDomains
-- Use tools like Mozilla Observatory or Security Headers to validate configuration
+デプロイ後に必要なアクション：
+- すべてのHTTPSレスポンスでHSTSヘッダーの存在を検証
+- 混在コンテンツ警告についてブラウザコンソールを監視
+- HTTPリファレンスについてすべての内部リンクとリダイレクトを監査
+- includeSubDomainsを有効化する前にサブドメインHTTPS可用性をテスト
+- 設定を検証するためMozilla ObservatoryやSecurity Headersのようなツールを使用
 
-### Browser Support
+### ブラウザサポート
 
-HSTS is supported by all modern browsers. The only notable exception is Opera Mini.
+HSTSはすべての最新ブラウザでサポートされています。唯一の注目すべき例外はOpera Miniです。

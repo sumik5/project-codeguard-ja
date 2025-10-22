@@ -1,5 +1,5 @@
 [project]
-name = "project-codeguard"
+name = "project-codeguard-ja"
 version = "1.0.0"
 description = "AI Coding Rules for Security and Best Practices"
 requires-python = ">=3.11"

@@ -1,134 +1,134 @@
-# Contributing
+# コントリビューション
 
-## How to contribute?
+## コントリビュート方法
 
-Project CodeGuard is an open-source initiative actively seeking contributions from the community. This document outlines how to get involved and the process we follow for proposing, reviewing, and merging changes.
+Project CodeGuardはコミュニティからの貢献を積極的に募集しているオープンソースプロジェクトです。このドキュメントでは、参加方法と、変更の提案、レビュー、マージのプロセスについて説明します。
 
-In general, a Project CodeGuard Contributor is expected to:
-- be knowledgeable in one or more areas related to the project
-- contribute to developing and finalizing workstream deliverables
-- be reliable in completing issues they take on
-- show commitment over time with one or more PRs merged
-- follow the project style and testing guidelines
-- follow branch, PR, and code style conventions
-- contribute in ways that substantially improve the quality of the project and the experience of people who use it
+一般的に、Project CodeGuardのコントリビューターには以下が期待されます：
+- プロジェクトに関連する1つ以上の分野に精通していること
+- ワークストリーム成果物の開発と完成に貢献すること
+- 担当したイシューを確実に完了すること
+- 1つ以上のPRがマージされるなど、長期的なコミットメントを示すこと
+- プロジェクトのスタイルとテストガイドラインに従うこと
+- ブランチ、PR、コードスタイルの規約に従うこと
+- プロジェクトの品質とユーザーエクスペリエンスを大幅に向上させる方法で貢献すること
 
-When contributing to any CodeGuard repository, please first discuss the change you wish to make via a GitHub issue. For small fixes, opening a PR directly with clear context is fine; for larger changes or new features, please open an issue first to align on scope and approach.
+CodeGuardの任意のリポジトリに貢献する際は、まずGitHubイシューで実施したい変更について議論してください。小さな修正の場合は、明確なコンテキストを含むPRを直接開くことができます。大きな変更や新機能の場合は、まずイシューを開いて範囲とアプローチを調整してください。
 
-Please note that all of your interactions in the project are subject to our [Code of Conduct](CODE_OF_CONDUCT.md). This includes creation of issues or pull requests, commenting on issues or pull requests, and extends to all interactions in any real-time space.
+プロジェクトでのすべてのやり取りは、[行動規範](CODE_OF_CONDUCT.md)に従います。これには、イシューやプルリクエストの作成、イシューやプルリクエストへのコメント、およびリアルタイムスペースでのすべてのやり取りが含まれます。
 
-Please be respectful of differing opinions when discussing potential contributions. We aim for a welcoming, collaborative environment for all contributors.
+潜在的な貢献について議論する際は、異なる意見を尊重してください。すべてのコントリビューターにとって、歓迎的で協力的な環境を目指しています。
 
-## Content Update Governance Process
+## コンテンツ更新ガバナンスプロセス
 
-CodeGuard uses a two-stage governance process for updates to the project’s rules, controls, and other structured content. This separates technical review from community governance, ensuring both content quality and project alignment.
+CodeGuardは、プロジェクトのルール、コントロール、その他の構造化されたコンテンツの更新に対して、2段階のガバナンスプロセスを使用します。これにより、技術レビューとコミュニティガバナンスを分離し、コンテンツの品質とプロジェクトの整合性の両方を確保します。
 
-### What Constitutes a Content Update
+### コンテンツ更新とは
 
-Content updates include changes to:
-- Rules definitions, categories, and metadata
-- Security control specifications and mappings
-- Component or taxonomy elements and relationships
-- Content-oriented documentation and guidance materials
+コンテンツ更新には以下の変更が含まれます：
+- ルール定義、カテゴリ、メタデータ
+- セキュリティコントロール仕様とマッピング
+- コンポーネントまたはタクソノミー要素と関係
+- コンテンツ指向のドキュメントとガイダンス資料
 
-### Two-Stage Process Overview
+### 2段階プロセスの概要
 
-**Stage 1: Technical Review** – Content `feature` branches merge to the `develop` branch after standard PR review
+**ステージ1: 技術レビュー** – コンテンツ`feature`ブランチは、標準的なPRレビュー後に`develop`ブランチにマージされます
 
-**Stage 2: Community Review** – Bi-weekly governance review of the `develop` branch’s accumulated changes before release to `main`
+**ステージ2: コミュニティレビュー** – `develop`ブランチの蓄積された変更の隔週ガバナンスレビューを、`main`へのリリース前に実施します
 
 ```
 feature-branch  →  develop    →    main
      ↑                 ↑             ↑
-  Stage 1         Stage 2        Release
-(Technical)       (Community)
+  ステージ1         ステージ2        リリース
+  (技術)          (コミュニティ)
 ```
 
-### Non-Content Changes
+### コンテンツ以外の変更
 
-The following types of changes are not covered by the two-stage content update process and continue to follow existing workflows:
-- Bug fixes – technical corrections and error resolution
-- Implementation changes – updates to code logic, algorithms, or system functionality
-- Infrastructure updates – CI/CD, build processes, deployment configurations
-- Documentation fixes – corrections to technical documentation, README updates, etc.
-- Security patches – critical security-related fixes requiring immediate deployment
-- Dependency updates – library upgrades and security patches for dependencies
+以下のタイプの変更は、2段階コンテンツ更新プロセスの対象外であり、既存のワークフローに従い続けます：
+- バグ修正 – 技術的な修正とエラー解決
+- 実装変更 – コードロジック、アルゴリズム、システム機能の更新
+- インフラストラクチャ更新 – CI/CD、ビルドプロセス、デプロイ設定
+- ドキュメント修正 – 技術ドキュメントの修正、README更新など
+- セキュリティパッチ – 即時デプロイが必要な重要なセキュリティ関連修正
+- 依存関係更新 – ライブラリアップグレードと依存関係のセキュリティパッチ
 
-These excluded change types may follow direct-to-`main` workflows as determined by repository maintainers and policies.
+これらの除外される変更タイプは、リポジトリメンテナーとポリシーによって決定される、`main`への直接ワークフローに従うことができます。
 
-## First-time contributors
+## 初めてのコントリビューター
 
-If you are new to the project and looking for an entry point, check the open issues. Issues tagged `good first issue` are meant to be small, well-scoped tasks suitable for first-time contributors. If you find one you’d like to work on, comment on the issue and/or assign yourself, and a maintainer can confirm assignment.
+プロジェクトが初めてで、エントリーポイントを探している場合は、オープンイシューを確認してください。`good first issue`タグが付いたイシューは、初めてのコントリビューターに適した、小規模でスコープが明確なタスクです。取り組みたいものを見つけたら、イシューにコメントするか、自分自身をアサインしてください。メンテナーがアサインを承認します。
 
-## Submitting a new issue
+## 新しいイシューの提出
 
-If you want to create a new issue that doesn't exist already, open a new one and include:
-- a concise problem statement or feature request
-- steps to reproduce (for bugs)
-- expected vs. actual behavior
-- environment details (versions, OS) if applicable
-- proposed approach or alternatives (optional but helpful)
+まだ存在しない新しいイシューを作成したい場合は、以下を含めて新しいものを開いてください：
+- 簡潔な問題記述または機能リクエスト
+- 再現手順（バグの場合）
+- 期待される動作と実際の動作
+- 環境の詳細（バージョン、OS）（該当する場合）
+- 提案されるアプローチまたは代替案（オプションですが役立ちます）
 
-**If you discover a security bug, please do not report it through GitHub. Instead, please see security procedures in [SECURITY.md](SECURITY.md).**
+**セキュリティバグを発見した場合は、GitHubで報告しないでください。代わりに、[SECURITY.md](SECURITY.md)のセキュリティ手順を参照してください。**
 
-## Submitting a new pull request and review process
+## 新しいプルリクエストの提出とレビュープロセス
 
-The process for submitting pull requests depends on the type of change:
+プルリクエストを提出するプロセスは、変更のタイプによって異なります：
 
-### For Content Updates (Two-Stage Process)
+### コンテンツ更新の場合（2段階プロセス）
 
-Follow these steps when submitting content updates:
+コンテンツ更新を提出する際は、以下の手順に従ってください：
 
-1. Fork this repo into your GitHub account. If you have write access, you may create a branch directly.
-2. Create a new branch, based on the `develop` branch, with a name that concisely describes what you’re working on.
-3. Ensure that your changes pass validation and do not cause any existing tests to fail.
-4. Submit a pull request against the `develop` branch.
+1. このリポジトリをGitHubアカウントにフォークします。書き込み権限がある場合は、直接ブランチを作成できます。
+2. `develop`ブランチを基に、作業内容を簡潔に説明する名前で新しいブランチを作成します。
+3. 変更が検証に合格し、既存のテストが失敗しないことを確認します。
+4. `develop`ブランチに対してプルリクエストを提出します。
 
-#### Content Update PR Review
+#### コンテンツ更新PRレビュー
 
-**Stage 1 Review**: Your PR to `develop` will be reviewed for technical criteria including content correctness, formatting and schema validation (where applicable), code hygiene, and commit message quality.
+**ステージ1レビュー**: `develop`へのPRは、コンテンツの正確性、フォーマットとスキーマ検証（該当する場合）、コードの整合性、コミットメッセージの品質を含む技術基準でレビューされます。
 
-**Stage 2 Review**: On a regular cadence (typically bi-weekly), a PR will be created from `develop` to `main` containing all merged content changes from the cycle period. This undergoes community review by maintainers and contributors using lazy consensus and/or simple voting procedures as needed.
+**ステージ2レビュー**: 定期的なサイクル（通常は隔週）で、サイクル期間中にマージされたすべてのコンテンツ変更を含む`develop`から`main`へのPRが作成されます。これは、必要に応じてレイジーコンセンサスや単純投票手順を使用して、メンテナーとコントリビューターによるコミュニティレビューを受けます。
 
-### For Non-Content Changes (Standard Process)
+### コンテンツ以外の変更の場合（標準プロセス）
 
-Follow these steps when submitting non-content changes (bug fixes, implementation changes, infrastructure updates, etc.):
+コンテンツ以外の変更（バグ修正、実装変更、インフラストラクチャ更新など）を提出する際は、以下の手順に従ってください：
 
-1. Fork this repo into your GitHub account (or create a branch if you have write access).
-2. Create a new branch, based on the `main` branch, with a name that concisely describes what you’re working on.
-3. Ensure that your changes do not cause any existing tests to fail.
-4. Submit a pull request against the `main` branch.
+1. このリポジトリをGitHubアカウントにフォークします（書き込み権限がある場合はブランチを作成できます）。
+2. `main`ブランチを基に、作業内容を簡潔に説明する名前で新しいブランチを作成します。
+3. 変更が既存のテストを失敗させないことを確認します。
+4. `main`ブランチに対してプルリクエストを提出します。
 
-#### Non-Content PR Review
-1. PRs will be reviewed by maintainers. Additional reviewers may be requested depending on scope.
-2. Reviewer responses are typically due within 3 business days.
+#### コンテンツ以外のPRレビュー
+1. PRはメンテナーによってレビューされます。スコープに応じて、追加のレビュアーが要請されることがあります。
+2. レビュアーの応答は通常、3営業日以内に行われます。
 
-### General Review Guidelines
+### 一般的なレビューガイドライン
 
-Maintainers aim to review pull requests and issues within 3 business days.
+メンテナーは、プルリクエストとイシューを3営業日以内にレビューすることを目指します。
 
-[Lazy consensus](https://openoffice.apache.org/docs/governance/lazyConsensus.html) is practiced for this project. Major changes in GitHub or to a project document on any official platform should be accompanied by an issue or discussion with a comment period of no less than seven (7) business days, mindful of major world holidays.
+このプロジェクトでは[レイジーコンセンサス](https://openoffice.apache.org/docs/governance/lazyConsensus.html)が実践されています。GitHubまたは公式プラットフォーム上のプロジェクトドキュメントへの大きな変更は、主要な世界の祝日を考慮して、7営業日以上のコメント期間を設けたイシューまたはディスカッションを伴うべきです。
 
-## Branch naming and commit messages
+## ブランチ命名とコミットメッセージ
 
-### Branch naming
+### ブランチ命名
 
-- `main` – main development branch and authoritative source; updated after community approval for content changes
-- `develop` – staging area for community review of content updates; feature branches for content changes target this branch
-- `feature` – feature/this-is-a-new-feature-branch (target `develop` for content updates, `main` for non-content changes)
-- `codebugfix` – codebugfix/description-of-the-bug (typically targets `main`)
-- `languagefix` – languagefix/description-of-the-language-fix (typically targets `main`)
-- `docs` – docs/description-of-the-documentation-change (typically targets `main`; documentation changes are exempt from the content update rule above)
-- `release` – release/description-of-the-release – cut from `main` when ready
+- `main` – メイン開発ブランチで権威あるソース。コンテンツ変更のコミュニティ承認後に更新
+- `develop` – コンテンツ更新のコミュニティレビューのためのステージングエリア。コンテンツ変更のfeatureブランチはこのブランチをターゲットにします
+- `feature` – feature/this-is-a-new-feature-branch（コンテンツ更新の場合は`develop`、コンテンツ以外の変更の場合は`main`をターゲット）
+- `codebugfix` – codebugfix/description-of-the-bug（通常は`main`をターゲット）
+- `languagefix` – languagefix/description-of-the-language-fix（通常は`main`をターゲット）
+- `docs` – docs/description-of-the-documentation-change（通常は`main`をターゲット。ドキュメント変更は上記のコンテンツ更新ルールから除外されます）
+- `release` – release/description-of-the-release – 準備ができたら`main`からカット
 
-### Commit messages format
+### コミットメッセージフォーマット
 
-Write commit messages that clearly explain the change by continuing the sentence “This commit …”.
+「このコミットは…」という文を続ける形で、変更を明確に説明するコミットメッセージを書いてください。
 
-Examples of good commit messages:
-- “This commit renames the examples folder to reference-implementations.”
-- “This commit bumps dependency versions to address security advisories.”
+良いコミットメッセージの例：
+- "このコミットは、examplesフォルダの名前をreference-implementationsに変更します。"
+- "このコミットは、セキュリティアドバイザリに対処するために依存関係のバージョンをアップします。"
 
-## Feedback
+## フィードバック
 
-Questions or comments about this project may be composed as GitHub issues or PR comments. If a broader discussion is needed, open or reference a GitHub Discussion (if enabled) or propose a short design doc in an issue.
+このプロジェクトに関する質問やコメントは、GitHubイシューまたはPRコメントとして作成できます。より広範な議論が必要な場合は、GitHubディスカッション（有効な場合）を開くか参照するか、イシュー内で短い設計ドキュメントを提案してください。

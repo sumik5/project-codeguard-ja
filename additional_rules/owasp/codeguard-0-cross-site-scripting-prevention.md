@@ -1,5 +1,5 @@
 ---
-description: Cross Site Scripting (XSS) Prevention Best Practices
+description: クロスサイトスクリプティング（XSS）防止のベストプラクティス
 languages:
 - c
 - html
@@ -10,46 +10,46 @@ languages:
 alwaysApply: false
 ---
 
-## Introduction
+## はじめに
 
-This cheat sheet helps developers prevent XSS vulnerabilities.
+このチートシートは、開発者がXSS脆弱性を防ぐのに役立ちます。
 
-Cross-Site Scripting (XSS) attacks are serious and can lead to account impersonation, observing user behaviour, loading external content, stealing sensitive data, and more. XSS occurs when an attacker injects malicious content into a webpage that executes in users' browsers.
+クロスサイトスクリプティング（XSS）攻撃は深刻であり、アカウントなりすまし、ユーザー行動の観察、外部コンテンツの読み込み、機密データの窃取など、さまざまな被害をもたらします。XSSは、攻撃者が悪意のあるコンテンツをWebページに注入し、ユーザーのブラウザで実行される時に発生します。
 
-**This cheatsheet contains techniques to prevent or limit the impact of XSS. Since no single technique will solve XSS, using the right combination of defensive techniques will be necessary to prevent XSS.**
+**このチートシートには、XSSを防止または影響を制限する技術が含まれています。単一の技術だけではXSSを解決できないため、XSSを防止するには適切な防御技術の組み合わせが必要です。**
 
-## Preventing Cross-Site Scripting (XSS) Vulnerabilities
+## クロスサイトスクリプティング（XSS）脆弱性の防止
 
-### Core Defensive Strategies
+### 核心防御戦略
 
-#### 1. Context-Aware Output Encoding
+#### 1. コンテキストを意識した出力エンコーディング
 
-The most important defense against XSS is proper output encoding based on the context where data will be inserted:
+XSSに対する最も重要な防御は、データが挿入されるコンテキストに基づいた適切な出力エンコーディングです：
 
-* **HTML Body Context:** Use `element.textContent` instead of `innerHTML`, or sanitize with DOMPurify for rich content
-* **HTML Attribute Context:** Always quote attributes and HTML encode values: `<div data-user="{{encodedInput}}">` 
-* **JavaScript Context:** Avoid dynamic JavaScript generation; use data attributes and event listeners instead
-* **CSS Context:** Validate CSS values against strict allow-lists before injection
-* **URL Context:** Encode URLs and validate protocols to prevent `javascript:` URLs
+* **HTMLボディコンテキスト：** `innerHTML`の代わりに`element.textContent`を使用、またはリッチコンテンツにはDOMPurifyでサニタイズ
+* **HTML属性コンテキスト：** 常に属性を引用符で囲み、値をHTMLエンコード：`<div data-user="{{encodedInput}}">`
+* **JavaScriptコンテキスト：** 動的なJavaScript生成を避け、代わりにdata属性とイベントリスナーを使用
+* **CSSコンテキスト：** 注入前に厳格な許可リストでCSS値を検証
+* **URLコンテキスト：** URLをエンコードし、`javascript:` URLを防ぐためプロトコルを検証
 
-* **ARIA Attributes & SVG Context:** Validate ARIA values against allow-lists; sanitize SVG with DOMPurify SVG profiles
-* **JavaScript Event Handlers:** Never inject user data into `onclick` attributes; use `addEventListener()` instead
+* **ARIA属性とSVGコンテキスト：** 許可リストでARIA値を検証；DOMPurify SVGプロファイルでSVGをサニタイズ
+* **JavaScriptイベントハンドラー：** `onclick`属性にユーザーデータを決して注入しない；代わりに`addEventListener()`を使用
 
-#### 2. Leverage Framework Protections
+#### 2. フレームワーク保護の活用
 
-Modern frameworks provide built-in XSS protections:
+モダンフレームワークは組み込みのXSS保護を提供します：
 
-* **React:** Auto-escapes values in JSX, but be careful with `dangerouslySetInnerHTML`
-* **Angular:** Uses contextual auto-escaping, but be cautious with `[innerHTML]` binding
-* **Vue:** Auto-escapes mustache interpolations, but watch out for `v-html`
+* **React：** JSX内の値を自動エスケープしますが、`dangerouslySetInnerHTML`には注意
+* **Angular：** コンテキストに応じた自動エスケープを使用しますが、`[innerHTML]`バインディングには注意
+* **Vue：** マスタッシュ補間を自動エスケープしますが、`v-html`には注意
 
-When using escape hatches like `dangerouslySetInnerHTML`, `[innerHTML]`, or `v-html`, always sanitize with DOMPurify first.
+`dangerouslySetInnerHTML`、`[innerHTML]`、`v-html`のようなエスケープハッチを使用する際は、必ず最初にDOMPurifyでサニタイズしてください。
 
-#### 3. Server-Side Input Validation and Sanitization
+#### 3. サーバーサイド入力検証とサニタイゼーション
 
-* **Server-Side Validation is Mandatory:** All input validation must happen on the server. Client-side validation is for user experience only.
-* **Validate Against Allow-Lists:** Use strict regex patterns for expected input types (email, username, etc.) with length limits.
-* **HTML Sanitization with Trusted Libraries:** Use [DOMPurify](https://github.com/cure53/DOMPurify) with strict configurations:
+* **サーバーサイド検証は必須：** すべての入力検証はサーバーで行う必要があります。クライアントサイド検証はユーザー体験のためだけです。
+* **許可リストで検証：** 期待される入力タイプ（メール、ユーザー名など）に対して、長さ制限付きの厳格な正規表現パターンを使用。
+* **信頼できるライブラリでHTMLサニタイゼーション：** 厳格な設定で[DOMPurify](https://github.com/cure53/DOMPurify)を使用：
   ```javascript
   const cleanHtml = DOMPurify.sanitize(userHtml, {
     ALLOWED_TAGS: ['b', 'i', 'p', 'a', 'ul', 'li'],
@@ -58,48 +58,48 @@ When using escape hatches like `dangerouslySetInnerHTML`, `[innerHTML]`, or `v-h
   });
   ```
 
-#### 4. Defense-in-Depth Controls
+#### 4. 多層防御コントロール
 
-* **Content Security Policy (CSP):** Implement strict CSP headers as additional protection:
+* **Content Security Policy（CSP）：** 追加保護として厳格なCSPヘッダーを実装：
   ```http
-  Content-Security-Policy: default-src 'self'; 
-    script-src 'self' 'nonce-{random}'; 
-    style-src 'self' 'unsafe-inline'; 
-    object-src 'none'; 
+  Content-Security-Policy: default-src 'self';
+    script-src 'self' 'nonce-{random}';
+    style-src 'self' 'unsafe-inline';
+    object-src 'none';
     base-uri 'self';
     require-trusted-types-for 'script';
   ```
 
-* **Trusted Types API:** Use Trusted Types to prevent DOM XSS:
+* **Trusted Types API：** DOM XSSを防ぐためTrusted Typesを使用：
   ```javascript
-  // Define trusted types policy
+  // Trusted Typesポリシーを定義
   const policy = trustedTypes.createPolicy('myPolicy', {
     createHTML: (string) => DOMPurify.sanitize(string),
-    createScript: () => { throw new Error('Script creation not allowed'); }
+    createScript: () => { throw new Error('スクリプト作成は許可されていません'); }
   });
-  
-  // Use with trusted types
+
+  // Trusted Typesで使用
   element.innerHTML = policy.createHTML(userInput);
   ```
 
-* **Safe DOM APIs:** Always prefer safe DOM manipulation methods:
+* **安全なDOM API：** 常に安全なDOM操作メソッドを優先：
   ```javascript
-  // Safe approaches
-  element.textContent = userInput;          // Always safe for text
-  element.setAttribute('data-user', userInput); // Safe for most attributes
-  element.classList.add(validatedClassName);     // Safe for CSS classes
+  // 安全なアプローチ
+  element.textContent = userInput;          // テキストには常に安全
+  element.setAttribute('data-user', userInput); // ほとんどの属性に安全
+  element.classList.add(validatedClassName);     // CSSクラスに安全
   ```
 
-* **Secure Cookie Configuration:** Prevent cookie theft:
+* **安全なCookie設定：** Cookie盗難を防止：
   ```http
   Set-Cookie: sessionId=abc123; HttpOnly; Secure; SameSite=Strict
   ```
 
-#### 5. Common Pitfalls to Avoid
+#### 5. 避けるべき一般的な落とし穴
 
-* **Don't trust any data source:** Even internal APIs or databases can contain malicious data.
-* **Beware of indirect inputs:** User data can enter your application through URLs, form fields, HTTP headers, and JSON/XML payloads.
-* **Don't rely on client-side sanitization alone:** Always re-validate and sanitize on the server.
-* **Keep dependencies updated:** Regularly update your frameworks and libraries to benefit from security patches.
+* **どのデータソースも信頼しない：** 内部APIやデータベースでさえ悪意のあるデータを含む可能性があります。
+* **間接的な入力に注意：** ユーザーデータはURL、フォームフィールド、HTTPヘッダー、JSON/XMLペイロードを通じてアプリケーションに入る可能性があります。
+* **クライアントサイドのサニタイゼーションのみに依存しない：** 常にサーバーで再検証とサニタイズを行ってください。
+* **依存関係を最新に保つ：** セキュリティパッチの恩恵を受けるため、フレームワークとライブラリを定期的に更新してください。
 
-By applying these context-specific encoding strategies and defense-in-depth approaches, you can significantly reduce the risk of XSS vulnerabilities in your web applications.
+これらのコンテキスト固有のエンコーディング戦略と多層防御アプローチを適用することで、Webアプリケーションにおけるxss脆弱性のリスクを大幅に軽減できます。

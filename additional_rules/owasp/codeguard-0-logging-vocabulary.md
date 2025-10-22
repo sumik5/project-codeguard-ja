@@ -1,5 +1,5 @@
 ---
-description: Standardized Security Event Logging Vocabulary
+description: 標準化されたセキュリティイベントロギング用語
 languages:
 - c
 - go
@@ -14,13 +14,13 @@ languages:
 alwaysApply: false
 ---
 
-## Security Event Logging Vocabulary Guidelines
+## セキュリティイベントロギング用語ガイドライン
 
-Standardized vocabulary for logging security events to improve monitoring, alerting, and incident response.
+監視、アラート、インシデント対応を改善するためのセキュリティイベントロギングの標準化された用語。
 
-### Standard Event Format
+### 標準イベントフォーマット
 
-NOTE: All dates should be logged in ISO 8601 format WITH UTC offset to ensure maximum portability
+注意：すべての日付は、最大の移植性を確保するためUTCオフセットを伴うISO 8601形式でログに記録する必要があります
 
 ```json
 {
@@ -42,102 +42,102 @@ NOTE: All dates should be logged in ISO 8601 format WITH UTC offset to ensure ma
 }
 ```
 
-### Authentication Events [AUTHN]
+### 認証イベント [AUTHN]
 
-authn_login_success[:userid] - Successful login (Level: INFO)
-authn_login_successafterfail[:userid,retries] - Successful login after previous failures (Level: INFO)
-authn_login_fail[:userid] - Failed login attempt (Level: WARN)
-authn_login_fail_max[:userid,maxlimit] - Maximum failures reached (Level: WARN)
-authn_login_lock[:userid,reason] - Account locked (reasons: maxretries, suspicious, customer, other) (Level: WARN)
-authn_password_change[:userid] - Password successfully changed (Level: INFO)
-authn_password_change_fail[:userid] - Password change failed (Level: CRITICAL)
-authn_impossible_travel[:userid,region1,region2] - User in distant locations simultaneously (Level: CRITICAL)
-authn_token_created[:userid,entitlements] - Service token created (Level: INFO)
-authn_token_revoked[:userid,tokenid] - Token revoked (Level: INFO)
-authn_token_reuse[:userid,tokenid] - Revoked token reuse attempt (Level: CRITICAL)
-authn_token_delete[:appid] - Token deleted (Level: WARN)
+authn_login_success[:userid] - ログイン成功（レベル：INFO）
+authn_login_successafterfail[:userid,retries] - 以前の失敗後のログイン成功（レベル：INFO）
+authn_login_fail[:userid] - ログイン試行失敗（レベル：WARN）
+authn_login_fail_max[:userid,maxlimit] - 最大失敗回数到達（レベル：WARN）
+authn_login_lock[:userid,reason] - アカウントロック（理由：maxretries、suspicious、customer、other）（レベル：WARN）
+authn_password_change[:userid] - パスワード変更成功（レベル：INFO）
+authn_password_change_fail[:userid] - パスワード変更失敗（レベル：CRITICAL）
+authn_impossible_travel[:userid,region1,region2] - ユーザーが同時に離れた場所に（レベル：CRITICAL）
+authn_token_created[:userid,entitlements] - サービストークン作成（レベル：INFO）
+authn_token_revoked[:userid,tokenid] - トークン失効（レベル：INFO）
+authn_token_reuse[:userid,tokenid] - 失効済みトークンの再利用試行（レベル：CRITICAL）
+authn_token_delete[:appid] - トークン削除（レベル：WARN）
 
-### Authorization Events [AUTHZ]
+### 認可イベント [AUTHZ]
 
-authz_fail[:userid,resource] - Unauthorized access attempt (Level: CRITICAL)
-authz_change[:userid,from,to] - User entitlements changed (Level: WARN)
-authz_admin[:userid,event] - All privileged user activity (Level: WARN)
+authz_fail[:userid,resource] - 不正アクセス試行（レベル：CRITICAL）
+authz_change[:userid,from,to] - ユーザー権限変更（レベル：WARN）
+authz_admin[:userid,event] - すべての特権ユーザー活動（レベル：WARN）
 
-### Encryption/Decryption Events [CRYPT]
+### 暗号化/復号化イベント [CRYPT]
 
-crypt_decrypt_fail[userid] - Decryption failure (Level: WARN)
-crypt_encrypt_fail[userid] - Encryption failure (Level: WARN)
+crypt_decrypt_fail[userid] - 復号化失敗（レベル：WARN）
+crypt_encrypt_fail[userid] - 暗号化失敗（レベル：WARN）
 
-### Excessive Use Events [EXCESS]
+### 過度な使用イベント [EXCESS]
 
-excess_rate_limit_exceeded[userid,max] - Rate limit exceeded (Level: WARN)
+excess_rate_limit_exceeded[userid,max] - レート制限超過（レベル：WARN）
 
-### File Upload Events [UPLOAD]
+### ファイルアップロードイベント [UPLOAD]
 
-upload_complete[userid,filename,type] - File upload completed (Level: INFO)
-upload_stored[filename,from,to] - File stored with new name/location (Level: INFO)
-upload_validation[filename,(virusscan|imagemagick|...):(FAILED|incomplete|passed)] - File validation results (Level: INFO|CRITICAL)
-upload_delete[userid,fileid] - File deleted (Level: INFO)
+upload_complete[userid,filename,type] - ファイルアップロード完了（レベル：INFO）
+upload_stored[filename,from,to] - 新しい名前/場所でファイル保存（レベル：INFO）
+upload_validation[filename,(virusscan|imagemagick|...):(FAILED|incomplete|passed)] - ファイル検証結果（レベル：INFO|CRITICAL）
+upload_delete[userid,fileid] - ファイル削除（レベル：INFO）
 
-### Input Validation Events [INPUT]
+### 入力検証イベント [INPUT]
 
-input_validation_fail:[(fieldone,fieldtwo...),userid] - Server-side validation failure (Level: WARN)
+input_validation_fail:[(fieldone,fieldtwo...),userid] - サーバー側検証失敗（レベル：WARN）
 
-### Malicious Behavior Events [MALICIOUS]
+### 悪意のある振る舞いイベント [MALICIOUS]
 
-malicious_excess_404:[userid|IP,useragent] - Excessive 404s indicating force-browsing (Level: WARN)
-malicious_extraneous:[userid|IP,inputname,useragent] - Unexpected input data submitted (Level: CRITICAL)
-malicious_attack_tool:[userid|IP,toolname,useragent] - Known attack tools detected (Level: CRITICAL)
-malicious_cors:[userid|IP,useragent,referer] - Illegal cross-origin request (Level: CRITICAL)
-malicious_direct_reference:[userid|IP,useragent] - Direct object reference attempt (Level: CRITICAL)
+malicious_excess_404:[userid|IP,useragent] - フォースブラウジングを示す過度の404（レベル：WARN）
+malicious_extraneous:[userid|IP,inputname,useragent] - 予期しない入力データ送信（レベル：CRITICAL）
+malicious_attack_tool:[userid|IP,toolname,useragent] - 既知の攻撃ツール検出（レベル：CRITICAL）
+malicious_cors:[userid|IP,useragent,referer] - 違法なクロスオリジンリクエスト（レベル：CRITICAL）
+malicious_direct_reference:[userid|IP,useragent] - 直接オブジェクト参照試行（レベル：CRITICAL）
 
-### Privilege Changes Events [PRIVILEGE]
+### 権限変更イベント [PRIVILEGE]
 
-privilege_permissions_changed:[userid,file|object,fromlevel,tolevel] - Object permissions changed (Level: WARN)
+privilege_permissions_changed:[userid,file|object,fromlevel,tolevel] - オブジェクト権限変更（レベル：WARN）
 
-### Sensitive Data Events [DATA]
+### 機密データイベント [DATA]
 
-sensitive_create:[userid,file|object] - Sensitive data created (Level: WARN)
-sensitive_read:[userid,file|object] - Sensitive data accessed (Level: WARN)
-sensitive_update:[userid,file|object] - Sensitive data modified (Level: WARN)
-sensitive_delete:[userid,file|object] - Sensitive data marked for deletion (Level: WARN)
+sensitive_create:[userid,file|object] - 機密データ作成（レベル：WARN）
+sensitive_read:[userid,file|object] - 機密データアクセス（レベル：WARN）
+sensitive_update:[userid,file|object] - 機密データ変更（レベル：WARN）
+sensitive_delete:[userid,file|object] - 機密データ削除マーク（レベル：WARN）
 
-### Sequence Errors Events [SEQUENCE]
+### シーケンスエラーイベント [SEQUENCE]
 
-sequence_fail:[userid] - Business logic flow bypassed (Level: CRITICAL)
+sequence_fail:[userid] - ビジネスロジックフローバイパス（レベル：CRITICAL）
 
-### Session Management Events [SESSION]
+### セッション管理イベント [SESSION]
 
-session_created:[userid] - New authenticated session (Level: INFO)
-session_renewed:[userid] - Session extended after expiry warning (Level: INFO)
-session_expired:[userid,reason] - Session expired (reasons: logout, timeout, revoked) (Level: INFO)
-session_use_after_expire:[userid] - Expired session use attempt (Level: CRITICAL)
+session_created:[userid] - 新しい認証済みセッション（レベル：INFO）
+session_renewed:[userid] - 有効期限警告後のセッション延長（レベル：INFO）
+session_expired:[userid,reason] - セッション期限切れ（理由：logout、timeout、revoked）（レベル：INFO）
+session_use_after_expire:[userid] - 期限切れセッション使用試行（レベル：CRITICAL）
 
-### System Events [SYS]
+### システムイベント [SYS]
 
-sys_startup:[userid] - System started (Level: WARN)
-sys_shutdown:[userid] - System shut down (Level: WARN)
-sys_restart:[userid] - System restarted (Level: WARN)
-sys_crash[:reason] - System crash (Level: WARN)
-sys_monitor_disabled:[userid,monitor] - Security monitoring disabled (Level: WARN)
-sys_monitor_enabled:[userid,monitor] - Security monitoring enabled (Level: WARN)
+sys_startup:[userid] - システム起動（レベル：WARN）
+sys_shutdown:[userid] - システムシャットダウン（レベル：WARN）
+sys_restart:[userid] - システム再起動（レベル：WARN）
+sys_crash[:reason] - システムクラッシュ（レベル：WARN）
+sys_monitor_disabled:[userid,monitor] - セキュリティ監視無効化（レベル：WARN）
+sys_monitor_enabled:[userid,monitor] - セキュリティ監視有効化（レベル：WARN）
 
-### User Management Events [USER]
+### ユーザー管理イベント [USER]
 
-user_created:[userid,newuserid,attributes[one,two,three]] - New user created (Level: WARN)
-user_updated:[userid,onuserid,attributes[one,two,three]] - User account updated (Level: WARN)
-user_archived:[userid,onuserid] - User account archived (Level: WARN)
-user_deleted:[userid,onuserid] - User account deleted (Level: WARN)
+user_created:[userid,newuserid,attributes[one,two,three]] - 新規ユーザー作成（レベル：WARN）
+user_updated:[userid,onuserid,attributes[one,two,three]] - ユーザーアカウント更新（レベル：WARN）
+user_archived:[userid,onuserid] - ユーザーアカウントアーカイブ（レベル：WARN）
+user_deleted:[userid,onuserid] - ユーザーアカウント削除（レベル：WARN）
 
-### Data Exclusions
+### データ除外
 
-Never log sensitive information: private or secret information, source code, keys, certificates, authentication passwords, session identification values, access tokens, sensitive personal data, PII, database connection strings, encryption keys, bank account or payment card data, commercially-sensitive information.
+機密情報をログに記録しません：プライベートまたは秘密情報、ソースコード、キー、証明書、認証パスワード、セッション識別値、アクセストークン、機密個人データ、PII、データベース接続文字列、暗号化キー、銀行口座または支払いカードデータ、商業上機密情報。
 
-### Implementation Requirements
+### 実装要件
 
-- Use ISO 8601 format with UTC offset for all timestamps
-- Include application identifier (appid) for correlation  
-- Apply consistent severity levels (INFO, WARN, CRITICAL)
-- Include relevant context (IP addresses, user agents, request details)
-- Consider data privacy regulations when logging user information
-- Fields logged after event type should be considered optional based on business needs and data stewardship responsibilities
+- すべてのタイムスタンプにUTCオフセットを伴うISO 8601形式を使用
+- 相関のためアプリケーション識別子（appid）を含める
+- 一貫した深刻度レベル（INFO、WARN、CRITICAL）を適用
+- 関連コンテキスト（IPアドレス、ユーザーエージェント、リクエスト詳細）を含める
+- ユーザー情報をログに記録する際はデータプライバシー規制を考慮
+- イベントタイプ後にログに記録されるフィールドは、ビジネスニーズとデータスチュワードシップ責任に基づいてオプションと見なされる必要があります

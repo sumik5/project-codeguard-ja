@@ -1,5 +1,5 @@
 ---
-description: Server-Side Request Forgery Prevention
+description: サーバーサイドリクエストフォージェリ（SSRF）の防止
 languages:
 - c
 - go
@@ -12,29 +12,29 @@ languages:
 alwaysApply: false
 ---
 
-## Server-Side Request Forgery Prevention
+## サーバーサイドリクエストフォージェリ（SSRF）の防止
 
-Prevent SSRF attacks that abuse applications to interact with internal/external networks by validating and restricting outbound requests.
+送信リクエストを検証および制限することで、アプリケーションが内部/外部ネットワークとやり取りするために悪用されるSSRF攻撃を防止します。
 
-### SSRF Attack Context
+### SSRF攻撃のコンテキスト
 
-SSRF exploits occur when applications:
-- Process user-provided URLs for external resources (avatars, webhooks)
-- Make internal requests using user-controlled data
-- Handle URL redirections without proper validation
+SSRF攻撃は、アプリケーションが以下を行う場合に発生します：
+- 外部リソース（アバター、Webhook）のためにユーザー提供のURLを処理
+- ユーザー制御データを使用して内部リクエストを実行
+- 適切な検証なしでURLリダイレクトを処理
 
-SSRF is not limited to HTTP - attackers can exploit FTP, SMB, SMTP protocols and schemes like `file://`, `phar://`, `gopher://`, `data://`, `dict://`.
+SSRFはHTTPに限定されません - 攻撃者はFTP、SMB、SMTPプロトコルや`file://`、`phar://`、`gopher://`、`data://`、`dict://`などのスキームを悪用できます。
 
-### Case 1: Allowlist Approach (Known Trusted Destinations)
+### ケース1: 許可リストアプローチ（既知の信頼できる宛先）
 
-When applications communicate only with identified trusted applications, use strict allowlisting.
+アプリケーションが識別された信頼できるアプリケーションとのみ通信する場合、厳格な許可リストを使用します。
 
-#### Application Layer Protection
+#### アプリケーション層の保護
 
-Always disable HTTP redirects in web clients to prevent bypass attempts.
+バイパス試行を防ぐため、Webクライアントで常にHTTPリダイレクトを無効化します。
 
-#### String Validation
-Use regex for simple formats, libraries for complex validation:
+#### 文字列検証
+シンプルな形式には正規表現を使用し、複雑な検証にはライブラリを使用します：
 
 ```java
 //Regex validation for a data having a simple format
@@ -45,56 +45,56 @@ if(Pattern.matches("[a-zA-Z0-9\\s\\-]{1,50}", userInput)){
 }
 ```
 
-#### IP Address Validation
-Use battle-tested libraries to validate IP format and prevent encoding bypasses:
+#### IPアドレス検証
+IPフォーマットを検証し、エンコーディングバイパスを防ぐため、実績のあるライブラリを使用します：
 
-- Java: `InetAddressValidator.isValid()` from Apache Commons Validator
-- .NET: `IPAddress.TryParse()` from SDK
-- JavaScript: `ip-address` library  
-- Ruby: `IPAddr` class from SDK
+- Java: Apache Commons Validatorの`InetAddressValidator.isValid()`
+- .NET: SDKの`IPAddress.TryParse()`
+- JavaScript: `ip-address`ライブラリ
+- Ruby: SDKの`IPAddr`クラス
 
-Create allowlist of all trusted application IPs (IPv4 and IPv6). Use output value from validation library for strict string comparison against allowlist.
+すべての信頼できるアプリケーションIP（IPv4とIPv6）の許可リストを作成します。許可リストとの厳密な文字列比較には、検証ライブラリからの出力値を使用します。
 
-#### Domain Name Validation
-Use libraries that validate format without DNS resolution:
+#### ドメイン名検証
+DNS解決なしでフォーマットを検証するライブラリを使用します：
 
-- Java: `DomainValidator.isValid()` from Apache Commons Validator
-- .NET: `Uri.CheckHostName()` from SDK
-- JavaScript: `is-valid-domain` library
-- Python: `validators.domain` module
-- Ruby: Use regex `^(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$`
+- Java: Apache Commons Validatorの`DomainValidator.isValid()`
+- .NET: SDKの`Uri.CheckHostName()`
+- JavaScript: `is-valid-domain`ライブラリ
+- Python: `validators.domain`モジュール
+- Ruby: 正規表現`^(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$`を使用
 
-Monitor allowlisted domains for DNS pinning attacks - alert when domains resolve to local/internal IP addresses.
+DNS Pinning攻撃に対して許可リストドメインを監視 - ドメインがローカル/内部IPアドレスに解決された場合にアラートを発行します。
 
-#### URL Handling
-Do not accept complete URLs from users. URLs are difficult to validate and parsers can be exploited. Accept only validated IP addresses or domain names.
+#### URL処理
+ユーザーから完全なURLを受け入れないでください。URLは検証が困難で、パーサーが悪用される可能性があります。検証済みのIPアドレスまたはドメイン名のみを受け入れます。
 
-#### Network Layer Protection
-- Use firewalls to restrict application network access to only required destinations
-- Implement network segregation to block illegitimate calls at network level
-- Define legitimate flows and block all others
+#### ネットワーク層の保護
+- ファイアウォールを使用して、アプリケーションのネットワークアクセスを必要な宛先のみに制限
+- 不正な呼び出しをネットワークレベルでブロックするためにネットワークセグメンテーションを実装
+- 正当なフローを定義し、それ以外をすべてブロック
 
-### Case 2: Dynamic External Destinations (Block-list Approach)
+### ケース2: 動的な外部宛先（ブロックリストアプローチ）
 
-When applications must access arbitrary external resources (webhooks), use block-list validation.
+アプリケーションが任意の外部リソース（Webhook）にアクセスする必要がある場合、ブロックリスト検証を使用します。
 
-#### Validation Flow
-1. Validate input format using libraries from Case 1
-2. For IP addresses: Verify it's public (not private, localhost, or link-local)
-3. For domains: 
-   - Verify it's external using internal DNS resolver that only resolves internal names
-   - Resolve domain to IPs and validate all returned addresses are public
-4. Restrict protocols to HTTP/HTTPS only via allowlist
-5. Require legitimate request proof via secure token
+#### 検証フロー
+1. ケース1のライブラリを使用して入力フォーマットを検証
+2. IPアドレスの場合：パブリックであることを確認（プライベート、localhost、リンクローカルではない）
+3. ドメインの場合：
+   - 内部名のみを解決する内部DNSリゾルバを使用して外部であることを確認
+   - ドメインをIPに解決し、返されたすべてのアドレスがパブリックであることを検証
+4. 許可リストを使用してHTTP/HTTPSのみにプロトコルを制限
+5. セキュアトークンによる正当なリクエストの証明を要求
 
-#### Secure Token Requirements
-- Target application generates random 20-character alphanumeric token
-- Token passed as POST parameter with name using only `[a-z]{1,10}` characters
-- Endpoint accepts only HTTP POST requests
-- Build requests using only validated information
+#### セキュアトークン要件
+- ターゲットアプリケーションがランダムな20文字の英数字トークンを生成
+- `[a-z]{1,10}`文字のみを使用する名前のPOSTパラメータとしてトークンを渡す
+- エンドポイントはHTTP POSTリクエストのみを受け入れる
+- 検証済み情報のみを使用してリクエストを構築
 
-#### Example Python Monitoring Script
-Monitor allowlisted domains for DNS pinning:
+#### Python監視スクリプトの例
+DNS Pinningのために許可リストドメインを監視：
 
 ```python
 # Dependencies: pip install ipaddress dnspython
@@ -161,20 +161,20 @@ if __name__== "__main__":
         exit(0)
 ```
 
-### Cloud-Specific Protections
+### クラウド固有の保護
 
 #### AWS IMDSv2
-In cloud environments, SSRF targets metadata services to steal credentials. Migrate to IMDSv2 and disable IMDSv1 for additional protection against SSRF accessing AWS Instance Metadata Service.
+クラウド環境では、SSRFはメタデータサービスをターゲットとして認証情報を盗みます。IMDSv2に移行し、AWS Instance Metadata ServiceへのSSRFアクセスに対する追加保護のためにIMDSv1を無効化します。
 
-### Essential Implementation Guidelines
+### 必須の実装ガイドライン
 
-1. Never accept raw URLs from users - validate only IP addresses or domain names
-2. Use established libraries for IP/domain validation to prevent encoding bypasses  
-3. Implement strict allowlists with case-sensitive exact matching for trusted destinations
-4. Disable HTTP redirects in all outbound HTTP clients
-5. For dynamic destinations, block private/internal IP ranges and validate DNS resolution
-6. Restrict protocols to HTTP/HTTPS only
-7. Require secure tokens for request legitimacy verification
-8. Apply network-layer restrictions via firewalls and segmentation
-9. Monitor allowlisted domains for DNS pinning attacks
-10. Use cloud-specific protections like AWS IMDSv2
+1. ユーザーから生のURLを受け入れない - IPアドレスまたはドメイン名のみを検証
+2. エンコーディングバイパスを防ぐため、確立されたライブラリをIP/ドメイン検証に使用
+3. 信頼できる宛先に対して、大文字小文字を区別する完全一致の厳格な許可リストを実装
+4. すべての送信HTTPクライアントでHTTPリダイレクトを無効化
+5. 動的な宛先の場合、プライベート/内部IP範囲をブロックし、DNS解決を検証
+6. プロトコルをHTTP/HTTPSのみに制限
+7. リクエスト正当性検証のためにセキュアトークンを要求
+8. ファイアウォールとセグメンテーションによりネットワーク層の制限を適用
+9. DNS Pinning攻撃のために許可リストドメインを監視
+10. AWS IMDSv2のようなクラウド固有の保護を使用

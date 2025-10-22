@@ -9,122 +9,122 @@ languages:
 alwaysApply: false
 ---
 
-## Content Security Policy (CSP): A Defense-in-Depth Strategy
+## Content Security Policy（CSP）：多層防御戦略
 
-Implementing a strong Content Security Policy (CSP) is one of the most effective ways to mitigate cross-site scripting (XSS), clickjacking, and other injection attacks. CSP works by declaring which dynamic resources are allowed to load, effectively creating an allowlist that the browser enforces.
+強力なContent Security Policy（CSP）の実装は、クロスサイトスクリプティング（XSS）、クリックジャッキング、その他のインジェクション攻撃を軽減する最も効果的な方法の1つです。CSPは、読み込みを許可する動的リソースを宣言することで、ブラウザが強制する許可リストを効果的に作成します。
 
-### Implementation
+### 実装
 
-#### 1. Deliver CSP via HTTP Headers
+#### 1. HTTPヘッダー経由でCSPを配信
 
-The most effective way to implement CSP is through HTTP response headers:
+CSPを実装する最も効果的な方法は、HTTPレスポンスヘッダーを使用することです：
 
 ```http
 Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted-cdn.com;
 ```
 
-When testing a new policy, use the report-only mode to monitor without blocking:
+新しいポリシーをテストする際は、ブロックせずに監視するレポート専用モードを使用してください：
 
 ```http
 Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self';
 ```
 
-**Note:** Avoid using the meta tag approach (`<meta http-equiv="Content-Security-Policy"...>`) except when you cannot modify HTTP headers, as it provides less protection and doesn't support all directives.
+**注意：** HTTPヘッダーを変更できない場合を除き、metaタグアプローチ（`<meta http-equiv="Content-Security-Policy"...>`）の使用は避けてください。保護レベルが低く、すべてのディレクティブをサポートしていません。
 
-#### 2. Adopt a Strict CSP Strategy
+#### 2. Strict CSP戦略の採用
 
-Modern CSP best practices favor nonce-based or hash-based approaches over domain whitelisting:
+モダンなCSPベストプラクティスは、ドメイン許可リストよりもnonce（ナンス）ベースまたはハッシュベースのアプローチを推奨します：
 
-**Nonce-based approach:**
+**nonceベースアプローチ：**
 
 ```http
 Content-Security-Policy: script-src 'nonce-random123' 'strict-dynamic';
 ```
 
-With corresponding HTML:
+対応するHTML：
 
 ```html
 <script nonce="random123">alert('Hello');</script>
 ```
 
-**Important:** Generate a unique, cryptographically strong nonce for each page load. The nonce should be at least 128 bits of entropy encoded in base64.
+**重要：** 各ページロードごとに一意で暗号学的に強力なnonceを生成してください。nonceは少なくとも128ビットのエントロピーをbase64エンコードしたものであるべきです。
 
-**Server-side nonce generation examples:**
+**サーバーサイドのnonce生成例：**
 
 ```javascript
 // Node.js: crypto.randomBytes(16).toString('base64')
 // Python: base64.b64encode(secrets.token_bytes(16)).decode('utf-8')
 ```
 
-**Hash-based alternative:**
+**ハッシュベースの代替：**
 ```http
 Content-Security-Policy: script-src 'sha256-hashOfYourScriptContent' 'strict-dynamic';
 ```
 
-#### 3. Baseline CSP for Getting Started
+#### 3. 開始のためのベースラインCSP
 
 ```http
 Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'self'; form-action 'self'; object-src 'none'; base-uri 'none'; upgrade-insecure-requests;
 ```
 
-This policy:
-- Restricts resources to the same origin
-- Allows inline styles (necessary for many applications initially)
-- Prevents clickjacking by controlling framing
-- Limits form submissions to the same origin
-- Blocks plugin content (Flash, Java applets)
-- Prevents base tag injection attacks
-- Automatically upgrades HTTP requests to HTTPS (when `upgrade-insecure-requests` is used)
+このポリシーは：
+- リソースを同一オリジンに制限
+- インラインスタイルを許可（多くのアプリケーションで最初は必要）
+- フレーム化を制御してクリックジャッキングを防止
+- フォーム送信を同一オリジンに制限
+- プラグインコンテンツ（Flash、Javaアプレット）をブロック
+- baseタグインジェクション攻撃を防止
+- HTTPリクエストを自動的にHTTPSにアップグレード（`upgrade-insecure-requests`使用時）
 
-#### 4. Refactor Your Code for CSP Compatibility
+#### 4. CSP互換性のためのコードリファクタリング
 
-To make CSP implementation easier:
+CSP実装を容易にするため：
 
-1. **Move inline code to external files:**
+1. **インラインコードを外部ファイルに移動：**
    ```html
-   <!-- Instead of this -->
+   <!-- これの代わりに -->
    <button onclick="doSomething()">
 
-   <!-- Do this -->
+   <!-- こうする -->
    <button id="myButton">
-   <script src="buttons.js"></script> <!-- With event listeners -->
+   <script src="buttons.js"></script> <!-- イベントリスナー付き -->
    ```
 
-2. **Eliminate inline styles:**
+2. **インラインスタイルを除去：**
    ```html
-   <!-- Instead of this -->
+   <!-- これの代わりに -->
    <div style="color: red">
 
-   <!-- Do this -->
+   <!-- こうする -->
    <div class="red-text">
    ```
 
-#### 5. Key CSP Directives You Should Know
+#### 5. 知っておくべき主要なCSPディレクティブ
 
-- **`default-src`**: The fallback for other fetch directives
-- **`script-src`**: Controls JavaScript sources
-- **`style-src`**: Controls CSS sources - use `'self'` for external stylesheets, add `'unsafe-inline'` only if needed for inline styles
-- **`img-src`**: Controls image sources
-- **`connect-src`**: Controls fetch, XHR, WebSocket connections
-- **`object-src`**: Controls `<object>`, `<embed>`, and `<applet>` elements - set to `'none'` to block Flash/plugins
-- **`frame-ancestors`**: Controls which sites can embed your pages (replaces X-Frame-Options) - use `'none'` to prevent all framing
-- **`form-action`**: Controls where forms can be submitted
-- **`upgrade-insecure-requests`**: Automatically upgrades HTTP requests to HTTPS
+- **`default-src`**: 他のfetchディレクティブのフォールバック
+- **`script-src`**: JavaScriptソースを制御
+- **`style-src`**: CSSソースを制御 - 外部スタイルシートには`'self'`を使用、インラインスタイルが必要な場合のみ`'unsafe-inline'`を追加
+- **`img-src`**: 画像ソースを制御
+- **`connect-src`**: fetch、XHR、WebSocket接続を制御
+- **`object-src`**: `<object>`、`<embed>`、`<applet>`要素を制御 - Flash/プラグインをブロックするには`'none'`に設定
+- **`frame-ancestors`**: どのサイトがページを埋め込めるかを制御（X-Frame-Optionsの代替） - すべてのフレーム化を防ぐには`'none'`を使用
+- **`form-action`**: フォームの送信先を制御
+- **`upgrade-insecure-requests`**: HTTPリクエストを自動的にHTTPSにアップグレード
 
-#### 6. Enable Violation Reporting
+#### 6. 違反レポートの有効化
 
-Set up a reporting endpoint to collect CSP violations:
+CSP違反を収集するレポートエンドポイントを設定：
 
 ```http
 Content-Security-Policy: default-src 'self'; report-uri https://your-domain.com/csp-reports;
 ```
 
-#### 7. Implementation Steps
+#### 7. 実装手順
 
-1. Start with `Content-Security-Policy-Report-Only`
-2. Analyze violation reports
-3. Gradually tighten policy
-4. Switch to enforcing mode
-5. Continue monitoring
+1. `Content-Security-Policy-Report-Only`から開始
+2. 違反レポートを分析
+3. 段階的にポリシーを強化
+4. 強制モードに切り替え
+5. 監視を継続
 
-Remember that CSP is a defense-in-depth measure. It complements, but does not replace, proper input validation, output encoding, and other secure coding practices.
+CSPは多層防御手段であることを忘れないでください。適切な入力検証、出力エンコーディング、その他のセキュアコーディングプラクティスを補完するものであり、それらの代替ではありません。

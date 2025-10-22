@@ -1,7 +1,7 @@
 {
-  "name": "project-codeguard",
+  "name": "project-codeguard-ja",
   "metadata": {
-    "description": "Official Project CodeGuard plugins for secure AI-assisted coding"
+    "description": "セキュアなAI支援コーディングのための公式Project CodeGuardプラグイン"
   },
   "owner": {
     "name": "Project CodeGuard",
@@ -12,9 +12,9 @@
     {
       "name": "codeguard-security",
       "source": "./",
-      "description": "Comprehensive security rules for AI coding agents",
+      "description": "AIコーディングエージェントのための包括的なセキュリティルール(Project CodeGuardの日本語化)",
       "version": "1.0.0",
-      "repository": "https://github.com/project-codeguard/rules.git",
+      "repository": "https://github.com/sumik5/project-codeguard-ja.git",
       "tags": ["security", "code-review", "vulnerability-prevention"]
     }
   ]

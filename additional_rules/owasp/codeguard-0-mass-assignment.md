@@ -1,5 +1,5 @@
 ---
-description: Mass Assignment Prevention
+description: マスアサインメント防止
 languages:
 - c
 - java
@@ -10,22 +10,22 @@ languages:
 alwaysApply: false
 ---
 
-## Mass Assignment Prevention Guidelines
+## マスアサインメント防止ガイドライン
 
-Essential practices for preventing mass assignment vulnerabilities that allow attackers to modify unintended object properties.
+攻撃者が意図しないオブジェクトプロパティを変更できるようにするマスアサインメント脆弱性を防ぐための必須プラクティス。
 
-### Understanding Mass Assignment
+### マスアサインメントの理解
 
-Mass assignment occurs when frameworks automatically bind HTTP request parameters to program variables or objects. Attackers can exploit this by creating new parameters to overwrite sensitive fields like `isAdmin` or other privilege-related properties.
+マスアサインメントは、フレームワークがHTTPリクエストパラメータをプログラム変数またはオブジェクトに自動的にバインドするときに発生します。攻撃者は新しいパラメータを作成して`isAdmin`やその他の権限関連プロパティなどの機密フィールドを上書きすることでこれを悪用できます。
 
-**Alternative Names by Framework:**
-- Mass Assignment: Ruby on Rails, NodeJS
-- Autobinding: Spring MVC, ASP NET MVC  
-- Object injection: PHP
+**フレームワーク別の代替名：**
+- マスアサインメント：Ruby on Rails、NodeJS
+- 自動バインディング：Spring MVC、ASP NET MVC
+- オブジェクトインジェクション：PHP
 
-### Vulnerable Example
+### 脆弱な例
 
-User form with typical fields:
+典型的なフィールドを持つユーザーフォーム：
 ```html
 <form>
      <input name="userid" type="text">
@@ -35,7 +35,7 @@ User form with typical fields:
 </form>
 ```
 
-User object with sensitive field:
+機密フィールドを持つユーザーオブジェクト：
 ```java
 public class User {
    private String userid;
@@ -46,7 +46,7 @@ public class User {
 }
 ```
 
-Vulnerable controller with automatic binding:
+自動バインディングを持つ脆弱なコントローラー：
 ```java
 @RequestMapping(value = "/addUser", method = RequestMethod.POST)
 public String submit(User user) {
@@ -55,38 +55,38 @@ public String submit(User user) {
 }
 ```
 
-Attack payload:
+攻撃ペイロード：
 ```text
 POST /addUser
 userid=bobbytables&password=hashedpass&email=bobby@tables.com&isAdmin=true
 ```
 
-### Primary Defense Strategies
+### 主要な防御戦略
 
-**1. Use Data Transfer Objects (DTOs)**
-Create objects exposing only safe, editable fields:
+**1. データ転送オブジェクト（DTO）を使用**
+安全で編集可能なフィールドのみを公開するオブジェクトを作成：
 
 ```java
 public class UserRegistrationFormDTO {
  private String userid;
  private String password;
  private String email;
- //NOTE: isAdmin field is not present
+ //注意：isAdminフィールドは存在しない
  //Getters & Setters
 }
 ```
 
-**2. Allow-list Approach**
-Explicitly define permitted fields for binding.
+**2. 許可リストアプローチ**
+バインディングのために許可されたフィールドを明示的に定義。
 
-**3. Block-list Approach**  
-Explicitly exclude sensitive fields from binding.
+**3. ブロックリストアプローチ**
+バインディングから機密フィールドを明示的に除外。
 
-### Framework-Specific Implementations
+### フレームワーク固有の実装
 
 #### Spring MVC
 
-Allow-listing permitted fields:
+許可されたフィールドの許可リスト：
 ```java
 @Controller
 public class UserController {
@@ -97,7 +97,7 @@ public class UserController {
 }
 ```
 
-Block-listing sensitive fields:
+機密フィールドのブロックリスト：
 ```java
 @Controller
 public class UserController {
@@ -110,7 +110,7 @@ public class UserController {
 
 #### NodeJS + Mongoose
 
-Allow-listing with underscore.js:
+underscore.jsを使用した許可リスト：
 ```javascript
 var UserSchema = new mongoose.Schema({
     userid: String,
@@ -129,7 +129,7 @@ _ = require('underscore');
 var user = new User(_.pick(req.body, User.userCreateSafeFields));
 ```
 
-Block-listing with mongoose-mass-assign plugin:
+mongoose-mass-assignプラグインを使用したブロックリスト：
 ```javascript
 var massAssign = require('mongoose-mass-assign');
 
@@ -148,7 +148,7 @@ var user = User.massAssign(req.body);
 
 #### PHP Laravel + Eloquent
 
-Allow-listing with $fillable:
+$fillableを使用した許可リスト：
 ```php
 <?php
 namespace App;
@@ -164,7 +164,7 @@ class User extends Model {
 }
 ```
 
-Block-listing with $guarded:
+$guardedを使用したブロックリスト：
 ```php
 <?php
 namespace App;
@@ -180,19 +180,19 @@ class User extends Model {
 }
 ```
 
-### Exploitability Conditions
+### 悪用可能性の条件
 
-Mass assignment becomes exploitable when:
-- Attacker can guess common sensitive fields
-- Attacker has access to source code to review models
-- The target object has an empty constructor
+以下の場合、マスアサインメントは悪用可能になります：
+- 攻撃者が一般的な機密フィールドを推測できる
+- 攻撃者がモデルをレビューするソースコードにアクセスできる
+- ターゲットオブジェクトに空のコンストラクタがある
 
-### Key Prevention Principles
+### 主要な防止原則
 
-1. Never bind user input directly to domain objects with sensitive fields
-2. Use DTOs to expose only safe, editable fields
-3. Apply framework-specific allow-listing or block-listing mechanisms
-4. Regularly review models for sensitive attributes
-5. Prefer allow-listing over block-listing when possible
+1. 機密フィールドを持つドメインオブジェクトにユーザー入力を直接バインドしない
+2. DTOを使用して安全で編集可能なフィールドのみを公開
+3. フレームワーク固有の許可リストまたはブロックリストメカニズムを適用
+4. 機密属性のモデルを定期的にレビュー
+5. 可能な限りブロックリストよりも許可リストを優先
 
-Mass assignment protection is critical to prevent unauthorized privilege escalation and data manipulation attacks.
+マスアサインメント保護は、不正な権限昇格とデータ操作攻撃を防ぐために重要です。

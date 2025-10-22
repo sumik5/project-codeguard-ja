@@ -1,5 +1,5 @@
 ---
-description: Preventing Cross-Site Leaks (XS-Leaks)
+description: クロスサイトリーク（XS-Leaks）の防止
 languages:
 - c
 - javascript
@@ -7,39 +7,39 @@ languages:
 alwaysApply: false
 ---
 
-Protecting your applications from Cross-Site Leaks is crucial for safeguarding user privacy. XS-Leaks are a class of vulnerabilities that exploit subtle browser behaviors to extract sensitive user information across origins. 
+アプリケーションをクロスサイトリーク（XS-Leaks）から保護することは、ユーザーのプライバシーを守るために重要です。XS-Leaksは、ブラウザの微妙な動作を悪用してオリジン間で機密性の高いユーザー情報を抽出する脆弱性のクラスです。
 
-XS-Leaks occur when an attacker's website can infer information about a user's state on another website through side-channels like:
+XS-Leaksは、攻撃者のWebサイトが以下のようなサイドチャネルを通じて別のWebサイト上のユーザーの状態に関する情報を推測できる場合に発生します:
 
-- Error messages
-- Frame counting
-- Resource timing
-- Cache probing
-- Response size detection
+- エラーメッセージ
+- フレームカウント
+- リソースタイミング
+- キャッシュプロービング
+- レスポンスサイズ検出
 
-These attacks can reveal sensitive information such as whether a user is logged in, specific account details, or even extract data from cross-origin resources.
+これらの攻撃は、ユーザーがログインしているかどうか、特定のアカウント詳細、またはクロスオリジンリソースからデータを抽出することさえ可能な機密情報を明らかにすることができます。
 
-Properly configured cookies are your first line of defense against XS-Leaks. For example:
+適切に設定されたCookieは、XS-Leaksに対する第一の防御線です。例えば:
 
 ```javascript
-// Setting cookies in JavaScript with secure attributes
+// 安全な属性を持つJavaScriptでのCookie設定
 document.cookie = "sessionId=abc123; SameSite=Strict; Secure; HttpOnly; Path=/";
 ```
 
-For server-side cookie setting (example in Express.js):
+サーバーサイドでのCookie設定（Express.jsの例）:
 
 ```javascript
 app.use(session({
   secret: 'your-secret-key',
   cookie: {
-    sameSite: 'strict',  // Options: strict, lax, none
-    secure: true,         // Requires HTTPS
-    httpOnly: true        // Prevents JavaScript access
+    sameSite: 'strict',  // オプション: strict, lax, none
+    secure: true,         // HTTPSが必要
+    httpOnly: true        // JavaScriptアクセスを防止
   }
 }));
 ```
 
-In your HTTP response headers:
+HTTPレスポンスヘッダー内:
 
 ```http
 Set-Cookie: sessionId=abc123; SameSite=Strict; Secure; HttpOnly; Path=/
@@ -47,92 +47,92 @@ Set-Cookie: sessionId=abc123; SameSite=Strict; Secure; HttpOnly; Path=/
 
 
 
-* Always specify a `SameSite` attribute:
-  * Use `SameSite=Strict` for cookies related to sensitive actions
-  * Use `SameSite=Lax` for cookies needed on normal navigation to your site
-  * Use `SameSite=None; Secure` only when third-party usage is absolutely required
+* 必ず`SameSite`属性を指定してください:
+  * 機密性の高いアクションに関連するCookieには`SameSite=Strict`を使用
+  * サイトへの通常のナビゲーションで必要なCookieには`SameSite=Lax`を使用
+  * サードパーティでの使用が絶対に必要な場合のみ`SameSite=None; Secure`を使用
 
-* Never rely on browser defaults as they may vary across browsers and versions
+* ブラウザのデフォルトに依存しないでください。ブラウザやバージョンによって異なる可能性があります
 
-### Framing Protection
+### フレーミング保護
 
-Prevent your site from being framed by potentially malicious sites:
+潜在的に悪意のあるサイトによってサイトがフレーム化されることを防止します:
 
 ```javascript
-// In your Express.js application
+// Express.jsアプリケーションでの実装
 app.use((req, res, next) => {
-  // CSP frame-ancestors directive (modern approach)
+  // CSP frame-ancestorsディレクティブ（モダンなアプローチ）
   res.setHeader(
     'Content-Security-Policy',
     "frame-ancestors 'self' https://trusted-parent.com"
   );
-  
-  // X-Frame-Options (legacy fallback)
+
+  // X-Frame-Options（レガシーフォールバック）
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-  
+
   next();
 });
 ```
 
-Use Fetch Metadata headers to detect and block suspicious cross-origin requests:
+Fetch Metadataヘッダーを使用して疑わしいクロスオリジンリクエストを検出してブロックします:
 
 ```javascript
-// Express.js middleware for protecting sensitive endpoints
+// Express.js 機密エンドポイント保護ミドルウェア
 function secureEndpoint(req, res, next) {
-  // Get Fetch Metadata headers
+  // Fetch Metadataヘッダーを取得
   const fetchSite = req.get('Sec-Fetch-Site') || 'unknown';
   const fetchMode = req.get('Sec-Fetch-Mode') || 'unknown';
   const fetchDest = req.get('Sec-Fetch-Dest') || 'unknown';
-  
-  // Block cross-site requests to sensitive endpoints
+
+  // 機密エンドポイントへのクロスサイトリクエストをブロック
   if (fetchSite === 'cross-site' && req.path.startsWith('/api/sensitive')) {
     return res.status(403).send('Cross-site requests not allowed');
   }
-  
-  // Block embedding in iframes from untrusted sites
+
+  // 信頼されていないサイトからのiframe埋め込みをブロック
   if (fetchDest === 'iframe' && fetchSite === 'cross-site') {
     return res.status(403).send('Embedding not allowed');
   }
-  
+
   next();
 }
 
 app.use(secureEndpoint);
 ```
 
-### Secure Cross-Origin Communication
+### 安全なクロスオリジン通信
 
-When using `postMessage` for cross-origin communication:
+クロスオリジン通信に`postMessage`を使用する場合:
 
 ```javascript
-// UNSAFE - Never do this
+// 安全でない - 絶対にこれを実行しないでください
 window.postMessage(sensitiveData, '*');
 
-// SAFE - Always specify the exact target origin
+// 安全 - 常に正確なターゲットオリジンを指定
 window.postMessage(sensitiveData, 'https://trusted-receiver.com');
 
-// When receiving messages, always verify the origin
+// メッセージを受信する際は、常にオリジンを検証
 window.addEventListener('message', (event) => {
-  // Always verify message origin
+  // 常にメッセージのオリジンを検証
   if (event.origin !== 'https://trusted-sender.com') {
     console.error('Received message from untrusted origin:', event.origin);
     return;
   }
-  
-  // Process the message
+
+  // メッセージを処理
   processMessage(event.data);
 });
 ```
 
-### Isolating Browsing Contexts
+### ブラウジングコンテキストの分離
 
-Use Cross-Origin-Opener-Policy (COOP) to isolate your site from potential attackers:
+Cross-Origin-Opener-Policy（COOP）を使用してサイトを潜在的な攻撃者から分離します:
 
 ```http
 Cross-Origin-Opener-Policy: same-origin
 ```
 
-In Express.js:
+Express.jsでの実装:
 
 ```javascript
 app.use((req, res, next) => {
@@ -141,7 +141,7 @@ app.use((req, res, next) => {
 });
 ```
 
-For maximum isolation, combine with Cross-Origin-Embedder-Policy (COEP):
+最大限の分離のために、Cross-Origin-Embedder-Policy（COEP）と組み合わせます:
 
 ```javascript
 app.use((req, res, next) => {
@@ -151,30 +151,30 @@ app.use((req, res, next) => {
 });
 ```
 
-### Preventing Cache-Based Leaks
+### キャッシュベースのリークの防止
 
-Protect sensitive resources from cache probing attacks:
+キャッシュプロービング攻撃から機密リソースを保護します:
 
 ```javascript
-// Express.js middleware for sensitive endpoints
+// Express.js 機密エンドポイント用ミドルウェア
 app.get('/api/sensitive-data', (req, res) => {
-  // Add user-specific token to prevent cache probing
+  // キャッシュプロービングを防ぐためにユーザー固有のトークンを追加
   const userToken = req.user.securityToken;
-  
-  // Disable caching for sensitive resources
+
+  // 機密リソースのキャッシュを無効化
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Pragma', 'no-cache');
-  
-  // Add user token to response to ensure uniqueness
+
+  // 一意性を確保するためにレスポンスにユーザートークンを追加
   const data = { userToken, sensitiveData: 'secret information' };
   res.json(data);
 });
 ```
 
-For static resources that might reveal user state:
+ユーザーの状態を明らかにする可能性のある静的リソースの場合:
 
 ```javascript
-// Add user-specific tokens to URLs of sensitive resources
+// 機密リソースのURLにユーザー固有のトークンを追加
 function getUserSpecificUrl(baseUrl) {
   const userToken = generateUserToken();
   return `${baseUrl}?token=${userToken}`;
@@ -183,25 +183,25 @@ function getUserSpecificUrl(baseUrl) {
 const profileImageUrl = getUserSpecificUrl('/images/profile.jpg');
 ```
 
-### Comprehensive Defense Strategy
+### 包括的な防御戦略
 
-Implement these headers for a robust defense against XS-Leaks:
+XS-Leaksに対する堅牢な防御のためにこれらのヘッダーを実装してください:
 
 ```javascript
 app.use((req, res, next) => {
-  // Framing protection
+  // フレーミング保護
   res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-  
-  // Resource isolation
+
+  // リソース分離
   res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-  
-  // Cache control for dynamic content
+
+  // 動的コンテンツのキャッシュ制御
   if (req.path.startsWith('/api/')) {
     res.setHeader('Cache-Control', 'no-store');
   }
-  
+
   next();
 });
 ```

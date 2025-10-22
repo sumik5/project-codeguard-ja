@@ -1,6 +1,5 @@
 ---
-description: Secure file handling & uploads (validation, storage isolation, scanning,
-  safe delivery)
+description: セキュアなファイル処理・アップロード（検証、ストレージ分離、スキャン、安全な配信）
 languages:
 - c
 - go
@@ -13,62 +12,62 @@ languages:
 alwaysApply: false
 ---
 
-## File Upload Security Guidelines
+## ファイルアップロードセキュリティガイドライン
 
-This rule advises on secure file upload practices to prevent malicious file attacks and protect system integrity:
+このルールは、悪意のあるファイル攻撃を防ぎ、システムの整合性を保護するための安全なファイルアップロード手法を示します。
 
-- Extension Validation
-  - List allowed extensions only for business-critical functionality.
-  - Ensure input validation is applied before validating extensions.
-  - Avoid double extensions (e.g., `.jpg.php`) and null byte injection (e.g., `.php%00.jpg`).
-  - Use allowlist approach rather than denylist for file extensions.
-  - Validate extensions after decoding filename to prevent bypass attempts.
+- 拡張子検証
+  - ビジネスクリティカルな機能に対してのみ許可される拡張子をリスト化します。
+  - 拡張子を検証する前に入力検証を適用することを確認します。
+  - 二重拡張子（例：`.jpg.php`）とヌルバイトインジェクション（例：`.php%00.jpg`）を避けます。
+  - ファイル拡張子には拒否リストではなく許可リストアプローチを使用します。
+  - バイパス試行を防ぐため、ファイル名をデコードした後に拡張子を検証します。
 
-- Content Type and File Signature Validation
-  - Never trust client-supplied Content-Type headers as they can be spoofed.
-  - Validate file signatures (magic numbers) in conjunction with Content-Type checking.
-  - Implement allowlist approach for MIME types as a quick protection layer.
-  - Use file signature validation but not as a standalone security measure.
+- コンテンツタイプとファイルシグネチャ検証
+  - クライアントが提供するContent-Typeヘッダーは偽装可能なため、決して信頼しません。
+  - Content-Typeチェックと併せてファイルシグネチャ（マジックナンバー）を検証します。
+  - 迅速な保護レイヤーとしてMIMEタイプの許可リストアプローチを実装します。
+  - ファイルシグネチャ検証を使用しますが、単独のセキュリティ対策としては使用しません。
 
-- Filename Security
-  - Generate random filenames (UUID/GUID) instead of using user-supplied names.
-  - If user filenames required, implement maximum length limits.
-  - Restrict characters to alphanumeric, hyphens, spaces, and periods only.
-  - Prevent leading periods (hidden files) and sequential periods (directory traversal).
-  - Avoid leading hyphens or spaces for safer shell script processing.
+- ファイル名のセキュリティ
+  - ユーザー提供の名前を使用する代わりに、ランダムなファイル名（UUID/GUID）を生成します。
+  - ユーザーファイル名が必要な場合、最大長制限を実装します。
+  - 英数字、ハイフン、スペース、ピリオドのみに文字を制限します。
+  - 先頭のピリオド（隠しファイル）と連続したピリオド（ディレクトリトラバーサル）を防止します。
+  - より安全なシェルスクリプト処理のため、先頭のハイフンまたはスペースを避けます。
 
-- File Content Validation
-  - For images, apply image rewriting techniques to destroy malicious content.
-  - For Microsoft documents, use Apache POI for validation.
-  - Avoid ZIP files due to numerous attack vectors.
-  - Implement manual file review in sandboxed environments when resources allow.
-  - Integrate antivirus scanning and Content Disarm & Reconstruct (CDR) for applicable file types.
+- ファイルコンテンツ検証
+  - 画像の場合、悪意のあるコンテンツを破壊するため画像書き換え技術を適用します。
+  - Microsoftドキュメントの場合、検証にApache POIを使用します。
+  - 多数の攻撃ベクトルがあるため、ZIPファイルを避けます。
+  - リソースが許す場合、サンドボックス環境で手動ファイルレビューを実装します。
+  - 該当するファイルタイプにはウイルススキャンとContent Disarm & Reconstruct（CDR）を統合します。
 
-- Storage Security
-  - Store files on different servers for complete segregation when possible.
-  - Store files outside webroot with administrative access only.
-  - If storing in webroot, set write-only permissions with proper access controls.
-  - Use application handlers that map IDs to filenames for public access.
-  - Consider database storage for specific use cases with DBA expertise.
+- ストレージセキュリティ
+  - 可能な場合、完全な分離のため異なるサーバーにファイルを保存します。
+  - 管理者アクセスのみで、Webルート外にファイルを保存します。
+  - Webルートに保存する場合、適切なアクセス制御で書き込み専用権限を設定します。
+  - パブリックアクセス用にIDをファイル名にマッピングするアプリケーションハンドラーを使用します。
+  - DBAの専門知識がある特定のユースケースでは、データベースストレージを検討します。
 
-- Access Control and Authentication
-  - Require user authentication before allowing file uploads.
-  - Implement proper authorization levels for file access and modification.
-  - Set filesystem permissions on principle of least privilege.
-  - Scan files before execution if execution permission is required.
+- アクセス制御と認証
+  - ファイルアップロードを許可する前にユーザー認証を要求します。
+  - ファイルアクセスと変更に対する適切な認可レベルを実装します。
+  - 最小権限の原則でファイルシステム権限を設定します。
+  - 実行権限が必要な場合は、実行前にファイルをスキャンします。
 
-- Upload and Download Limits
-  - Set proper file size limits for upload protection.
-  - Consider post-decompression size limits for compressed files.
-  - Implement request limits for download services to prevent DoS attacks.
-  - Use secure methods to calculate ZIP file sizes safely.
+- アップロード・ダウンロード制限
+  - アップロード保護のため適切なファイルサイズ制限を設定します。
+  - 圧縮ファイルには展開後のサイズ制限を検討します。
+  - DoS攻撃を防ぐため、ダウンロードサービスにリクエスト制限を実装します。
+  - ZIPファイルサイズを安全に計算する安全な方法を使用します。
 
-- Additional Security Measures
-  - Protect file upload endpoints from CSRF attacks.
-  - Keep all file processing libraries securely configured and updated.
-  - Implement logging and monitoring for upload activities.
-  - Provide user reporting mechanisms for illegal content.
-  - Use secure extraction methods for compressed files.
+- 追加のセキュリティ対策
+  - CSRF攻撃からファイルアップロードエンドポイントを保護します。
+  - すべてのファイル処理ライブラリを安全に設定し、最新に保ちます。
+  - アップロード活動のロギングと監視を実装します。
+  - 違法コンテンツに対するユーザー報告メカニズムを提供します。
+  - 圧縮ファイルには安全な展開方法を使用します。
 
-Summary:  
-Implement defense-in-depth for file uploads through multi-layered validation, secure storage practices, proper access controls, and comprehensive monitoring. Never rely on single validation methods and always generate safe filenames to prevent attacks.
+まとめ：
+多層検証、セキュアなストレージ手法、適切なアクセス制御、包括的な監視を通じて、ファイルアップロードに対する多層防御を実装します。単一の検証方法に依存せず、攻撃を防ぐため常に安全なファイル名を生成します。

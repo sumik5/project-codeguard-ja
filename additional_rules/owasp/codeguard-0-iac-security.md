@@ -1,5 +1,5 @@
 ---
-description: Infrastructure as Code Security
+description: Infrastructure as Code（IaC）セキュリティ
 languages:
 - c
 - d
@@ -11,72 +11,74 @@ languages:
 alwaysApply: false
 ---
 
-# Infrastructure as Code (IaC) Security
+# Infrastructure as Code（IaC）セキュリティ
 
-When designing cloud infrastructure and writing Infrastructure as Code (IaC) in languages like Terraform and CloudFormation, always use secure practices and defaults such as preventing public exposure and follow the principle of least privilege. Actively identify security misconfigurations and provide secure alternatives.
+クラウドインフラを設計し、TerraformやCloudFormationなどの言語でInfrastructure as Code（IaC）を記述する際は、常にセキュアなプラクティスとデフォルト設定を使用してください。例えば、公開露出を防ぎ、最小権限の原則に従います。セキュリティの誤設定を積極的に識別し、安全な代替策を提供します。
 
-## Critical Security Patterns In Infrastructure as Code
+## Infrastructure as Codeにおける重要なセキュリティパターン
 
-### Network security
-- **ALWAYS** restrict the access to remote administrative services, databases, LDAP, TACACS+, or other sensitive services. No service should be accessible from the entire Internet if it does not need to be. Instead, restrict access to a specific set of IP addresses or CIDR blocks which require access.
-    - Security Group and ACL inbound rules should **NEVER** allow `0.0.0.0/0` to remote administration ports (such as SSH 22, RDP 3389).
-    - Security Group and ACL inbound rules should **NEVER** allow `0.0.0.0/0` to database ports (such as 3306, 5432, 1433, 1521, 27017).
-    - Kubernetes API endpoints allow lists should **NEVER** allow `0.0.0.0/0`. EKS, AKS, GKE, and any other Kubernetes API endpoint should be restricted to an allowed list of CIDR addresses which require administrative access.
-    - **NEVER** expose cloud platform database services (RDS, Azure SQL, Cloud SQL) to all IP addresses `0.0.0.0/0`.
-- Generally prefer private networking, such as internal VPC, VNET, VPN, or other internal transit unless public network access is required.
-- **ALWAYS** enable VPC/VNET flow logs for network monitoring and security analysis.
-- **ALWAYS** implement default deny rules and explicit allow rules for required traffic only.
-- Generally prefer blocking egress traffic to the Internet by default. If egress is required appropriate traffic control solutions might include:
-    - Egress firewall or proxy with rules allowing access to specific required services.
-    - Egress security group (SG) or access control list (ACL) with rules allowing access to specific required IPs or CIDR blocks.
-    - DNS filtering to prevent access to malicious domains.
+### ネットワークセキュリティ
+- **常に**リモート管理サービス、データベース、LDAP、TACACS+、その他の機密サービスへのアクセスを制限します。インターネット全体からアクセス可能にする必要がないサービスは、そうすべきではありません。代わりに、アクセスが必要な特定のIPアドレスまたはCIDRブロックのセットにアクセスを制限します。
+    - セキュリティグループとACLのインバウンドルールは、リモート管理ポート（SSH 22、RDP 3389など）に対して`0.0.0.0/0`を**決して**許可しない。
+    - セキュリティグループとACLのインバウンドルールは、データベースポート（3306、5432、1433、1521、27017など）に対して`0.0.0.0/0`を**決して**許可しない。
+    - Kubernetes APIエンドポイントの許可リストは`0.0.0.0/0`を**決して**許可しない。EKS、AKS、GKE、その他のKubernetes APIエンドポイントは、管理アクセスが必要なCIDRアドレスの許可リストに制限する。
+    - クラウドプラットフォームのデータベースサービス（RDS、Azure SQL、Cloud SQL）をすべてのIPアドレス`0.0.0.0/0`に**決して**公開しない。
+- 一般的に、パブリックネットワークアクセスが必要でない限り、内部VPC、VNET、VPN、その他の内部トランジットなどのプライベートネットワークを優先します。
+- ネットワーク監視とセキュリティ分析のために、VPC/VNETフローログを**常に**有効化します。
+- デフォルト拒否ルールと必要なトラフィックのみの明示的許可ルールを**常に**実装します。
+- 一般的に、デフォルトでインターネットへのエグレストラフィックをブロックします。エグレスが必要な場合、適切なトラフィック制御ソリューションには以下が含まれます：
+    - 特定の必要なサービスへのアクセスを許可するルールを持つエグレスファイアウォールまたはプロキシ。
+    - 特定の必要なIPまたはCIDRブロックへのアクセスを許可するルールを持つエグレスセキュリティグループ（SG）またはアクセス制御リスト（ACL）。
+    - 悪意のあるドメインへのアクセスを防ぐDNSフィルタリング。
 
-### Data protection
-- **ALWAYS** configure data encryption at rest for all storage services including databases, file systems, object storage, and block storage.
-    - Enable encryption for cloud storage services (S3, Azure Blob, GCS buckets).
-    - Configure database encryption at rest for all database engines (RDS, Azure SQL, Cloud SQL, DocumentDB, etc.).
-    - Enable EBS/disk encryption for virtual machine storage volumes.
-- **ALWAYS** configure encryption in transit for all data communications.
-    - Use TLS 1.2 or higher for all HTTPS/API communications.
-    - Configure SSL/TLS for database connections with certificate validation.
-    - Enable encryption for inter-service communication within VPCs/VNETs.
-    - Use encrypted protocols for remote access (SSH, HTTPS, secure RDP).
-- **ALWAYS** implement data classification and protection controls based on sensitivity levels.
-    - Apply stricter encryption and access controls for PII, PHI, financial data, and intellectual property.
-    - Use separate encryption keys for different data classification levels.
-- **ALWAYS** configure secure data retention and disposal policies.
-    - Define data retention periods based on regulatory and business requirements.
-    - Implement automated data lifecycle management with secure deletion.
-- **ALWAYS** enable comprehensive data access monitoring and auditing.
-    - Log all data access, modification, and deletion operations.
-    - Monitor for unusual data access patterns and potential data exfiltration.
-    - Implement real-time alerting for sensitive data access violations.
-- **ALWAYS** encrypt data backups.
-    - Encrypt all backup data using separate encryption keys from production data.
-    - Store backups in geographically distributed locations with appropriate access controls.
-    - Test backup restoration procedures regularly and verify backup integrity.
+### データ保護
+- データベース、ファイルシステム、オブジェクトストレージ、ブロックストレージを含むすべてのストレージサービスに対して、保存時のデータ暗号化を**常に**設定します。
+    - クラウドストレージサービス（S3、Azure Blob、GCSバケット）の暗号化を有効化。
+    - すべてのデータベースエンジン（RDS、Azure SQL、Cloud SQL、DocumentDBなど）の保存時データベース暗号化を設定。
+    - 仮想マシンストレージボリュームのEBS/ディスク暗号化を有効化。
+- すべてのデータ通信に対して転送中の暗号化を**常に**設定します。
+    - すべてのHTTPS/API通信にTLS 1.2以上を使用。
+    - 証明書検証を伴うデータベース接続にSSL/TLSを設定。
+    - VPC/VNET内のサービス間通信の暗号化を有効化。
+    - リモートアクセスに暗号化されたプロトコル（SSH、HTTPS、セキュアRDP）を使用。
+- 機密レベルに基づくデータ分類と保護制御を**常に**実装します。
+    - PII、PHI、財務データ、知的財産に対してより厳格な暗号化とアクセス制御を適用。
+    - データ分類レベルごとに異なる暗号化キーを使用。
+- 安全なデータ保持と廃棄ポリシーを**常に**設定します。
+    - 規制とビジネス要件に基づくデータ保持期間を定義。
+    - 安全な削除を伴う自動データライフサイクル管理を実装。
+- 包括的なデータアクセス監視と監査を**常に**有効化します。
+    - すべてのデータアクセス、変更、削除操作をログに記録。
+    - 異常なデータアクセスパターンと潜在的なデータ流出を監視。
+    - 機密データアクセス違反のリアルタイムアラートを実装。
+- データバックアップを**常に**暗号化します。
+    - 本番データとは別の暗号化キーを使用してすべてのバックアップデータを暗号化。
+    - 適切なアクセス制御を伴う地理的に分散した場所にバックアップを保存。
+    - バックアップ復元手順を定期的にテストし、バックアップの整合性を検証。
 
-### Access control
-- **NEVER** leave critical administration or data services with anonymous access (backups, storage, container registries, file shares) unless otherwise labeled as public classification or intended to be public.
-- **NEVER** use wildcard permissions in IAM policies or cloud RBAC (`"Action": "*"`, `"Resource": "*"`)
-- **NEVER** overprivilege service accounts with Owner/Admin roles when it is not necessary.
-- **NEVER** use service API Keys and client secrets and instead use workload identity with role-based access control to eliminate the need for long-lived credentials.
-- **NEVER** enable or use the legacy Instance Metadata Service version 1 (IMDSv1) in AWS.
-- **NEVER** use legacy or outdated authentication methods (such as local users) when there is a more secure alternative such as OAuth.
+### アクセス制御
+- 重要な管理サービスやデータサービス（バックアップ、ストレージ、コンテナレジストリ、ファイル共有）を匿名アクセスのまま**決して**放置しない。ただし、公開分類とラベル付けされているか、公開を意図している場合を除く。
+- IAMポリシーやクラウドRBACでワイルドカード権限（`"Action": "*"`、`"Resource": "*"`）を**決して**使用しない。
+- 必要でない場合、サービスアカウントにOwner/Adminロールを過剰に付与**しない**。
+- サービスAPIキーとクライアントシークレットを**決して**使用せず、代わりにロールベースのアクセス制御を伴うワークロードIDを使用して、長期間有効な認証情報の必要性を排除します。
+- AWSでレガシーInstance Metadata Service version 1（IMDSv1）を**決して**有効化または使用しない。
+- OAuth などのより安全な代替手段がある場合、レガシーまたは古い認証方法（ローカルユーザーなど）を**決して**使用しない。
 
-### Container and VM images
-- **NEVER** use non-hardened VM and container images.
-- **ALWAYS** choose distroless or minimal container images.
+### コンテナとVMイメージ
+- ハードニングされていないVMおよびコンテナイメージを**決して**使用しない。
+- distrolessまたは最小限のコンテナイメージを**常に**選択します。
+- 信頼できるソースからのセキュアなベースライン仮想マシンイメージの使用を**推奨**します。
+- 信頼できるソースからの最小限のdistrolessコンテナイメージの使用を**推奨**します。
 
-### Logging and administrative access
-- **NEVER** disable administrative activity logging for sensitive services.
-- **ALWAYS** enable audit logging for privileged operations.
+### ログと管理アクセス
+- 機密サービスの管理アクティビティログを**決して**無効化しない。
+- 特権操作の監査ログを**常に**有効化します。
 
-### Secrets management
-- **NEVER** hardcode secrets, passwords, API keys, or certificates directly in IaC source code.
-- **ALWAYS** in Terraform mark secrets with "sensitive = true", in other IaC code use appropriate annotations or metadata to indicate sensitive values.
+### シークレット管理
+- シークレット、パスワード、APIキー、証明書をIaCソースコードに直接**決して**ハードコーディングしない。
+- Terraformでは**常に**シークレットに「sensitive = true」をマークし、他のIaCコードでは適切なアノテーションまたはメタデータを使用して機密値を示します。
 
-### Backup and data recovery
-- **NEVER** create backups without encryption at rest and in transit.
-- **ALWAYS** configure multi-region data storage for backups with cross-region replication.
-- **NEVER** configure backups without retention policies and lifecycle management.
+### バックアップとデータリカバリ
+- 保存時と転送中の暗号化なしでバックアップを**決して**作成しない。
+- クロスリージョンレプリケーションを伴うバックアップのマルチリージョンデータストレージを**常に**設定します。
+- 保持ポリシーとライフサイクル管理なしでバックアップを**決して**設定しない。

@@ -1,125 +1,125 @@
-# CodeGuard Claude Code Plugin
+# CodeGuard Claude Code プラグイン
 
-## Overview
+## 概要
 
-This document explains how Project CodeGuard is packaged as a Claude Code plugin (Agent Skill) and how to use it effectively in your AI-assisted coding workflows.
+このドキュメントでは、Project CodeGuardをClaude Codeプラグイン（Agentスキル）としてパッケージ化し、AIアシスト型コーディングワークフローで効果的に使用する方法を説明します。
 
-Project CodeGuard is an **open-source, model-agnostic security framework** that embeds secure-by-default practices into AI coding workflows. The plugin makes it easy to integrate these security rules with Claude Code.
+Project CodeGuardは、**オープンソースでモデル非依存のセキュリティフレームワーク**であり、セキュアバイデフォルトの実践をAIコーディングワークフローに組み込みます。このプラグインにより、これらのセキュリティルールをClaude Codeと簡単に統合できます。
 
-## What is an Agent Skill?
+## Agentスキルとは
 
-Agent Skills are model-invoked capabilities that Claude autonomously uses based on task context. The CodeGuard security skill provides comprehensive security guidance that Claude applies automatically when writing, reviewing, or modifying code.
+Agentスキルは、Claudeがタスクのコンテキストに基づいて自律的に使用するモデル呼び出し可能な機能です。CodeGuardセキュリティスキルは、Claudeがコードを書いたり、レビューしたり、変更したりする際に自動的に適用する包括的なセキュリティガイダンスを提供します。
 
-## Installation
+## インストール
 
-### Prerequisites
+### 前提条件
 
-- Claude Code installed
-- Basic familiarity with Claude Code's plugin system
+- Claude Codeがインストール済み
+- Claude Codeのプラグインシステムに関する基本的な知識
 
-### Installation Steps
+### インストール手順
 
-1. **Add the Project CodeGuard marketplace:**
+1. **Project CodeGuardマーケットプレイスを追加:**
    ```bash
    /plugin marketplace add project-codeguard/rules
    ```
 
-2. **Install the security plugin:**
+2. **セキュリティプラグインをインストール:**
    ```bash
    /plugin install codeguard-security@project-codeguard
    ```
 
-3. **Restart Claude Code** (if prompted)
+3. **Claude Codeを再起動**（プロンプトが表示された場合）
 
-4. **Verify installation:**
-   The skill is automatically loaded. Start coding and Claude will apply security rules automatically.
+4. **インストールを確認:**
+   スキルは自動的に読み込まれます。コーディングを開始すると、Claudeが自動的にセキュリティルールを適用します。
 
-## How It Works
+## 動作原理
 
-The CodeGuard skill integrates **22 security rule files** covering all major security domains across languages, frameworks, and technology stacks. The skill follows a simple but powerful workflow:
+CodeGuardスキルは、言語、フレームワーク、テクノロジースタック全体にわたる主要なセキュリティドメインをカバーする**22のセキュリティルールファイル**を統合します。このスキルは、シンプルながら強力なワークフローに従います。
 
-### Skill Activation
+### スキルの有効化
 
-The skill activates automatically when:
-- Writing new code in any language
-- Reviewing or modifying existing code
-- Implementing security-sensitive features (authentication, cryptography, data handling)
-- Working with user input, databases, APIs, or external services
-- Configuring cloud infrastructure, CI/CD pipelines, or containers
-- Handling sensitive data, credentials, or cryptographic operations
+スキルは以下の場合に自動的に有効化されます：
+- 任意の言語で新しいコードを記述する
+- 既存のコードをレビューまたは変更する
+- セキュリティに配慮した機能（認証、暗号化、データ処理）を実装する
+- ユーザー入力、データベース、API、または外部サービスを扱う
+- クラウドインフラ、CI/CDパイプライン、またはコンテナを設定する
+- 機密データ、認証情報、または暗号化操作を処理する
 
-### Security Workflow
+### セキュリティワークフロー
 
-When generating or reviewing code, Claude follows this 3-step workflow:
+コードを生成またはレビューする際、Claudeは次の3ステップのワークフローに従います：
 
-**1. Initial Security Check**
-- Will this handle credentials? → Apply `codeguard-1-hardcoded-credentials`
-- What language is being used? → Identify applicable language-specific rules
-- What security domains are involved? → Load relevant rule files
+**1. 初期セキュリティチェック**
+- 認証情報を扱うか？ → `codeguard-1-hardcoded-credentials`を適用
+- 使用されている言語は？ → 適用可能な言語固有のルールを特定
+- 関与するセキュリティドメインは？ → 関連するルールファイルを読み込む
 
-**2. Code Generation**
-- Apply secure-by-default patterns from relevant CodeGuard rules
-- Add security-relevant comments explaining choices
+**2. コード生成**
+- 関連するCodeGuardルールからセキュアバイデフォルトパターンを適用
+- 選択理由を説明するセキュリティ関連のコメントを追加
 
-**3. Security Review**
-- Review against implementation checklists in each rule
-- Verify no hardcoded credentials or secrets
-- Validate that all applicable rules have been followed
-- Explain which security rules were applied
-- Highlight security features implemented
+**3. セキュリティレビュー**
+- 各ルールの実装チェックリストに照らしてレビュー
+- ハードコードされた認証情報やシークレットがないことを確認
+- 適用可能なすべてのルールが遵守されていることを検証
+- 適用されたセキュリティルールを説明
+- 実装されたセキュリティ機能を強調
 
-### Rule Categories
+### ルールカテゴリ
 
-**Always-Apply Rules** (4 critical rules checked on every code operation):
-- `codeguard-1-hardcoded-credentials` - Never hardcode secrets or credentials
-- `codeguard-1-crypto-algorithms` - Use modern cryptographic algorithms
-- `codeguard-1-digital-certificates` - Validate certificate security
-- `codeguard-1-safe-c-functions` - Replace unsafe C/C++ functions
+**常時適用ルール**（すべてのコード操作でチェックされる4つの重要ルール）：
+- `codeguard-1-hardcoded-credentials` - シークレットや認証情報をハードコードしない
+- `codeguard-1-crypto-algorithms` - 最新の暗号化アルゴリズムを使用
+- `codeguard-1-digital-certificates` - 証明書のセキュリティを検証
+- `codeguard-1-safe-c-functions` - 安全でないC/C++関数を置き換える
 
-**Context-Specific Rules** (18 rules applied based on technology and features):
-- Input validation, authentication, authorization, APIs, data storage, privacy, logging, cryptography, file handling, serialization, supply chain, DevOps, cloud, Kubernetes, IaC, frameworks, and mobile security
+**コンテキスト固有ルール**（技術と機能に基づいて適用される18ルール）：
+- 入力検証、認証、認可、API、データストレージ、プライバシー、ロギング、暗号化、ファイル処理、シリアル化、サプライチェーン、DevOps、クラウド、Kubernetes、IaC、フレームワーク、モバイルセキュリティ
 
-## Usage Examples
+## 使用例
 
-### Example 1: Writing Database Code
+### 例1: データベースコード作成
 
 ```python
-# Claude will automatically use parameterized queries
+# Claudeは自動的にパラメータ化クエリを使用
 def get_user(email):
-    # Secure pattern following codeguard-0-input-validation-injection
+    # codeguard-0-input-validation-injectionに従ったセキュアパターン
     query = "SELECT * FROM users WHERE email = ?"
     return cursor.execute(query, (email,))
 ```
 
-### Example 2: Handling API Keys
+### 例2: APIキーの処理
 
 ```javascript
-// Claude will prevent hardcoded credentials
-// and suggest environment variables
+// Claudeはハードコードされた認証情報を防止し、
+// 環境変数を提案
 const apiKey = process.env.STRIPE_API_KEY;
 if (!apiKey) {
   throw new Error("STRIPE_API_KEY not configured");
 }
 ```
 
-### Example 3: Password Hashing
+### 例3: パスワードハッシュ化
 
 ```python
-# Claude will suggest modern password hashing
+# Claudeは最新のパスワードハッシュ化を提案
 from argon2 import PasswordHasher
 ph = PasswordHasher()
 password_hash = ph.hash(password)
 ```
 
-### Example 4: File Upload Security
+### 例4: ファイルアップロードセキュリティ
 
 ```javascript
-// Claude will enforce file validation
+// Claudeはファイル検証を強制
 const multer = require('multer');
 const upload = multer({
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB制限
   fileFilter: (req, file, cb) => {
-    // Validate file type by content, not just extension
+    // 拡張子だけでなく、コンテンツでファイルタイプを検証
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
@@ -129,11 +129,11 @@ const upload = multer({
 });
 ```
 
-## Team Deployment
+## チームへの展開
 
-For organizations, deploy CodeGuard to all developers automatically:
+組織では、すべての開発者に自動的にCodeGuardを展開できます：
 
-1. Add to your project's `.claude/settings.json`:
+1. プロジェクトの`.claude/settings.json`に追加：
    ```json
    {
      "marketplaces": [{"source": "project-codeguard/rules"}],
@@ -147,259 +147,258 @@ For organizations, deploy CodeGuard to all developers automatically:
    }
    ```
 
-2. Team members trust the repository folder
+2. チームメンバーがリポジトリフォルダを信頼
 
-3. CodeGuard installs automatically for everyone
+3. CodeGuardがすべてのユーザーに自動的にインストール
 
-## All Security Rules
+## すべてのセキュリティルール
 
-The plugin includes 22 comprehensive security rules organized into two categories:
+プラグインには、2つのカテゴリに分類された22の包括的なセキュリティルールが含まれています：
 
-### Always-Apply Rules (4 rules)
+### 常時適用ルール（4ルール）
 
-These critical rules are checked on **every** code operation:
+これらの重要なルールは、**すべての**コード操作でチェックされます：
 
-| Rule | Description |
-|------|-------------|
-| `codeguard-1-hardcoded-credentials` | Prevent secrets, passwords, API keys, tokens in source code |
-| `codeguard-1-crypto-algorithms` | Ban weak algorithms (MD5, SHA-1, DES); use modern alternatives |
-| `codeguard-1-digital-certificates` | Validate certificate expiration, key strength, signature algorithms |
-| `codeguard-1-safe-c-functions` | Replace unsafe C/C++ functions (gets, strcpy, strcat, sprintf) |
+| ルール | 説明 |
+|------|------|
+| `codeguard-1-hardcoded-credentials` | ソースコード内のシークレット、パスワード、APIキー、トークンを防止 |
+| `codeguard-1-crypto-algorithms` | 弱いアルゴリズム（MD5、SHA-1、DES）を禁止し、最新の代替手段を使用 |
+| `codeguard-1-digital-certificates` | 証明書の有効期限、キー強度、署名アルゴリズムを検証 |
+| `codeguard-1-safe-c-functions` | 安全でないC/C++関数（gets、strcpy、strcat、sprintf）を置き換え |
 
-### Context-Specific Rules (18 rules)
+### コンテキスト固有ルール（18ルール）
 
-These rules apply based on the programming language, framework, or feature being implemented. Claude automatically selects relevant rules based on context:
+これらのルールは、実装されているプログラミング言語、フレームワーク、または機能に基づいて適用されます。Claudeはコンテキストに基づいて関連するルールを自動的に選択します：
 
-| Security Domain | Rules |
-|-----------------|-------|
-| **Input & Injection** | `codeguard-0-input-validation-injection` |
-| **Authentication** | `codeguard-0-authentication-mfa` |
-| **Authorization** | `codeguard-0-authorization-access-control` |
-| **Sessions** | `codeguard-0-session-management-and-cookies` |
-| **APIs & Web** | `codeguard-0-api-web-services`, `codeguard-0-client-side-web-security` |
-| **Data & Privacy** | `codeguard-0-data-storage`, `codeguard-0-privacy-data-protection`, `codeguard-0-logging` |
-| **Cryptography** | `codeguard-0-additional-cryptography` |
-| **Files & Serialization** | `codeguard-0-file-handling-and-uploads`, `codeguard-0-xml-and-serialization` |
-| **Infrastructure** | `codeguard-0-supply-chain-security`, `codeguard-0-devops-ci-cd-containers`, `codeguard-0-cloud-orchestration-kubernetes`, `codeguard-0-iac-security` |
-| **Platforms** | `codeguard-0-framework-and-languages`, `codeguard-0-mobile-apps` |
+| セキュリティドメイン | ルール |
+|------------------|-------|
+| **入力とインジェクション** | `codeguard-0-input-validation-injection` |
+| **認証** | `codeguard-0-authentication-mfa` |
+| **認可** | `codeguard-0-authorization-access-control` |
+| **セッション** | `codeguard-0-session-management-and-cookies` |
+| **APIとWeb** | `codeguard-0-api-web-services`, `codeguard-0-client-side-web-security` |
+| **データとプライバシー** | `codeguard-0-data-storage`, `codeguard-0-privacy-data-protection`, `codeguard-0-logging` |
+| **暗号化** | `codeguard-0-additional-cryptography` |
+| **ファイルとシリアル化** | `codeguard-0-file-handling-and-uploads`, `codeguard-0-xml-and-serialization` |
+| **インフラ** | `codeguard-0-supply-chain-security`, `codeguard-0-devops-ci-cd-containers`, `codeguard-0-cloud-orchestration-kubernetes`, `codeguard-0-iac-security` |
+| **プラットフォーム** | `codeguard-0-framework-and-languages`, `codeguard-0-mobile-apps` |
 
-> **Note:** Each rule file contains detailed guidance, checklists, and examples. Claude references these automatically based on the code context.
+> **注意:** 各ルールファイルには、詳細なガイダンス、チェックリスト、例が含まれています。Claudeはコードのコンテキストに基づいてこれらを自動的に参照します。
 
-## Updating
+## 更新
 
-To update to the latest security rules:
+最新のセキュリティルールに更新するには：
 
 ```bash
 /plugin update codeguard-security@project-codeguard
 ```
 
-## Customization
+## カスタマイズ
 
-### Disabling the Plugin
+### プラグインの無効化
 
-If needed, temporarily disable:
+必要に応じて一時的に無効化：
 
 ```bash
 /plugin disable codeguard-security@project-codeguard
 ```
 
-Re-enable:
+再有効化：
 
 ```bash
 /plugin enable codeguard-security@project-codeguard
 ```
 
-### Using Specific Rule Files
+### 特定のルールファイルの使用
 
-All rule files are available in the `skills/software-security/rules/` directory within the plugin. You can reference specific rules in prompts:
-
-```
-Claude, please review this authentication code against the 
-codeguard-0-authentication-mfa.md guidelines
-```
-
-### Creating Custom Workflows
-
-You can create custom security review workflows:
+すべてのルールファイルは、プラグイン内の`skills/software-security/rules/`ディレクトリにあります。プロンプトで特定のルールを参照できます：
 
 ```
-Claude, perform the following security checks on this code:
-1. Check for hardcoded credentials
-2. Validate input sanitization
-3. Verify authentication implementation
-4. Review authorization logic
-Use the relevant CodeGuard rules for each check.
+Claude、この認証コードをcodeguard-0-authentication-mfa.mdガイドラインに
+照らしてレビューしてください
 ```
 
-## Troubleshooting
+### カスタムワークフローの作成
 
-### Plugin Not Loading
+カスタムセキュリティレビューワークフローを作成できます：
 
-1. Verify installation: `/plugin` → "Manage Plugins"
-2. Check that `codeguard-security` is listed and enabled
-3. Restart Claude Code
+```
+Claude、このコードに対して以下のセキュリティチェックを実施してください：
+1. ハードコードされた認証情報をチェック
+2. 入力のサニタイゼーションを検証
+3. 認証実装を確認
+4. 認可ロジックをレビュー
+各チェックには関連するCodeGuardルールを使用してください。
+```
 
-### Rules Not Being Applied
+## トラブルシューティング
 
-1. Confirm the plugin is enabled
-2. Try explicitly mentioning security in your prompt
-3. Check that you're working with supported languages
+### プラグインが読み込まれない
 
-### Checking Plugin Version
+1. インストールを確認: `/plugin` → "プラグインの管理"
+2. `codeguard-security`がリストされ、有効になっていることを確認
+3. Claude Codeを再起動
+
+### ルールが適用されない
+
+1. プラグインが有効になっていることを確認
+2. プロンプトでセキュリティについて明示的に言及してみる
+3. サポートされている言語で作業していることを確認
+
+### プラグインバージョンの確認
 
 ```bash
 /plugin list
 ```
 
-Look for `codeguard-security@project-codeguard` and note the version number.
+`codeguard-security@project-codeguard`を探し、バージョン番号を確認します。
 
-## Best Practices
+## ベストプラクティス
 
-### During Development
+### 開発時
 
-1. **Trust the automation**: Let Claude apply security rules automatically
-2. **Learn from suggestions**: When Claude suggests secure alternatives, understand why
-3. **Ask for explanations**: Request Claude to explain security recommendations
-4. **Use proactive security**: Ask Claude for security guidance before implementing features
+1. **自動化を信頼**: Claudeがセキュリティルールを自動的に適用するのを許可
+2. **提案から学ぶ**: Claudeがセキュアな代替案を提案したら、その理由を理解
+3. **説明を求める**: Claudeにセキュリティ推奨事項の説明を要求
+4. **プロアクティブなセキュリティ**: 機能実装前にClaude にセキュリティガイダンスを求める
 
-### During Code Review
+### コードレビュー時
 
-1. **Explicit security review**: Ask Claude to perform comprehensive security analysis
-2. **Reference specific rules**: Mention rule names for focused review (e.g., "Review against codeguard-0-authentication-mfa")
-3. **Check always-apply rules**: Ensure credentials, crypto algorithms, certificates, and C functions are handled securely
-4. **Validate workflow**: Confirm that Claude followed the 3-step security workflow
+1. **明示的なセキュリティレビュー**: Claudeに包括的なセキュリティ分析を依頼
+2. **特定ルールの参照**: 集中レビューのためにルール名を言及（例：「codeguard-0-authentication-mfaに照らしてレビュー」）
+3. **常時適用ルールをチェック**: 認証情報、暗号化アルゴリズム、証明書、C関数が安全に処理されていることを確認
+4. **ワークフローを検証**: Claudeが3ステップのセキュリティワークフローに従ったことを確認
 
-### For Teams
+### チーム向け
 
-1. **Standardize installation**: Use `.claude/settings.json` for consistent setup across the team
-2. **Version control**: Track which plugin version your team uses
-3. **Update regularly**: Keep rules current with latest security guidance
-4. **Share learnings**: Document security patterns specific to your stack
-5. **Train developers**: Ensure team members understand how to work with AI-assisted security
+1. **インストールの標準化**: チーム全体で一貫したセットアップのために`.claude/settings.json`を使用
+2. **バージョン管理**: チームが使用するプラグインバージョンを追跡
+3. **定期的な更新**: 最新のセキュリティガイダンスでルールを最新の状態に保つ
+4. **学びを共有**: スタック固有のセキュリティパターンを文書化
+5. **開発者のトレーニング**: チームメンバーがAIアシスト型セキュリティの使い方を理解していることを確認
 
-## Building the Plugin
+## プラグインのビルド
 
-If you're contributing to Project CodeGuard or need to rebuild the plugin:
+Project CodeGuardに貢献している場合、またはプラグインを再ビルドする必要がある場合：
 
 ```bash
 cd /path/to/project-codeguard/rules
 ./src/prepare-claude-code-plugin.sh
 ```
 
-This script:
-- Copies all rule files from `rules/` to `skills/software-security/rules/`
-- Verifies the plugin structure
-- Prepares the plugin for distribution or local testing
+このスクリプトは：
+- すべてのルールファイルを`rules/`から`skills/software-security/rules/`にコピー
+- プラグイン構造を検証
+- 配布またはローカルテスト用にプラグインを準備
 
-## Advanced Usage
+## 高度な使用法
 
-### Language-Specific Security Reviews
+### 言語固有のセキュリティレビュー
 
-Request focused reviews for specific languages:
-
-```
-Claude, perform a security review of this Python code with emphasis on:
-- SQL injection prevention
-- Input validation
-- Authentication best practices
-```
-
-### Feature-Specific Guidance
-
-Get proactive security guidance when building features:
+特定の言語に焦点を当てたレビューを要求：
 
 ```
-Claude, I'm about to implement a file upload feature. 
-What security considerations should I keep in mind 
-according to CodeGuard rules?
+Claude、このPythonコードのセキュリティレビューを以下に重点を置いて実施してください：
+- SQLインジェクション防止
+- 入力検証
+- 認証のベストプラクティス
 ```
 
-### Security-First Development
+### 機能固有のガイダンス
 
-Use CodeGuard from the planning phase:
+機能を構築する際にプロアクティブなセキュリティガイダンスを取得：
 
 ```
-Claude, help me design a secure authentication system for a web app.
-Use CodeGuard rules to guide the architecture.
+Claude、ファイルアップロード機能を実装しようとしています。
+CodeGuardルールに従って、どのようなセキュリティ上の考慮事項を
+念頭に置くべきですか？
 ```
 
-## Plugin Architecture
+### セキュリティファーストの開発
 
-### File Structure
+計画段階からCodeGuardを使用：
+
+```
+Claude、Webアプリのセキュアな認証システムの設計を手伝ってください。
+CodeGuardルールを使用してアーキテクチャを導いてください。
+```
+
+## プラグインアーキテクチャ
+
+### ファイル構造
 
 ```
 project-codeguard/rules/
 ├── .claude-plugin/
-│   ├── plugin.json                  # Plugin metadata
-│   └── marketplace.json             # Marketplace catalog
+│   ├── plugin.json                  # プラグインメタデータ
+│   └── marketplace.json             # マーケットプレイスカタログ
 │
 ├── skills/
 │   └── software-security/
-│       ├── SKILL.md                 # Skill definition and workflow
-│       └── rules/                   # All 22 CodeGuard security rules
-│           ├── codeguard-1-*.md     # 4 always-apply rules
-│           └── codeguard-0-*.md     # 18 context-specific rules
+│       ├── SKILL.md                 # スキル定義とワークフロー
+│       └── rules/                   # 全22のCodeGuardセキュリティルール
+│           ├── codeguard-1-*.md     # 4つの常時適用ルール
+│           └── codeguard-0-*.md     # 18のコンテキスト固有ルール
 │
 └── src/
-    └── prepare-claude-code-plugin.sh  # Build script
+    └── prepare-claude-code-plugin.sh  # ビルドスクリプト
 ```
 
-### How Claude Uses the Skill
+### Claudeによるスキルの使用方法
 
-When you write or review code, Claude follows this workflow:
+コードを書いたりレビューしたりする際、Claudeは次のワークフローに従います：
 
-1. **Reads SKILL.md** - Understands when to activate the skill and what workflow to follow
-2. **Initial Security Check** - Identifies which rules apply based on:
-   - Whether credentials are involved (always-apply rule)
-   - The programming language in use
-   - The security domains involved (auth, crypto, APIs, etc.)
-3. **Applies Security Rules** - References relevant rule files to:
-   - Use secure-by-default patterns
-   - Follow implementation checklists
-   - Apply language-specific guidance
-4. **Generates Secure Code** - Produces code that:
-   - Never hardcodes credentials
-   - Uses modern cryptographic algorithms
-   - Implements input validation
-   - Follows security best practices
-5. **Provides Explanations** - Documents which security rules were applied and highlights security features implemented
+1. **SKILL.mdを読む** - スキルをいつ有効化するか、どのようなワークフローに従うかを理解
+2. **初期セキュリティチェック** - 以下に基づいて適用するルールを特定：
+   - 認証情報が関与しているか（常時適用ルール）
+   - 使用されているプログラミング言語
+   - 関与するセキュリティドメイン（認証、暗号化、API等）
+3. **セキュリティルールを適用** - 関連するルールファイルを参照して：
+   - セキュアバイデフォルトパターンを使用
+   - 実装チェックリストに従う
+   - 言語固有のガイダンスを適用
+4. **セキュアなコードを生成** - 以下のコードを生成：
+   - 認証情報をハードコードしない
+   - 最新の暗号化アルゴリズムを使用
+   - 入力検証を実装
+   - セキュリティのベストプラクティスに従う
+5. **説明を提供** - 適用されたセキュリティルールを文書化し、実装されたセキュリティ機能を強調
 
-## Contributing
+## コントリビューション
 
-Found an issue with the plugin or want to improve it?
+プラグインに関する問題を見つけた場合、または改善したい場合：
 
-1. **Report issues**: [GitHub Issues](https://github.com/project-codeguard/rules/issues)
-2. **Suggest rules**: [GitHub Discussions](https://github.com/project-codeguard/rules/discussions)
-3. **Contribute**: [Contributing Guide](https://github.com/project-codeguard/rules/blob/main/CONTRIBUTING.md)
+1. **問題を報告**: [GitHub Issues](https://github.com/project-codeguard/rules/issues)
+2. **ルールを提案**: [GitHub Discussions](https://github.com/project-codeguard/rules/discussions)
+3. **貢献**: [コントリビューションガイド](https://github.com/project-codeguard/rules/blob/main/CONTRIBUTING.md)
 
-## Version History
+## バージョン履歴
 
-### Version 1.0.0
-- Initial release
-- 22 comprehensive security rules
-- 4 always-apply rules
-- 18 context-specific rules
-- Support for all major programming languages
-- Complete technology stack coverage
+### バージョン1.0.0
+- 初回リリース
+- 22の包括的なセキュリティルール
+- 4つの常時適用ルール
+- 18のコンテキスト固有ルール
+- すべての主要プログラミング言語をサポート
+- 完全なテクノロジースタックカバレッジ
 
-## Resources
+## リソース
 
-- **Project Website**: [https://project-codeguard.org](https://project-codeguard.org)
-- **GitHub Repository**: [https://github.com/project-codeguard/rules](https://github.com/project-codeguard/rules)
-- **Documentation**: [https://project-codeguard.org/getting-started/](https://project-codeguard.org/getting-started/)
-- **Issue Tracker**: [https://github.com/project-codeguard/rules/issues](https://github.com/project-codeguard/rules/issues)
+- **プロジェクトWebサイト**: [https://project-codeguard.org](https://project-codeguard.org)
+- **GitHubリポジトリ**: [https://github.com/project-codeguard/rules](https://github.com/project-codeguard/rules)
+- **ドキュメント**: [https://project-codeguard.org/getting-started/](https://project-codeguard.org/getting-started/)
+- **イシュートラッカー**: [https://github.com/project-codeguard/rules/issues](https://github.com/project-codeguard/rules/issues)
 
-## License
+## ライセンス
 
-- **Rules**: Creative Commons Attribution 4.0 International (CC BY 4.0)
-- **Tools**: Apache License 2.0
+- **ルール**: Creative Commons Attribution 4.0 International (CC BY 4.0)
+- **ツール**: Apache License 2.0
 
-## Support
+## サポート
 
-Need help? We're here for you:
+サポートが必要ですか？私たちがお手伝いします：
 
-1. **Documentation**: Start with [Getting Started Guide](https://project-codeguard.org/getting-started/)
-2. **Community**: Join [GitHub Discussions](https://github.com/project-codeguard/rules/discussions)
-3. **Issues**: Report bugs via [GitHub Issues](https://github.com/project-codeguard/rules/issues)
-
+1. **ドキュメント**: [スタートガイド](https://project-codeguard.org/getting-started/)から始めてください
+2. **コミュニティ**: [GitHub Discussions](https://github.com/project-codeguard/rules/discussions)に参加
+3. **問題報告**: [GitHub Issues](https://github.com/project-codeguard/rules/issues)経由でバグを報告
 

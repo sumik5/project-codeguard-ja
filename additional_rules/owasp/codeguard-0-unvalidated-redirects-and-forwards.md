@@ -1,5 +1,5 @@
 ---
-description: Unvalidated Redirects and Forwards Prevention
+description: 未検証のリダイレクトとフォワードの防止
 languages:
 - c
 - java
@@ -11,20 +11,20 @@ languages:
 alwaysApply: false
 ---
 
-## Unvalidated Redirects and Forwards Prevention
+## 未検証のリダイレクトとフォワードの防止
 
-Prevent open redirect and forward vulnerabilities by validating all user-controlled redirect destinations to stop phishing attacks and access control bypass.
+すべてのユーザー制御のリダイレクト先を検証することで、オープンリダイレクトとフォワードの脆弱性を防止し、フィッシング攻撃とアクセス制御バイパスを阻止します。
 
-### Security Risks
+### セキュリティリスク
 
-Unvalidated redirects and forwards occur when applications accept untrusted input for redirect destinations, enabling:
-- Phishing attacks by redirecting users to malicious sites while maintaining trusted domain appearance
-- Access control bypass by forwarding to privileged functions normally restricted
-- User credential theft through convincing redirect to attacker-controlled sites
+未検証のリダイレクトとフォワードは、アプリケーションがリダイレクト先に信頼できない入力を受け入れる場合に発生し、以下を可能にします：
+- 信頼されたドメインの外観を維持したまま悪意のあるサイトにユーザーをリダイレクトするフィッシング攻撃
+- 通常制限されている特権機能へのフォワードによるアクセス制御バイパス
+- 攻撃者が制御するサイトへの説得力のあるリダイレクトによるユーザー認証情報の盗難
 
-### Safe Redirect Examples
+### 安全なリダイレクトの例
 
-Secure redirects use hardcoded URLs that cannot be manipulated by attackers:
+セキュアなリダイレクトは、攻撃者が操作できないハードコードされたURLを使用します：
 
 Java:
 ```java
@@ -58,9 +58,9 @@ Rust actix web:
         .finish())
 ```
 
-### Dangerous Redirect Examples
+### 危険なリダイレクトの例
 
-Vulnerable code accepts user input directly for redirect destinations:
+脆弱なコードはリダイレクト先にユーザー入力を直接受け入れます：
 
 Java:
 ```java
@@ -91,7 +91,7 @@ Rust actix web:
         .finish())
 ```
 
-ASP.NET MVC vulnerable example:
+ASP.NET MVC脆弱な例：
 ```csharp
 [HttpPost]
  public ActionResult LogOn(LogOnModel model, string returnUrl)
@@ -121,16 +121,16 @@ ASP.NET MVC vulnerable example:
  }
 ```
 
-Attack example:
+攻撃の例：
 ```text
  http://example.com/example.php?url=http://malicious.example.com
 ```
 
-### Dangerous Forward Examples
+### 危険なフォワードの例
 
-Server-side forwards can bypass access controls when user input determines the forward destination:
+ユーザー入力がフォワード先を決定する場合、サーバーサイドフォワードはアクセス制御をバイパスできます：
 
-Java servlet vulnerable forward:
+Javaサーブレット脆弱なフォワード：
 ```java
 public class ForwardServlet extends HttpServlet
 {
@@ -153,64 +153,64 @@ public class ForwardServlet extends HttpServlet
 }
 ```
 
-Attack example:
+攻撃の例：
 ```text
 http://www.example.com/function.jsp?fwd=admin.jsp
 ```
 
-### Prevention Strategies
+### 防止戦略
 
-#### Avoid User Input for Destinations
-Simply avoid using redirects and forwards, or do not allow URLs as user input for destinations.
+#### 宛先にユーザー入力を使用しない
+単にリダイレクトとフォワードを使用しないか、宛先のユーザー入力としてURLを許可しないでください。
 
-#### Use Server-Side Mapping
-Have users provide short name, ID, or token mapped server-side to full target URL.
+#### サーバーサイドマッピングを使用
+ユーザーに短縮名、ID、またはトークンを提供させ、サーバーサイドで完全なターゲットURLにマッピングします。
 
-Benefits:
-- Highest degree of protection against URL tampering
-- Prevents direct URL manipulation
+利点：
+- URL改ざんに対する最高度の保護
+- 直接URL操作を防止
 
-Considerations:
-- Prevent enumeration vulnerabilities where users cycle through IDs
-- Use sufficiently large or complex token spaces
+考慮事項：
+- ユーザーがIDをサイクルする列挙脆弱性を防止
+- 十分に大きいまたは複雑なトークンスペースを使用
 
-#### Input Validation and Authorization
-If user input cannot be avoided:
-- Ensure supplied value is valid and appropriate for the application
-- Verify user is authorized for the redirect/forward target
-- Validate before performing redirect or forward
+#### 入力検証と認可
+ユーザー入力を避けられない場合：
+- 提供された値がアプリケーションにとって有効で適切であることを確認
+- ユーザーがリダイレクト/フォワードターゲットに対して認可されていることを検証
+- リダイレクトまたはフォワードを実行する前に検証
 
-#### Allow-List Approach
-Create and enforce list of trusted URLs or hosts:
-- Use allow-list approach rather than deny-list
-- Sanitize input against trusted URL list
-- Consider regex patterns for flexible matching
+#### 許可リストアプローチ
+信頼できるURLまたはホストのリストを作成して実施：
+- 拒否リストではなく許可リストアプローチを使用
+- 信頼できるURLリストに対して入力をサニタイズ
+- 柔軟なマッチングのために正規表現パターンを検討
 
-#### External Redirect Warning
-Force external redirects through interstitial warning page:
-- Clearly display destination to users
-- Require user confirmation before proceeding
-- Helps users identify potential phishing attempts
+#### 外部リダイレクト警告
+間接警告ページを通じて外部リダイレクトを強制：
+- ユーザーに宛先を明確に表示
+- 続行する前にユーザー確認を要求
+- ユーザーが潜在的なフィッシング試行を識別するのを支援
 
-#### Framework-Specific Considerations
+#### フレームワーク固有の考慮事項
 
 PHP:
-- Always follow header("Location: ...") with exit; to stop execution
-- Prevents continued code execution after redirect
+- `header("Location: ...")`の後は常に`exit;`を続ける
+- リダイレクト後のコード実行の継続を防止
 
 ASP.NET MVC:
-- MVC 1 & 2 particularly vulnerable to open redirection attacks
-- Use MVC 3 or later to avoid vulnerabilities
+- MVC 1と2は特にオープンリダイレクション攻撃に脆弱
+- 脆弱性を回避するためMVC 3以降を使用
 
-### Implementation Guidelines
+### 実装ガイドライン
 
-1. Use hardcoded URLs for redirects whenever possible
-2. Implement server-side mapping for user-controlled redirects
-3. Validate all user input against allow-list of permitted destinations
-4. Verify user authorization before performing redirects or forwards
-5. Use interstitial warnings for external redirects
-6. Follow framework-specific security practices
-7. Prevent enumeration through complex token spaces
-8. Keep frameworks updated with security patches
-9. Never trust user input for determining redirect destinations
-10. Test redirect functionality for bypass attempts
+1. 可能な限りリダイレクトにハードコードされたURLを使用
+2. ユーザー制御のリダイレクトにサーバーサイドマッピングを実装
+3. 許可された宛先の許可リストに対してすべてのユーザー入力を検証
+4. リダイレクトまたはフォワードを実行する前にユーザー認可を検証
+5. 外部リダイレクトに間接警告を使用
+6. フレームワーク固有のセキュリティプラクティスに従う
+7. 複雑なトークンスペースを通じて列挙を防止
+8. セキュリティパッチでフレームワークを最新に保つ
+9. リダイレクト先の決定にユーザー入力を信頼しない
+10. バイパス試行のためにリダイレクト機能をテスト

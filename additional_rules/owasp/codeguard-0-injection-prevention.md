@@ -1,5 +1,5 @@
 ---
-description: Injection Prevention Best Practices
+description: インジェクション防止のベストプラクティス
 languages:
 - c
 - go
@@ -15,62 +15,62 @@ languages:
 alwaysApply: false
 ---
 
-## Injection Prevention Guidelines
+## インジェクション防止ガイドライン
 
-This rule provides clear, actionable guidance for preventing injection flaws across multiple languages and injection types. Injection flaws occur when untrusted data is sent to an interpreter as part of a command or query.
+このルールは、複数の言語とインジェクションタイプにわたるインジェクション欠陥を防ぐための明確で実行可能なガイダンスを提供します。インジェクション欠陥は、信頼できないデータがコマンドまたはクエリの一部としてインタープリターに送信されるときに発生します。
 
-### Introduction
+### はじめに
 
-Injection attacks, especially SQL Injection, are unfortunately very common. Injection flaws occur when an application sends untrusted data to an interpreter. Injection flaws are very prevalent, particularly in legacy code, often found in SQL queries, LDAP queries, XPath queries, OS commands, program arguments, etc.
+インジェクション攻撃、特にSQLインジェクションは、残念ながら非常に一般的です。インジェクション欠陥は、アプリケーションが信頼できないデータをインタープリターに送信するときに発生します。インジェクション欠陥は非常に蔓延しており、特にレガシーコードで、SQLクエリ、LDAPクエリ、XPathクエリ、OSコマンド、プログラム引数などでよく見られます。
 
-### SQL Injection Prevention
+### SQLインジェクション防止
 
-Defense Option 1: Prepared Statements (with Parameterized Queries)
+防御オプション1：プリペアドステートメント（パラメータ化クエリ付き）
 
-Safe Java Prepared Statement Example:
+安全なJava プリペアドステートメントの例：
 ```java
-// This should REALLY be validated too
-String custname = request.getParameter("customerName"); 
+// これも本当に検証すべき
+String custname = request.getParameter("customerName");
 String query = "SELECT account_balance FROM user_data WHERE user_name = ?";
 PreparedStatement pstmt = connection.prepareStatement( query );
-pstmt.setString( 1, custname); 
+pstmt.setString( 1, custname);
 ResultSet results = pstmt.executeQuery( );
 ```
 
-Defense Option 2: Stored Procedures
+防御オプション2：ストアドプロシージャ
 
-Safe Java Stored Procedure Example:
+安全なJavaストアドプロシージャの例：
 ```java
-// This should REALLY be validated
+// これも本当に検証すべき
 String custname = request.getParameter("customerName");
 try {
  CallableStatement cs = connection.prepareCall("{call sp_getAccountBalance(?)}");
  cs.setString(1, custname);
  ResultSet results = cs.executeQuery();
- // Result set handling...
+ // 結果セット処理...
 } catch (SQLException se) {
- // Logging and error handling...
+ // ロギングとエラー処理...
 }
 ```
 
-Defense Option 3: Allow-List Input Validation
+防御オプション3：許可リスト入力検証
 
-Defense Option 4: Escaping All User-Supplied Input
+防御オプション4：すべてのユーザー提供入力のエスケープ
 
-### LDAP Injection Prevention
+### LDAPインジェクション防止
 
-Escape all variables using the right LDAP encoding function
+正しいLDAPエンコーディング関数を使用してすべての変数をエスケープ
 
-Safe Java for LDAP escaping Example:
+LDAPエスケープ用の安全なJavaの例：
 ```java
 public String escapeDN (String name) {
- //From RFC 2253 and the / character for JNDI
+ // RFC 2253とJNDI用の/文字から
  final char[] META_CHARS = {'+', '"', '<', '>', ';', '/'};
  String escapedStr = new String(name);
- //Backslash is both a Java and an LDAP escape character,
- //so escape it first
+ // バックスラッシュはJavaとLDAP両方のエスケープ文字なので
+ // 最初にエスケープ
  escapedStr = escapedStr.replaceAll("\\\\\\\\","\\\\\\\\");
- //Positional characters - see RFC 2253
+ // 位置的文字 - RFC 2253を参照
  escapedStr = escapedStr.replaceAll("\^#","\\\\\\\\#");
  escapedStr = escapedStr.replaceAll("\^ | $","\\\\\\\\ ");
  for (int i=0 ; i < META_CHARS.length ; i++) {
@@ -83,7 +83,7 @@ public String escapeDN (String name) {
 
 ```java
 public String escapeSearchFilter (String filter) {
- //From RFC 2254
+ // RFC 2254から
  String escapedStr = new String(filter);
  escapedStr = escapedStr.replaceAll("\\\\\\\\","\\\\\\\\5c");
  escapedStr = escapedStr.replaceAll("\\\\\*","\\\\\\\\2a");
@@ -95,24 +95,24 @@ public String escapeSearchFilter (String filter) {
 }
 ```
 
-### Operating System Commands
+### オペレーティングシステムコマンド
 
-If it is considered unavoidable the call to a system command incorporated with user-supplied input, the following two layers of defense should be used:
+ユーザー提供入力を組み込んだシステムコマンド呼び出しが避けられないと判断される場合、以下の2層の防御を使用すべきです：
 
-1. Parameterization - If available, use structured mechanisms that automatically enforce the separation between data and command
-2. Input validation - the values for commands and the relevant arguments should be both validated:
-   - Commands must be validated against a list of allowed commands
-   - Arguments should be validated using positive or allowlist input validation
-   - Allow-list Regular Expression - explicitly define a list of good characters allowed and maximum length. Ensure that metacharacters like `& | ; $ > < \` \ !` and whitespaces are not part of the Regular Expression
+1. パラメータ化 - 利用可能な場合、データとコマンド間の分離を自動的に強制する構造化されたメカニズムを使用
+2. 入力検証 - コマンドと関連する引数の値は両方とも検証されるべき：
+   - コマンドは許可されたコマンドのリストと照合して検証
+   - 引数はポジティブまたは許可リスト入力検証を使用して検証
+   - 許可リスト正規表現 - 許可される良い文字のリストと最大長を明示的に定義。`& | ; $ > < \` \ !`やホワイトスペースなどのメタ文字が正規表現の一部でないことを確認
 
-Example regular expression: `^[a-z0-9]{3,10}$`
+正規表現の例：`^[a-z0-9]{3,10}$`
 
-Incorrect Usage:
+間違った使用法：
 ```java
 ProcessBuilder b = new ProcessBuilder("C:\DoStuff.exe -arg1 -arg2");
 ```
 
-Correct Usage:
+正しい使用法：
 ```java
 ProcessBuilder pb = new ProcessBuilder("TrustedCmd", "TrustedArg1", "TrustedArg2");
 Map<String, String> env = pb.environment();
@@ -120,13 +120,13 @@ pb.directory(new File("TrustedDir"));
 Process p = pb.start();
 ```
 
-### Injection Prevention Rules
+### インジェクション防止ルール
 
-Rule #1 (Perform proper input validation)
-- Perform proper input validation. Positive or allowlist input validation with appropriate canonicalization is recommended, but is not a complete defense as many applications require special characters in their input.
+ルール#1（適切な入力検証を実行）
+- 適切な入力検証を実行してください。適切な正規化を伴うポジティブまたは許可リスト入力検証が推奨されますが、多くのアプリケーションが入力に特殊文字を必要とするため、完全な防御ではありません。
 
-Rule #2 (Use a safe API)
-- The preferred option is to use a safe API which avoids the use of the interpreter entirely or provides a parameterized interface. Be careful of APIs, such as stored procedures, that are parameterized, but can still introduce injection under the hood.
+ルール#2（安全なAPIを使用）
+- 推奨オプションは、インタープリターの使用を完全に回避するか、パラメータ化インターフェースを提供する安全なAPIを使用することです。ストアドプロシージャなど、パラメータ化されているがバックグラウンドでインジェクションを導入する可能性のあるAPIに注意してください。
 
-Rule #3 (Contextually escape user data)
-- If a parameterized API is not available, you should carefully escape special characters using the specific escape syntax for that interpreter.
+ルール#3（コンテキストに応じてユーザーデータをエスケープ）
+- パラメータ化APIが利用できない場合、そのインタープリター用の特定のエスケープ構文を使用して特殊文字を注意深くエスケープする必要があります。

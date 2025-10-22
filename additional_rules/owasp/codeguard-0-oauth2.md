@@ -1,5 +1,5 @@
 ---
-description: OAuth 2.0 Security Best Practices
+description: OAuth 2.0セキュリティのベストプラクティス
 languages:
 - c
 - go
@@ -13,91 +13,91 @@ languages:
 alwaysApply: false
 ---
 
-## OAuth 2.0 Security Guidelines
+## OAuth 2.0セキュリティガイドライン
 
-Essential security practices for implementing secure OAuth 2.0 authorization flows and protecting against common attacks.
+安全なOAuth 2.0認可フローを実装し、一般的な攻撃から保護するための重要なセキュリティプラクティス。
 
-### Essential Basics
+### 基本事項
 
-Prevent open redirectors that can enable token exfiltration:
-- Clients and Authorization Servers must not expose URLs that forward the user's browser to arbitrary URIs obtained from query parameters
-- Use exact string matching for redirect URI validation during client registration
+トークン流出を可能にするオープンリダイレクターを防止：
+- クライアントと認可サーバーは、クエリパラメータから取得した任意のURIにユーザーのブラウザを転送するURLを公開してはいけません
+- クライアント登録時のリダイレクトURI検証には正確な文字列マッチングを使用
 
-Use proper CSRF protection:
-- When Authorization Server supports PKCE, clients may rely on PKCE's CSRF protection
-- In OpenID Connect flows, the "nonce" parameter provides CSRF protection
-- Otherwise, use one-time CSRF tokens in the "state" parameter that are securely bound to the user agent
+適切なCSRF保護を使用：
+- 認可サーバーがPKCEをサポートする場合、クライアントはPKCEのCSRF保護に依存できます
+- OpenID Connectフローでは、「nonce」パラメータがCSRF保護を提供
+- それ以外の場合、ユーザーエージェントに安全にバインドされた「state」パラメータでワンタイムCSRFトークンを使用
 
-Prevent mix-up attacks in multi-Authorization Server environments:
-- Use the issuer "iss" parameter as a countermeasure when interacting with multiple Authorization Servers
-- Alternatively, use distinct redirect URIs to identify different authorization and token endpoints
-- Authorization Servers should avoid accidentally forwarding requests containing user credentials
+複数認可サーバー環境でのミックスアップ攻撃を防止：
+- 複数の認可サーバーとやり取りする場合、対策として発行者「iss」パラメータを使用
+- または、異なる認可およびトークンエンドポイントを識別するため個別のリダイレクトURIを使用
+- 認可サーバーは、ユーザー認証情報を含むリクエストを誤って転送しないようにする必要があります
 
 ### PKCE - Proof Key for Code Exchange
 
-PKCE mitigates authorization code interception attacks, especially for public clients:
+PKCEは、特にパブリッククライアントに対する認可コード傍受攻撃を緩和します：
 
-- Use PKCE flow to prevent injection (replay) of authorization codes into authorization responses
-- Use PKCE code challenge methods that do not expose the verifier in the authorization request
-- Use S256 as the code challenge method instead of plain text
-- Authorization servers must support PKCE and enforce correct "code_verifier" usage at the token endpoint
-- Prevent PKCE downgrade attacks by accepting "code_verifier" only when "code_challenge" was present in the authorization request
+- 認可レスポンスへの認可コード注入（リプレイ）を防ぐためPKCEフローを使用
+- 認可リクエストで検証子を公開しないPKCEコードチャレンジメソッドを使用
+- 平文の代わりにS256をコードチャレンジメソッドとして使用
+- 認可サーバーはPKCEをサポートし、トークンエンドポイントで正しい「code_verifier」使用を強制する必要があります
+- 認可リクエストに「code_challenge」が存在する場合のみ「code_verifier」を受け入れることで、PKCEダウングレード攻撃を防ぎます
 
-### Authorization Code vs Implicit Grant
+### 認可コード対Implicit Grant
 
-Prefer Authorization Code Grant over Implicit Grant:
-- Use response type "code" (authorization code grant) or "code id_token" instead of implicit flows
-- This allows the Authorization Server to detect replay attempts and reduces attack surface
-- Access tokens are not exposed in URLs and can be sender-constrained
+Implicit GrantよりAuthorization Code Grantを優先：
+- Implicitフローの代わりにレスポンスタイプ「code」（認可コードグラント）または「code id_token」を使用
+- これにより、認可サーバーがリプレイ試行を検出でき、攻撃面が減少します
+- アクセストークンはURLに公開されず、送信者制約が可能です
 
-### Token Replay Prevention
+### トークンリプレイ防止
 
-Implement sender-constraining mechanisms:
-- Use Mutual TLS for OAuth 2.0 or OAuth Demonstration of Proof of Possession (DPoP) to prevent token replays
-- Implement refresh token rotation or ensure refresh tokens are sender-constrained
+送信者制約メカニズムを実装：
+- OAuth 2.0のMutual TLSまたはOAuth Demonstration of Proof of Possession（DPoP）を使用してトークンリプレイを防止
+- リフレッシュトークンローテーションを実装するか、リフレッシュトークンが送信者制約されていることを確認
 
-### Access Token Privilege Restriction
+### アクセストークン権限制限
 
-Apply the principle of least privilege:
-- Restrict token privileges to the minimum required for the particular application or use case
-- Implement audience restriction by associating access tokens with specific Resource Servers
-- Resource Servers must verify that tokens were intended for their use
-- Restrict tokens to specific resources and actions using "scope" and "authorization_details" parameters
-- Use "scope" and "resource" parameters to determine the intended Resource Server
+最小権限の原則を適用：
+- トークン権限を特定のアプリケーションまたはユースケースに必要な最小限に制限
+- アクセストークンを特定のリソースサーバーに関連付けることで対象者制限を実装
+- リソースサーバーはトークンが自分たちの使用を意図していることを検証する必要があります
+- 「scope」および「authorization_details」パラメータを使用して、トークンを特定のリソースとアクションに制限
+- 「scope」および「resource」パラメータを使用して、意図されたリソースサーバーを決定
 
-### Avoid Insecure Grant Types
+### 安全でないグラントタイプを避ける
 
-Never use Resource Owner Password Credentials Grant:
-- This grant type insecurely exposes Resource Owner credentials to the client
-- Increases the attack surface of the application
+リソースオーナーパスワード認証情報グラントを決して使用しない：
+- このグラントタイプはリソースオーナー認証情報をクライアントに安全でなく公開
+- アプリケーションの攻撃面を増加
 
-### Client Authentication
+### クライアント認証
 
-Use strong authentication methods:
-- Implement client authentication whenever possible
-- Prefer asymmetric (public-key based) methods like mTLS or "private_key_jwt" (OpenID Connect)
-- Asymmetric methods eliminate the need to store sensitive symmetric keys on Authorization Servers
-- This approach is more robust against various attacks
+強力な認証方式を使用：
+- 可能な限りクライアント認証を実装
+- mTLSや「private_key_jwt」（OpenID Connect）などの非対称（公開鍵ベース）方式を優先
+- 非対称方式により、認可サーバー上に機密対称鍵を保存する必要がなくなります
+- このアプローチは様々な攻撃に対してより堅牢です
 
-### Additional Security Controls
+### 追加のセキュリティ制御
 
-Protect sensitive claims and enforce secure communications:
-- Authorization Servers must not allow clients to influence their "client_id" or "sub" values
-- Prevent clients from controlling any claims that could be confused with genuine Resource Owner data
-- Use end-to-end TLS for all communications
-- Never transmit authorization responses over unencrypted network connections
-- Prohibit redirect URIs using "http" scheme except for native clients using Loopback Interface Redirection
+機密クレームを保護し、安全な通信を強制：
+- 認可サーバーは、クライアントが「client_id」または「sub」値に影響を与えることを許可してはいけません
+- クライアントが本物のリソースオーナーデータと混同される可能性のあるクレームを制御することを防ぎます
+- すべての通信にエンドツーエンドTLSを使用
+- 暗号化されていないネットワーク接続を介して認可レスポンスを決して送信しません
+- ループバックインターフェースリダイレクションを使用するネイティブクライアントを除き、「http」スキームを使用するリダイレクトURIを禁止
 
-### Implementation Summary
+### 実装まとめ
 
-Secure OAuth 2.0 implementations require:
-- PKCE implementation for all public clients
-- Proper CSRF protection through state parameters or nonce
-- Authorization Code Grant preference over Implicit Grant
-- Token sender-constraining mechanisms (mTLS or DPoP)
-- Strict privilege restriction and audience validation
-- Strong client authentication using asymmetric methods
-- Elimination of insecure grant types
-- Comprehensive TLS enforcement and redirect URI validation
+安全なOAuth 2.0実装には以下が必要です：
+- すべてのパブリッククライアントにPKCE実装
+- stateパラメータまたはnonceによる適切なCSRF保護
+- Implicit GrantよりAuthorization Code Grantの優先
+- トークン送信者制約メカニズム（mTLSまたはDPoP）
+- 厳格な権限制限と対象者検証
+- 非対称方式を使用した強力なクライアント認証
+- 安全でないグラントタイプの排除
+- 包括的なTLS強制とリダイレクトURI検証
 
-Following these practices ensures robust protection against authorization code interception, token replay, privilege escalation, and mix-up attacks while maintaining the flexibility and security benefits of OAuth 2.0.
+これらのプラクティスに従うことで、OAuth 2.0の柔軟性とセキュリティの利点を維持しながら、認可コード傍受、トークンリプレイ、権限昇格、ミックスアップ攻撃に対する堅牢な保護を保証します。

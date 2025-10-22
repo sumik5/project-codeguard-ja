@@ -1,5 +1,5 @@
 ---
-description: Network Segmentation Security Architecture
+description: ネットワークセグメンテーションセキュリティアーキテクチャ
 languages:
 - c
 - javascript
@@ -8,124 +8,124 @@ languages:
 alwaysApply: false
 ---
 
-## Network Segmentation Guidelines
+## ネットワークセグメンテーションガイドライン
 
-Essential practices for implementing secure network architecture to limit attack surface and prevent lateral movement.
+攻撃面を制限し横方向の移動を防ぐための安全なネットワークアーキテクチャを実装するための必須プラクティス。
 
-### Purpose of Network Segmentation
+### ネットワークセグメンテーションの目的
 
-Network segmentation is the core of multi-layer defense in depth for modern services. Proper segmentation slows down attackers by preventing:
-- SQL injections from providing direct database access
-- Compromised workstations from accessing sensitive systems
-- Lateral movement between organizational servers
-- Access to command and control servers from compromised internal systems
+ネットワークセグメンテーションは、現代のサービスにおける多層防御の中核です。適切なセグメンテーションは以下を防止することで攻撃者を遅らせます：
+- SQLインジェクションが直接データベースアクセスを提供すること
+- 侵害されたワークステーションが機密システムにアクセスすること
+- 組織サーバー間の横方向の移動
+- 侵害された内部システムからコマンドアンドコントロールサーバーへのアクセス
 
-### Three-Layer Security Architecture
+### 3層セキュリティアーキテクチャ
 
-Implement a mandatory three-tier architecture with distinct security zones:
+明確なセキュリティゾーンを持つ必須の3層アーキテクチャを実装：
 
-#### Frontend Layer
-Contains internet-facing components:
-- Load balancers
-- Application layer firewalls (WAF)
-- Web servers
-- Web caches
+#### フロントエンド層
+インターネット向けコンポーネントを含む：
+- ロードバランサー
+- アプリケーション層ファイアウォール（WAF）
+- Webサーバー
+- Webキャッシュ
 
-Frontend systems should only communicate with middleware layer, never directly with backend.
+フロントエンドシステムはミドルウェア層とのみ通信し、バックエンドと直接通信してはいけない。
 
-#### Middleware Layer  
-Houses business logic and processing:
-- Web applications implementing system logic
-- Authorization services
-- Analytics services
-- Message queues
-- Stream processing platforms
+#### ミドルウェア層
+ビジネスロジックと処理を収容：
+- システムロジックを実装するWebアプリケーション
+- 認可サービス
+- 分析サービス
+- メッセージキュー
+- ストリーム処理プラットフォーム
 
-Middleware mediates all communication between frontend and backend layers.
+ミドルウェアはフロントエンド層とバックエンド層間のすべての通信を仲介。
 
-#### Backend Layer
-Stores sensitive data and critical systems:
-- SQL databases
-- LDAP directories and domain controllers
-- Cryptographic key storage
-- File servers
+#### バックエンド層
+機密データと重要システムを保存：
+- SQLデータベース
+- LDAPディレクトリとドメインコントローラー
+- 暗号鍵ストレージ
+- ファイルサーバー
 
-Backend systems should only accept connections from middleware layer.
+バックエンドシステムはミドルウェア層からの接続のみを受け入れる。
 
-### Segmentation Implementation
+### セグメンテーション実装
 
-#### Communication Flow Rules
-Enforce strict unidirectional communication patterns:
-- External users connect only to frontend
-- Frontend communicates only with middleware
-- Middleware communicates with backend when needed
-- No direct frontend-to-backend communication allowed
+#### 通信フロールール
+厳格な単方向通信パターンを実施：
+- 外部ユーザーはフロントエンドにのみ接続
+- フロントエンドはミドルウェアとのみ通信
+- ミドルウェアは必要に応じてバックエンドと通信
+- フロントエンドからバックエンドへの直接通信は許可しない
 
-#### DMZ Configuration
-Frontend layer should include two DMZ segments:
-- DMZ Inbound: Services accessible from internet, protected by WAF
-- DMZ Outbound: Services with external network access but no inbound internet access
+#### DMZ設定
+フロントエンド層には2つのDMZセグメントを含める：
+- DMZインバウンド: インターネットからアクセス可能なサービス、WAFで保護
+- DMZアウトバウンド: 外部ネットワークアクセスを持つがインバウンドインターネットアクセスのないサービス
 
-#### Firewall Policy Requirements
-- Define explicit allow rules rather than broad network access
-- Prohibit cross-system communication between different information systems at same layer
-- Prevent middleware from accessing foreign backend systems directly
-- Document all allowed network flows in security policy
+#### ファイアウォールポリシー要件
+- 広範なネットワークアクセスではなく明示的な許可ルールを定義
+- 同じ層の異なる情報システム間のクロスシステム通信を禁止
+- ミドルウェアが外部バックエンドシステムに直接アクセスすることを防止
+- セキュリティポリシーですべての許可されたネットワークフローを文書化
 
-### Interservice Communication Security
+### サービス間通信セキュリティ
 
-#### Between Different Applications
-- Frontend and middleware segments of different systems cannot communicate directly
-- Middleware cannot access backend segments of other services
-- Each application should use dedicated network segments when possible
+#### 異なるアプリケーション間
+- 異なるシステムのフロントエンドとミドルウェアセグメントは直接通信できない
+- ミドルウェアは他のサービスのバックエンドセグメントにアクセスできない
+- 各アプリケーションは可能な限り専用のネットワークセグメントを使用
 
-#### Load Balancer Approach
-For organizations with fewer networks hosting multiple applications:
-- Deploy load balancers within each network segment
-- Open only one port to each network (to the load balancer)
-- Perform traffic routing based on application layer parameters
-- Note: This approach moves access control to OSI Layer 7 rather than network layer
+#### ロードバランサーアプローチ
+複数のアプリケーションをホストするネットワークが少ない組織向け：
+- 各ネットワークセグメント内にロードバランサーを配置
+- 各ネットワークへの1つのポートのみを開く（ロードバランサーへ）
+- アプリケーション層パラメータに基づいてトラフィックルーティングを実行
+- 注意: このアプローチはアクセス制御をネットワーク層ではなくOSIレイヤー7に移動
 
-### Network Security Policy Documentation
+### ネットワークセキュリティポリシードキュメント
 
-Organizations must maintain written policies describing:
-- Firewall rules and network access permissions
-- Visual diagrams showing allowed communication flows
-- Specific provisions for different use cases
+組織は以下を記述した書面ポリシーを維持する必要があります：
+- ファイアウォールルールとネットワークアクセス権限
+- 許可された通信フローを示す視覚的な図
+- 異なるユースケースのための特定の規定
 
-Policy should be accessible to:
-- Network administrators
-- Security representatives  
-- IT auditors
-- System architects and developers
-- IT administrators
+ポリシーは以下にアクセス可能である必要があります：
+- ネットワーク管理者
+- セキュリティ代表者
+- IT監査人
+- システムアーキテクトと開発者
+- IT管理者
 
-#### CI/CD Network Permissions
-Define specific network access rules for software development systems, including:
-- Source code repository access
-- Build system connectivity
-- Deployment pipeline network requirements
+#### CI/CDネットワーク権限
+ソフトウェア開発システムのための特定のネットワークアクセスルールを定義、以下を含む：
+- ソースコードリポジトリアクセス
+- ビルドシステム接続
+- デプロイメントパイプラインネットワーク要件
 
-#### Secure Logging Architecture
-Implement tamper-resistant logging:
-- Copy logs to separate servers using syslog protocol
-- Syslog allows only adding new events, preventing log modification
-- Separate log storage from application systems
-- Include both security events and attack indicators
+#### 安全なロギングアーキテクチャ
+改ざん防止ロギングを実装：
+- syslogプロトコルを使用してログを別のサーバーにコピー
+- syslogは新しいイベントの追加のみを許可し、ログの変更を防止
+- ログストレージをアプリケーションシステムから分離
+- セキュリティイベントと攻撃指標の両方を含める
 
-#### Monitoring System Access
-Define network policies for IT monitoring systems:
-- Specify which segments monitoring tools can access
-- Document data collection and alerting network flows
-- Ensure monitoring doesn't create security bypass opportunities
+#### モニタリングシステムアクセス
+ITモニタリングシステムのネットワークポリシーを定義：
+- モニタリングツールがアクセスできるセグメントを指定
+- データ収集とアラートのネットワークフローを文書化
+- モニタリングがセキュリティバイパスの機会を生じさせないことを確認
 
-### Implementation Best Practices
+### 実装ベストプラクティス
 
-- Use visual network diagrams to communicate segmentation design
-- Implement defense in depth with multiple firewall layers
-- Regularly audit network access rules and segmentation effectiveness
-- Test segmentation by attempting prohibited network connections
-- Monitor network traffic for violations of segmentation policies
-- Update segmentation rules as application architecture evolves
+- ネットワーク図を使用してセグメンテーション設計を伝達
+- 複数のファイアウォール層を持つ多層防御を実装
+- ネットワークアクセスルールとセグメンテーション効果を定期的に監査
+- 禁止されたネットワーク接続を試行してセグメンテーションをテスト
+- セグメンテーションポリシー違反のネットワークトラフィックを監視
+- アプリケーションアーキテクチャの進化に応じてセグメンテーションルールを更新
 
-Network segmentation based on these principles, following the [comprehensive guidance](https://github.com/sergiomarotco/OWASP-Network-segmentation-cheat-sheet), provides foundational security that significantly reduces attack surface and limits potential breach impact.
+[包括的なガイダンス](https://github.com/sergiomarotco/OWASP-Network-segmentation-cheat-sheet)に従ったこれらの原則に基づくネットワークセグメンテーションは、攻撃面を大幅に削減し、潜在的な侵害の影響を制限する基礎的なセキュリティを提供します。

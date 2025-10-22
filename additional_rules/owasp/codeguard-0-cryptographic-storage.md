@@ -1,5 +1,5 @@
 ---
-description: Cryptographic Storage Best Practices
+description: 暗号化ストレージベストプラクティス
 languages:
 - c
 - go
@@ -14,109 +14,109 @@ languages:
 alwaysApply: false
 ---
 
-## Introduction
+## はじめに
 
-This rule provides a simple model to follow when implementing solutions to protect data at rest.
+このルールは、保存データを保護するソリューションを実装する際に従うべきシンプルなモデルを提供します。
 
-Passwords should not be stored using reversible encryption - secure password hashing algorithms should be used instead. The [Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html) contains further guidance on storing passwords.
+パスワードは可逆暗号化を使用して保存すべきではありません - 代わりにセキュアなパスワードハッシュアルゴリズムを使用する必要があります。[Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)には、パスワード保存に関する詳細なガイダンスが含まれています。
 
-## Rule 1: Architectural Design Requirements
+## ルール1: アーキテクチャ設計要件
 
-**YOU MUST consider the overall architecture** of the system, as this will have a huge impact on the technical implementation.
+**システムの全体的なアーキテクチャを検討する必要があります** - これは技術実装に大きな影響を与えます。
 
-* **Application level** - REQUIRED for database compromise protection
-* **Database level** (SQL Server TDE) - Additional data-at-rest protection  
-* **Filesystem level** (BitLocker, LUKS) - Physical theft protection
-* **Hardware level** (encrypted RAID/SSDs) - Hardware-based protection
+* **アプリケーションレベル** - データベース侵害保護に必須
+* **データベースレベル**（SQL Server TDE）- 追加の保存時データ保護
+* **ファイルシステムレベル**（BitLocker、LUKS）- 物理的盗難保護
+* **ハードウェアレベル**（暗号化RAID/SSD）- ハードウェアベース保護
 
-**YOU MUST minimize sensitive data storage** - avoid storing credit card details and implement data minimization policies. Use tokenization when storage is unavoidable.
+**機密データの保存を最小化する必要があります** - クレジットカード詳細の保存を避け、データ最小化ポリシーを実装します。保存が避けられない場合はトークン化を使用します。
 
-## Rule 2: Algorithm Requirements
+## ルール2: アルゴリズム要件
 
-**YOU MUST use approved algorithms:**
-* **Symmetric:** AES with ≥128-bit keys (256-bit preferred)
-* **Asymmetric:** Curve25519 (ECC preferred) or RSA ≥2048 bits
-* **Custom algorithms:** PROHIBITED
+**承認されたアルゴリズムを使用する必要があります：**
+* **対称暗号：** 128ビット以上の鍵を持つAES（256ビット推奨）
+* **非対称暗号：** Curve25519（ECC推奨）またはRSA 2048ビット以上
+* **カスタムアルゴリズム：** 禁止
 
-**YOU MUST use authenticated cipher modes:**
-1. **GCM** or **CCM** (preferred)
-2. **CTR/CBC** only with separate authentication (Encrypt-then-MAC)
-3. **ECB:** PROHIBITED
+**認証付き暗号モードを使用する必要があります：**
+1. **GCM**または**CCM**（推奨）
+2. **CTR/CBC**は別途認証を伴う場合のみ（Encrypt-then-MAC）
+3. **ECB：** 禁止
 
-**For RSA: YOU MUST enable Random Padding** (OAEP/PKCS#1).
+**RSAの場合：ランダムパディングを有効化する必要があります**（OAEP/PKCS#1）。
 
-**YOU MUST use cryptographically secure random generators:**
+**暗号学的に安全な乱数生成器を使用する必要があります：**
 
-| Platform | PROHIBITED | REQUIRED |
+| プラットフォーム | 禁止 | 必須 |
 |----------|------------|----------|
 | PHP | `rand()`, `mt_rand()` | `random_bytes()`, `random_int()` |
 | Java | `java.util.Random` | `java.security.SecureRandom` |
 | .NET | `System.Random` | `System.Security.Cryptography.RandomNumberGenerator` |
-| Python | `random` module | `secrets` module |
+| Python | `random`モジュール | `secrets`モジュール |
 | JavaScript | `Math.random()` | `window.crypto.getRandomValues()` |
 | Go | `math/rand` | `crypto/rand` |
 | Node.js | `Math.random()` | `crypto.randomBytes()`, `crypto.randomInt()` |
 
-**UUIDs:** Version 1 UUIDs are NOT random. Only trust Version 4 UUIDs if implementation uses CSPRNG.
+**UUID：** バージョン1のUUIDはランダムではありません。実装がCSPRNGを使用している場合のみ、バージョン4のUUIDを信頼してください。
 
-## Rule 3: Key Management Requirements
+## ルール3: 鍵管理要件
 
-**YOU MUST implement formal processes for:**
-* Key generation using cryptographically secure functions
-* Secure key distribution and deployment
-* Regular key rotation and secure decommissioning
+**以下のための正式なプロセスを実装する必要があります：**
+* 暗号学的に安全な関数を使用した鍵生成
+* セキュアな鍵配布とデプロイ
+* 定期的な鍵ローテーションとセキュアな廃止
 
-**Key Generation:** YOU ARE PROHIBITED from using passwords, phrases, or predictable patterns. Multiple keys MUST be fully independent.
+**鍵生成：** パスワード、フレーズ、予測可能なパターンの使用は禁止されています。複数の鍵は完全に独立している必要があります。
 
-**Key Rotation Requirements - YOU MUST rotate keys when:**
-* Key compromise is suspected
-* Cryptoperiod expires (see NIST SP 800-57)
-* Usage limits reached (2^35 bytes for 64-bit keys, 2^68 bytes for 128-bit)
-* Algorithm security changes
+**鍵ローテーション要件 - 以下の場合に鍵をローテーションする必要があります：**
+* 鍵の侵害が疑われる場合
+* 暗号期間が満了した場合（NIST SP 800-57を参照）
+* 使用制限に達した場合（64ビット鍵で2^35バイト、128ビット鍵で2^68バイト）
+* アルゴリズムのセキュリティが変更された場合
 
-**YOU MUST have rotation processes ready BEFORE compromise.**
+**侵害前にローテーションプロセスを準備しておく必要があります。**
 
-## Rule 4: Key Storage Requirements
+## ルール4: 鍵保存要件
 
-**YOU MUST use secure storage mechanisms where available:**
-* Physical/Virtual HSMs
-* Cloud key vaults (AWS KMS, Azure Key Vault, Google Cloud KMS)
-* External secrets management (HashiCorp Vault, Conjur)
-* Framework secure APIs (ProtectedData, Keychain)
+**利用可能な場合、セキュアなストレージメカニズムを使用する必要があります：**
+* 物理/仮想HSM
+* クラウド鍵ボルト（AWS KMS、Azure Key Vault、Google Cloud KMS）
+* 外部シークレット管理（HashiCorp Vault、Conjur）
+* フレームワークのセキュアAPI（ProtectedData、Keychain）
 
-**Basic Storage Rules (when secure mechanisms unavailable):**
-* PROHIBITED: Hard-coding keys in source code or version control
-* REQUIRED: Restrictive permissions on config files
-* AVOID: Environment variables (exposure risk)
+**基本的なストレージルール（セキュアなメカニズムが利用できない場合）：**
+* 禁止：ソースコードまたはバージョン管理への鍵のハードコーディング
+* 必須：設定ファイルへの制限的な権限
+* 回避：環境変数（露出リスク）
 
-**Key Separation:** YOU MUST store keys separately from encrypted data where possible.
+**鍵の分離：** 可能な限り、暗号化されたデータとは別に鍵を保存する必要があります。
 
-**Key Encryption:** YOU MUST encrypt stored keys using separate Key Encryption Keys (KEK):
-* Data Encryption Key (DEK) encrypts data
-* Key Encryption Key (KEK) encrypts DEK
-* KEK MUST be stored separately and be ≥ as strong as DEK
+**鍵の暗号化：** 別個の鍵暗号化鍵（KEK）を使用して保存された鍵を暗号化する必要があります：
+* データ暗号化鍵（DEK）がデータを暗号化
+* 鍵暗号化鍵（KEK）がDEKを暗号化
+* KEKは別に保存され、DEKと同等以上の強度である必要があります
 
-## Rule 5: Defense in Depth Requirements
+## ルール5: 多層防御要件
 
-**YOU MUST design applications to be secure even if cryptographic controls fail:**
-* Additional security layers for encrypted information
-* Strong access control (not relying on encrypted URL parameters alone)
-* Logging and monitoring of encrypted data access
+**暗号化制御が失敗した場合でもアプリケーションがセキュアであるように設計する必要があります：**
+* 暗号化情報のための追加のセキュリティ層
+* 強力なアクセス制御（暗号化されたURLパラメータのみに依存しない）
+* 暗号化データアクセスのロギングと監視
 
-## Critical Security Requirements
+## 重要なセキュリティ要件
 
-**COMPLIANCE IS MANDATORY** for all systems handling sensitive data.
+機密データを扱うすべてのシステムで**コンプライアンスは必須**です。
 
-**YOU ARE ABSOLUTELY PROHIBITED FROM:**
-* Implementing custom cryptographic algorithms
-* Using insecure random generators for security purposes
-* Hard-coding encryption keys in source code
-* Using deprecated algorithms (MD5, SHA-1, DES, RC4)
-* Storing keys with encrypted data without proper separation
+**以下は絶対に禁止されています：**
+* カスタム暗号化アルゴリズムの実装
+* セキュリティ目的での安全でない乱数生成器の使用
+* ソースコードへの暗号化鍵のハードコーディング
+* 非推奨のアルゴリズムの使用（MD5、SHA-1、DES、RC4）
+* 適切な分離なしでの暗号化データと鍵の保存
 
-**YOU MUST ALWAYS:**
-* Use authenticated encryption modes where available
-* Generate unique, random keys for each operation
-* Implement proper key lifecycle management
-* Use vetted cryptographic libraries only
-* Test key rotation procedures before needed
+**常に以下を行う必要があります：**
+* 利用可能な場合、認証付き暗号化モードを使用
+* 各操作に対してユニークでランダムな鍵を生成
+* 適切な鍵ライフサイクル管理を実装
+* 検証済みの暗号化ライブラリのみを使用
+* 必要になる前に鍵ローテーション手順をテスト

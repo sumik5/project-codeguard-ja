@@ -1,5 +1,5 @@
 ---
-description: Security Questions Implementation Guidelines
+description: セキュリティ質問実装ガイドライン
 languages:
 - c
 - go
@@ -12,42 +12,42 @@ languages:
 alwaysApply: false
 ---
 
-Security questions are no longer considered a strong authentication factor in authentication systems. Modern best practices strongly recommend against using them as a standalone method for authentication or account recovery.
+セキュリティ質問は、認証システムにおいて強力な認証要素とはもはや見なされていません。最新のベストプラクティスでは、認証またはアカウント復旧のスタンドアロン手段としての使用を強く推奨していません。
 
-### Preferred Alternatives to Security Questions
+### セキュリティ質問の推奨代替手段
 
-*   **Multi-Factor Authentication (MFA):** Implement time-based one-time passwords (TOTP), push notifications, or hardware security keys as your primary account recovery mechanism.
-*   **One-Time Recovery Codes:** Generate and provide users with a set of single-use recovery codes when they set up their account.
-*   **Email-Based Recovery:** Send a time-limited, single-use recovery link to a verified email address.
+*   **多要素認証（MFA）：** 時間ベースのワンタイムパスワード（TOTP）、プッシュ通知、またはハードウェアセキュリティキーを主要なアカウント復旧メカニズムとして実装します。
+*   **ワンタイム復旧コード：** ユーザーがアカウントを設定する際に、単一使用の復旧コードセットを生成して提供します。
+*   **メールベース復旧：** 確認済みメールアドレスに時間制限された単一使用の復旧リンクを送信します。
 
-### If You Must Use Security Questions (Legacy Systems)
+### セキュリティ質問を使用せざるを得ない場合（レガシーシステム）
 
-If your organization requires security questions for legacy or compliance reasons, implement these critical safeguards:
+組織がレガシーまたはコンプライアンス上の理由でセキュリティ質問を必要とする場合、以下の重要な保護措置を実装してください：
 
-#### 1. Question Selection
+#### 1. 質問の選択
 
-*   **Provide a Curated List:** Offer a predefined set of strong questions rather than allowing free-form user-created ones.
-*   **Question Quality:** Choose questions that are:
-    *   **Memorable:** Users can consistently recall the answer over time.
-    *   **Stable:** The answer doesn't change over the user's lifetime.
-    *   **Confidential:** Not easily discoverable through social media or public records.
-    *   **Specific:** Has a single, precise answer rather than multiple possible answers.
+*   **厳選されたリストを提供：** 自由形式のユーザー作成質問ではなく、事前定義された強力な質問セットを提供します。
+*   **質問の品質：** 以下の質問を選択します：
+    *   **記憶可能：** ユーザーが時間が経過しても一貫して回答を思い出せる。
+    *   **安定：** 回答がユーザーの生涯にわたって変化しない。
+    *   **機密：** ソーシャルメディアや公的記録を通じて容易に発見できない。
+    *   **具体的：** 複数の可能な回答ではなく、単一の正確な回答を持つ。
 
-#### 2. Answer Handling
+#### 2. 回答の処理
 
-*   **Secure Storage:** Hash all answers using Argon2id or bcrypt with per-answer unique salt and system-wide pepper. Store data encrypted at rest with AES-256.
-*   **Normalization:** Before comparing answers, normalize them by removing extra spaces, converting to lowercase, and removing punctuation.
-*   **Input Validation:**
-    *   Enforce a minimum length but allow legitimate short answers.
-    *   Implement a denylist for weak answers like "password", "123456", or the user's own username/email.
+*   **安全な保存：** 回答ごとに一意なソルトとシステム全体のペッパーを用いて、Argon2idまたはbcryptを使用してすべての回答をハッシュ化します。AES-256で保存時暗号化されたデータを保存します。
+*   **正規化：** 回答を比較する前に、余分なスペースを削除し、小文字に変換し、句読点を削除して正規化します。
+*   **入力検証：**
+    *   最小長を強制しますが、正当な短い回答を許可します。
+    *   "password"、"123456"、またはユーザー自身のユーザー名/メールなどの弱い回答に対するブロックリストを実装します。
 
-#### 3. Implementation Best Practices
+#### 3. 実装のベストプラクティス
 
-*   **Multi-Layered Security:** Use multiple questions together for increased security.
-*   **Consistent Question:** When a user fails to answer correctly, don't rotate to a different question—this helps prevent attackers from learning all the answers through multiple attempts.
-*   **Brute-Force Protection:** Implement rate limiting (max 5 attempts per hour), progressive delays, CAPTCHA after 3 failed attempts, and account lockout to prevent automated attacks.
-*   **Verify Email First:** Always verify ownership of the recovery email address before presenting security questions.
-*   **Require Authentication:** Require re-authentication (password or MFA) before allowing users to change their security questions or answers.
-*   **Secure Transport:** Use HTTPS/TLS 1.3+ for all recovery endpoints and implement certificate pinning where possible to prevent man-in-the-middle attacks.
+*   **多層セキュリティ：** セキュリティ向上のため、複数の質問を一緒に使用します。
+*   **一貫した質問：** ユーザーが正しく回答できなかった場合、別の質問にローテーションしない—これにより、攻撃者が複数回の試行を通じてすべての回答を学習することを防ぎます。
+*   **ブルートフォース保護：** レート制限（1時間あたり最大5回の試行）、段階的遅延、3回失敗後のCAPTCHA、自動攻撃を防ぐアカウントロックアウトを実装します。
+*   **メールを最初に検証：** セキュリティ質問を提示する前に、常に復旧メールアドレスの所有権を検証します。
+*   **認証を要求：** ユーザーがセキュリティ質問または回答を変更できるようにする前に、再認証（パスワードまたはMFA）を要求します。
+*   **安全な転送：** すべての復旧エンドポイントにHTTPS/TLS 1.3+を使用し、中間者攻撃を防ぐため可能な場合証明書ピンニングを実装します。
 
-By following these guidelines, you can minimize the risks associated with security questions while working toward implementing more secure authentication methods.
+これらのガイドラインに従うことで、より安全な認証方式の実装に向けて取り組みながら、セキュリティ質問に関連するリスクを最小化できます。

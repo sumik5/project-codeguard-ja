@@ -1,5 +1,5 @@
 ---
-description: SQL Injection Prevention via Query Parameterization
+description: クエリパラメータ化によるSQLインジェクション防止
 languages:
 - c
 - java
@@ -11,31 +11,31 @@ languages:
 alwaysApply: false
 ---
 
-## Query Parameterization Guidelines
+## クエリパラメータ化ガイドライン
 
-Essential practices for preventing SQL injection attacks by using parameterized queries instead of string concatenation when building database queries.
+データベースクエリを構築する際に文字列連結の代わりにパラメータ化されたクエリを使用することでSQLインジェクション攻撃を防ぐための必須プラクティス。
 
-### Core Principle
+### 基本原則
 
-SQL injection is prevented through parameterized queries that separate SQL structure from data. User input is treated as data parameters, not executable SQL code, preventing attackers from altering query structure.
+SQLインジェクションは、SQL構造とデータを分離するパラメータ化されたクエリによって防止されます。ユーザー入力は実行可能なSQLコードではなくデータパラメータとして扱われ、攻撃者がクエリ構造を変更することを防ぎます。
 
-### Implementation Requirements
+### 実装要件
 
-Always use language-specific parameterized queries or prepared statements:
+常に言語固有のパラメータ化されたクエリまたはプリペアドステートメントを使用します:
 
-#### Java with PreparedStatement
+#### JavaでPreparedStatementを使用
 ```java
 String custname = request.getParameter("customerName");
-String query = "SELECT account_balance FROM user_data WHERE user_name = ? ";  
+String query = "SELECT account_balance FROM user_data WHERE user_name = ? ";
 PreparedStatement pstmt = connection.prepareStatement( query );
 pstmt.setString( 1, custname);
 ResultSet results = pstmt.executeQuery( );
 ```
 
-#### Java with Hibernate
+#### JavaでHibernateを使用
 ```java
 // HQL
-@Entity // declare as entity;
+@Entity // エンティティとして宣言;
 @NamedQuery(
  name="findByDescription",
  query="FROM Inventory i WHERE i.productDescription = :productDescription"
@@ -46,23 +46,23 @@ public class Inventory implements Serializable {
  private String productDescription;
 }
 
-// Use case
-// This should REALLY be validated too
+// ユースケース
+// これも本当に検証すべき
 String userSuppliedParameter = request.getParameter("Product-Description");
-// Perform input validation to detect attacks
+// 攻撃を検出するための入力検証を実行
 List<Inventory> list =
  session.getNamedQuery("findByDescription")
  .setParameter("productDescription", userSuppliedParameter).list();
 
 // Criteria API
-// This should REALLY be validated too
+// これも本当に検証すべき
 String userSuppliedParameter = request.getParameter("Product-Description");
-// Perform input validation to detect attacks
+// 攻撃を検出するための入力検証を実行
 Inventory inv = (Inventory) session.createCriteria(Inventory.class).add
 (Restrictions.eq("productDescription", userSuppliedParameter)).uniqueResult();
 ```
 
-#### .NET with OleDbCommand
+#### .NETでOleDbCommandを使用
 ```csharp
 String query = "SELECT account_balance FROM user_data WHERE user_name = ?";
 try {
@@ -71,11 +71,11 @@ try {
    OleDbDataReader reader = command.ExecuteReader();
    // …
 } catch (OleDbException se) {
-   // error handling
+   // エラー処理
 }
 ```
 
-#### ASP.NET with SqlCommand
+#### ASP.NETでSqlCommandを使用
 ```csharp
 string sql = "SELECT * FROM Customers WHERE CustomerId = @CustomerId";
 SqlCommand command = new SqlCommand(sql);
@@ -83,27 +83,27 @@ command.Parameters.Add(new SqlParameter("@CustomerId", System.Data.SqlDbType.Int
 command.Parameters["@CustomerId"].Value = 1;
 ```
 
-#### Ruby with ActiveRecord
+#### RubyでActiveRecordを使用
 ```ruby
-## Create
+## 作成
 Project.create!(:name => 'owasp')
-## Read
+## 読み取り
 Project.all(:conditions => "name = ?", name)
 Project.all(:conditions => { :name => name })
 Project.where("name = :name", :name => name)
-## Update
+## 更新
 project.update_attributes(:name => 'owasp')
-## Delete
+## 削除
 Project.delete(:name => 'name')
 ```
 
-#### Ruby Built-in
+#### Ruby組み込み
 ```ruby
 insert_new_user = db.prepare "INSERT INTO users (name, age, gender) VALUES (?, ? ,?)"
 insert_new_user.execute 'aizatto', '20', 'male'
 ```
 
-#### PHP with PDO
+#### PHPでPDOを使用
 ```php
 $stmt = $dbh->prepare("INSERT INTO REGISTRY (name, value) VALUES (:name, :value)");
 $stmt->bindParam(':name', $name);
@@ -118,29 +118,29 @@ $stmt->bindParam(':value', $value);
 </cfquery>
 ```
 
-#### Perl with DBI
+#### PerlでDBIを使用
 ```perl
 my $sql = "INSERT INTO foo (bar, baz) VALUES ( ?, ? )";
 my $sth = $dbh->prepare( $sql );
 $sth->execute( $bar, $baz );
 ```
 
-#### Rust with SQLx
+#### RustでSQLxを使用
 ```rust
-// Input from CLI args but could be anything
+// CLIの引数からの入力だが何でも可
 let username = std::env::args().last().unwrap();
 
-// Using build-in macros (compile time checks)
+// 組み込みマクロを使用（コンパイル時チェック）
 let users = sqlx::query_as!(
         User,
         "SELECT * FROM users WHERE name = ?",
         username
     )
     .fetch_all(&pool)
-    .await 
+    .await
     .unwrap();
 
-// Using built-in functions
+// 組み込み関数を使用
 let users: Vec<User> = sqlx::query_as::<_, User>(
         "SELECT * FROM users WHERE name = ?"
     )
@@ -150,10 +150,10 @@ let users: Vec<User> = sqlx::query_as::<_, User>(
     .unwrap();
 ```
 
-### Stored Procedure Security
+### ストアドプロシージャのセキュリティ
 
-#### Normal Stored Procedures
-Parameters are naturally bound without special requirements:
+#### 通常のストアドプロシージャ
+パラメータは特別な要件なしに自然にバインドされます:
 
 ##### Oracle PL/SQL
 ```sql
@@ -169,10 +169,10 @@ PROCEDURE SafeGetBalanceQuery(@UserID varchar(20), @Dept varchar(10)) AS BEGIN
 END
 ```
 
-#### Dynamic SQL in Stored Procedures
-Use bind variables to ensure dynamic SQL treats inputs as data, not code:
+#### ストアドプロシージャ内の動的SQL
+バインド変数を使用して、動的SQLが入力をコードではなくデータとして扱うようにします:
 
-##### Oracle with EXECUTE IMMEDIATE
+##### OracleでEXECUTE IMMEDIATEを使用
 ```sql
 PROCEDURE AnotherSafeGetBalanceQuery(UserID varchar, Dept varchar)
           AS stmt VARCHAR(400); result NUMBER;
@@ -184,7 +184,7 @@ BEGIN
 END;
 ```
 
-##### SQL Server with sp_executesql
+##### SQL Serverでsp_executesqlを使用
 ```sql
 PROCEDURE SafeGetBalanceQuery(@UserID varchar(20), @Dept varchar(10)) AS BEGIN
    DECLARE @sql VARCHAR(200)
@@ -196,10 +196,10 @@ PROCEDURE SafeGetBalanceQuery(@UserID varchar(20), @Dept varchar(10)) AS BEGIN
 END
 ```
 
-### Critical Security Notes
+### 重要なセキュリティ注意事項
 
-- Ensure parameterization occurs server-side; client-side parameterization libraries may still build unsafe queries through string concatenation
-- Parameterized queries are the primary defense against SQL injection
-- Input validation should focus on business logic requirements, not SQL injection prevention
-- Never concatenate user input directly into SQL query strings
-- Use bind variables for any dynamic SQL construction within stored procedures
+- パラメータ化はサーバー側で行われることを確認してください。クライアント側のパラメータ化ライブラリは、文字列連結によって依然として安全でないクエリを構築する可能性があります
+- パラメータ化されたクエリはSQLインジェクションに対する主要な防御策です
+- 入力検証はSQLインジェクション防止ではなく、ビジネスロジック要件に焦点を当てるべきです
+- ユーザー入力をSQLクエリ文字列に直接連結しないでください
+- ストアドプロシージャ内の動的SQL構築にはバインド変数を使用してください

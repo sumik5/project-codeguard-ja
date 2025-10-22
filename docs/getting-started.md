@@ -1,73 +1,73 @@
-# Getting Started
+# はじめに
 
-Get up and running with Project CodeGuard in just a few steps.
+Project CodeGuardを数ステップで導入できます。
 
-## Prerequisites
+## 前提条件
 
-Before you begin, familiarize yourself with how rules work in your IDE:
+開始する前に、各IDEでのルール設定方法を確認してください。
 
 === "Cursor"
 
-    Cursor uses `.cursor/rules` for rule configuration.
-    
-    :material-book-open-page-variant: [Cursor Rules Documentation](https://docs.cursor.com/en/context/rules)
+    Cursorは`.cursor/rules`でルールを設定します。
+
+    :material-book-open-page-variant: [Cursorルールのドキュメント](https://docs.cursor.com/en/context/rules)
 
 === "Windsurf"
 
-    Windsurf uses `.windsurf/rules` for rule configuration.
-    
-    :material-book-open-page-variant: [Windsurf Rules Documentation](https://docs.windsurf.com/windsurf/cascade/memories#rules)
+    Windsurfは`.windsurf/rules`でルールを設定します。
+
+    :material-book-open-page-variant: [Windsurfルールのドキュメント](https://docs.windsurf.com/windsurf/cascade/memories#rules)
 
 === "GitHub Copilot"
 
-    GitHub Copilot uses `.github/instructions` for rule configuration.
-    
+    GitHub Copilotは`.github/instructions`でルールを設定します。
+
     :material-book-open-page-variant: [GitHub Copilot Instructions](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions)
 
-## Installation
+## インストール
 
-### Option 1: Download Pre-built Rules (Recommended)
+### 方法1: ビルド済みルールのダウンロード（推奨）
 
-1. **Download**: Visit the [Releases page](https://github.com/project-codeguard/rules/releases) and download the latest release archive
-2. **Extract**: Unzip the downloaded file
-3. **Install**: Copy the relevant IDE-specific rules to your project root:
-    - For **Cursor**: Copy `.cursor/` directory
-    - For **Windsurf**: Copy `.windsurf/` directory
-    - For **GitHub Copilot**: Copy `.github/instructions/` directory
+1. **ダウンロード**: [リリースページ](https://github.com/project-codeguard/rules/releases)から最新のリリースアーカイブをダウンロード
+2. **展開**: ダウンロードしたファイルを解凍
+3. **インストール**: 各IDE用のルールをプロジェクトルートにコピー：
+    - **Cursor用**: `.cursor/`ディレクトリをコピー
+    - **Windsurf用**: `.windsurf/`ディレクトリをコピー
+    - **GitHub Copilot用**: `.github/instructions/`ディレクトリをコピー
 
-!!! tip "Repository Level Installation"
-    Installing at the repository level ensures all team members benefit from the security rules automatically when they clone the repository.
+!!! tip "リポジトリレベルでのインストール"
+    リポジトリレベルでインストールすると、チームメンバー全員がリポジトリをクローンした時点でセキュリティルールの恩恵を受けられます。
 
-!!! note "Hidden Files on macOS/Linux"
-    On macOS/Linux, you may need to show hidden files:
-    
-    - **macOS Finder**: Press ++cmd+shift+period++ to toggle visibility
-    - **Linux**: Use `ls -la` in terminal or enable "Show Hidden Files" in your file manager
+!!! note "macOS/Linuxでの隠しファイル表示"
+    macOS/Linuxでは、隠しファイルを表示する必要があります：
 
-### Option 2: Build from Source
+    - **macOS Finder**: ++cmd+shift+period++を押して表示を切り替え
+    - **Linux**: ターミナルで`ls -la`を実行、またはファイルマネージャーで「隠しファイルを表示」を有効化
 
-If you want to customize or contribute to the rules:
+### 方法2: ソースからビルド
+
+ルールをカスタマイズまたは貢献したい場合：
 
 ```bash
-# Clone the repository
+# リポジトリをクローン
 git clone https://github.com/project-codeguard/rules.git
 cd rules
 
-# Install dependencies (requires Python 3.11+)
+# 依存関係をインストール（Python 3.11以上が必要）
 uv sync
 
-# Convert unified rules to IDE-specific formats
+# 統合ルールを各IDE形式に変換
 uv run python src/unified_to_all.py rules/ .
 
-# Copy the generated rules to your project
+# 生成されたルールをプロジェクトにコピー
 cp -r ./ide_rules/.cursor/ /path/to/your/project/
 cp -r ./ide_rules/.windsurf/ /path/to/your/project/
 cp -r ./ide_rules/.github/ /path/to/your/project/
 ```
 
-## Verify Installation
+## インストールの確認
 
-After installation, your project structure should include:
+インストール後、プロジェクト構造は以下のようになります：
 
 ```
 your-project/
@@ -77,81 +77,80 @@ your-project/
 │   └── rules/
 ├── .github/
 │   └── instructions/
-└── ... (your project files)
+└── ... (プロジェクトファイル)
 ```
 
-## What's Included
+## 含まれる内容
 
-The security rules cover essential areas:
+セキュリティルールは主要な領域をカバーしています：
 
-### Core Security Rules
+### コアセキュリティルール
 
-- **🔐 Cryptography**: Safe algorithms, secure key management, TLS configuration
-- **🛡️ Input Validation**: SQL injection, XSS prevention, command injection defense
-- **🔑 Authentication**: MFA, OAuth/OIDC, password security, session management
-- **⚡ Authorization**: RBAC/ABAC, access control, privilege escalation prevention
+- **🔐 暗号化**: 安全なアルゴリズム、鍵管理、TLS設定
+- **🛡️ 入力検証**: SQLインジェクション、XSS防御、コマンドインジェクション対策
+- **🔑 認証**: MFA、OAuth/OIDC、パスワードセキュリティ、セッション管理
+- **⚡ 認可**: RBAC/ABAC、アクセス制御、権限昇格防止
 
-### Platform-Specific Rules
+### プラットフォーム別ルール
 
-- **📱 Mobile Apps**: iOS/Android security, secure storage, transport security
-- **🌐 API Security**: REST/GraphQL/SOAP security, rate limiting, SSRF prevention
-- **☁️ Cloud & Containers**: Docker/Kubernetes hardening, IaC security
-- **🗄️ Data Storage**: Database security, encryption, backup protection
+- **📱 モバイルアプリ**: iOS/Androidセキュリティ、安全なストレージ、通信セキュリティ
+- **🌐 APIセキュリティ**: REST/GraphQL/SOAPセキュリティ、レート制限、SSRF防止
+- **☁️ クラウド・コンテナ**: Docker/Kubernetes強化、IaCセキュリティ
+- **🗄️ データストレージ**: データベースセキュリティ、暗号化、バックアップ保護
 
-### DevOps & Supply Chain
+### DevOps・サプライチェーン
 
-- **📦 Dependencies**: Supply chain security, SBOM, vulnerability management
-- **🔄 CI/CD**: Pipeline security, artifact signing, secrets management
-- **📝 Logging**: Secure logging, monitoring, privacy-aware telemetry
+- **📦 依存関係**: サプライチェーンセキュリティ、SBOM、脆弱性管理
+- **🔄 CI/CD**: パイプラインセキュリティ、アーティファクト署名、シークレット管理
+- **📝 ログ**: 安全なログ記録、モニタリング、プライバシー配慮のテレメトリー
 
-## Testing the Integration
+## 統合のテスト
 
-To verify the rules are working:
+ルールが正しく動作するか確認するには：
 
-1. **Open your IDE** with the Project CodeGuard rules installed
-2. **Start a new file** in a supported language (Python, JavaScript, Java, C/C++, etc.)
-3. **Ask your AI assistant** to generate code that might have security implications:
-   - "Create a function to hash a password"
-   - "Write code to connect to a database"
-   - "Generate an API endpoint with authentication"
+1. **IDEを起動** - Project CodeGuardルールがインストールされたIDE
+2. **新規ファイルを作成** - サポート言語（Python、JavaScript、Java、C/C++など）
+3. **AIアシスタントに質問** - セキュリティ影響のあるコード生成を依頼：
+   - 「パスワードをハッシュ化する関数を作成」
+   - 「データベースに接続するコードを書いて」
+   - 「認証機能付きAPIエンドポイントを生成」
 
-4. **Observe the output** - The AI should automatically apply security best practices:
-   - Using strong cryptographic algorithms (bcrypt/Argon2 for passwords)
-   - Parameterized queries to prevent SQL injection
-   - Proper authentication/authorization checks
+4. **出力を確認** - AIが自動的にセキュリティベストプラクティスを適用：
+   - 強力な暗号化アルゴリズム（パスワードはbcrypt/Argon2）
+   - SQLインジェクション防止のパラメータ化クエリ
+   - 適切な認証・認可チェック
 
-## Next Steps
+## 次のステップ
 
-- **Review Rules**: Explore the security rules in your IDE's rules directory
-- **Test Integration**: Generate some code and see the security guidance in action
-- **Share Feedback**: Help us improve by [opening an issue](https://github.com/project-codeguard/rules/issues)
-- **Contribute**: See [CONTRIBUTING.md](https://github.com/project-codeguard/rules/CONTRIBUTING.md) to contribute new rules or improvements
+- **ルールを確認**: IDEのルールディレクトリでセキュリティルールを確認
+- **統合をテスト**: コードを生成してセキュリティガイダンスを実際に体験
+- **フィードバック共有**: [issue](https://github.com/project-codeguard/rules/issues)で改善提案を送信
+- **貢献**: [CONTRIBUTING.md](https://github.com/project-codeguard/rules/CONTRIBUTING.md)で新しいルールや改善方法を確認
 
-!!! success "You're Ready!"
-    Project CodeGuard is now protecting your development workflow. The security rules will automatically guide AI assistants to generate more secure code.
+!!! success "準備完了！"
+    Project CodeGuardが開発ワークフローを保護します。セキュリティルールがAIアシスタントによるより安全なコード生成を自動的にガイドします。
 
-## Troubleshooting
+## トラブルシューティング
 
-### Rules Not Working
+### ルールが機能しない
 
-If the AI assistant doesn't seem to follow the rules:
+AIアシスタントがルールに従わない場合：
 
-1. **Restart your IDE** to ensure rules are loaded
-2. **Check file location** - Ensure rules are in the correct directory for your IDE
-3. **Verify file format** - Rules should be markdown files
-4. **Test with explicit request** - Ask the AI directly: "Follow the security rules when generating this code"
+1. **IDEを再起動** - ルールが読み込まれるよう確認
+2. **ファイルの場所を確認** - IDE用の正しいディレクトリにルールがあるか確認
+3. **ファイル形式を確認** - ルールはMarkdownファイルである必要があります
+4. **明示的にリクエスト** - AIに直接指示：「このコードを生成する際はセキュリティルールに従ってください」
 
-### Performance Impact
+### パフォーマンスへの影響
 
-The rules have minimal performance impact, but if you experience issues:
+ルールのパフォーマンス影響は最小限ですが、問題が発生した場合：
 
-- **Reduce rule count**: Start with core rules (cryptography, input validation, authentication)
-- **Combine rules**: Merge related rules into fewer files
-- **Report issues**: Let us know via [GitHub Issues](https://github.com/project-codeguard/rules/issues)
+- **ルール数を削減**: コアルール（暗号化、入力検証、認証）から開始
+- **ルールを結合**: 関連ルールを少数のファイルに統合
+- **問題を報告**: [GitHub Issues](https://github.com/project-codeguard/rules/issues)で報告
 
-## Getting Help
+## サポート
 
-- **Documentation**: You're reading it! Check the [FAQ](faq.md) for common questions
-- **GitHub Issues**: [Report bugs or ask questions](https://github.com/project-codeguard/rules/issues)
-- **Discussions**: [Join the community discussion](https://github.com/project-codeguard/rules/discussions)
-
+- **ドキュメント**: 今お読みのドキュメントです！よくある質問は[FAQ](faq.md)を確認
+- **GitHub Issues**: [バグ報告や質問](https://github.com/project-codeguard/rules/issues)
+- **ディスカッション**: [コミュニティディスカッションに参加](https://github.com/project-codeguard/rules/discussions)

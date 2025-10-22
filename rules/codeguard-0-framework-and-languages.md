@@ -1,6 +1,5 @@
 ---
-description: Framework & language security guides (Django/DRF, Laravel/Symfony/Rails,
-  .NET, Java/JAAS, Node.js, PHP config)
+description: フレームワーク・言語セキュリティガイド（Django/DRF、Laravel/Symfony/Rails、.NET、Java/JAAS、Node.js、PHP設定）
 languages:
 - c
 - java
@@ -15,51 +14,51 @@ languages:
 alwaysApply: false
 ---
 
-## Framework & Language Guides
+## フレームワーク・言語ガイド
 
-Apply secure‑by‑default patterns per platform. Harden configurations, use built‑in protections, and avoid common pitfalls.
+プラットフォームごとにセキュアバイデフォルトのパターンを適用します。設定を堅牢化し、組み込みの保護機能を使用し、一般的な落とし穴を避けます。
 
 ### Django
-- Disable DEBUG in production; keep Django and deps updated.
-- Enable `SecurityMiddleware`, clickjacking middleware, MIME sniffing protection.
-- Force HTTPS (`SECURE_SSL_REDIRECT`); configure HSTS; set secure cookie flags (`SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`).
-- CSRF: ensure `CsrfViewMiddleware` and `{% csrf_token %}` in forms; proper AJAX token handling.
-- XSS: rely on template auto‑escaping; avoid `mark_safe` unless trusted; use `json_script` for JS.
-- Auth: use `django.contrib.auth`; validators in `AUTH_PASSWORD_VALIDATORS`.
-- Secrets: generate via `get_random_secret_key`; store in env/secrets manager.
+- 本番環境でDEBUGを無効化、Djangoと依存関係を最新に保ちます。
+- `SecurityMiddleware`、クリックジャッキング対策ミドルウェア、MIMEスニッフィング保護を有効化します。
+- HTTPS強制（`SECURE_SSL_REDIRECT`）、HSTSの設定、セキュアCookieフラグの設定（`SESSION_COOKIE_SECURE`、`CSRF_COOKIE_SECURE`）。
+- CSRF：`CsrfViewMiddleware`と`{% csrf_token %}`をフォームに確実に配置、適切なAJAXトークン処理。
+- XSS：テンプレートの自動エスケープに依存、信頼できる場合を除き`mark_safe`を避ける、JSには`json_script`を使用。
+- 認証：`django.contrib.auth`を使用、`AUTH_PASSWORD_VALIDATORS`でバリデータを設定。
+- 秘密情報：`get_random_secret_key`で生成、環境変数またはシークレットマネージャーに保存。
 
 ### Django REST Framework (DRF)
-- Set `DEFAULT_AUTHENTICATION_CLASSES` and restrictive `DEFAULT_PERMISSION_CLASSES`; never leave `AllowAny` for protected endpoints.
-- Always call `self.check_object_permissions(request, obj)` for object‑level authz.
-- Serializers: explicit `fields=[...]`; avoid `exclude` and `"__all__"`.
-- Throttling: enable rate limits (and/or at gateway/WAF).
-- Disable unsafe HTTP methods where not needed. Avoid raw SQL; use ORM/parameters.
+- `DEFAULT_AUTHENTICATION_CLASSES`を設定し、制限的な`DEFAULT_PERMISSION_CLASSES`を使用、保護されたエンドポイントに`AllowAny`を残さない。
+- オブジェクトレベルの認可には必ず`self.check_object_permissions(request, obj)`を呼び出します。
+- シリアライザ：明示的に`fields=[...]`を指定、`exclude`と`"__all__"`を避けます。
+- スロットリング：レート制限を有効化（および/またはゲートウェイ/WAFで）。
+- 不要なHTTPメソッドを無効化。生SQLを避け、ORMまたはパラメータ化を使用。
 
 ### Laravel
-- Production: `APP_DEBUG=false`; generate app key; secure file perms.
-- Cookies/sessions: enable encryption middleware; set `http_only`, `same_site`, `secure`, short lifetimes.
-- Mass assignment: use `$request->only()` / `$request->validated()`; avoid `$request->all()`.
-- SQLi: use Eloquent parameterization; validate dynamic identifiers.
-- XSS: rely on Blade escaping; avoid `{!! ... !!}` for untrusted data.
-- File uploads: validate `file`, size, and `mimes`; sanitize filenames with `basename`.
-- CSRF: ensure middleware and form tokens enabled.
+- 本番環境：`APP_DEBUG=false`、アプリキーの生成、セキュアなファイル権限。
+- Cookie/セッション：暗号化ミドルウェアを有効化、`http_only`、`same_site`、`secure`、短いライフタイムを設定。
+- Mass assignment：`$request->only()`または`$request->validated()`を使用、`$request->all()`を避けます。
+- SQLi：Eloquentパラメータ化を使用、動的識別子を検証。
+- XSS：Bladeエスケープに依存、信頼できないデータに`{!! ... !!}`を避けます。
+- ファイルアップロード：`file`、サイズ、`mimes`を検証、`basename`でファイル名をサニタイズ。
+- CSRF：ミドルウェアとフォームトークンが有効化されていることを確認。
 
 ### Symfony
-- XSS: Twig auto‑escaping; avoid `|raw` unless trusted.
-- CSRF: use `csrf_token()` and `isCsrfTokenValid()` for manual flows; Forms include tokens by default.
-- SQLi: Doctrine parameterized queries; never concatenate inputs.
-- Command execution: avoid `exec/shell_exec`; use Filesystem component.
-- Uploads: validate with `#[File(...)]`; store outside public; unique names.
-- Directory traversal: validate `realpath`/`basename` and enforce allowed roots.
-- Sessions/security: configure secure cookies and authentication providers/firewalls.
+- XSS：Twig自動エスケープ、信頼できる場合を除き`|raw`を避けます。
+- CSRF：手動フローには`csrf_token()`と`isCsrfTokenValid()`を使用、Formsはデフォルトでトークンを含む。
+- SQLi：Doctrineパラメータ化クエリ、入力を連結しない。
+- コマンド実行：`exec/shell_exec`を避ける、Filesystemコンポーネントを使用。
+- アップロード：`#[File(...)]`で検証、パブリック外に保存、一意な名前を使用。
+- ディレクトリトラバーサル：`realpath`/`basename`を検証し、許可されたルートを強制。
+- セッション/セキュリティ：セキュアCookieと認証プロバイダー/ファイアウォールを設定。
 
 ### Ruby on Rails
-- Avoid dangerous functions:
+- 危険な関数を避ける：
 
 ```ruby
 eval("ruby code here")
 system("os command here")
-`ls -al /` # (backticks contain os command)
+`ls -al /` # (バッククォートはOSコマンドを含む)
 exec("os command here")
 spawn("os command here")
 open("| os command here")
@@ -74,47 +73,47 @@ IO.readlines("| os command here")
 IO.write("| os command here", "foo")
 ```
 
-- SQLi: always parameterize; use `sanitize_sql_like` for LIKE patterns.
-- XSS: default auto‑escape; avoid `raw`, `html_safe` on untrusted data; use `sanitize` allow‑lists.
-- Sessions: database‑backed store for sensitive apps; force HTTPS (`config.force_ssl = true`).
-- Auth: use Devise or proven libraries; configure routes and protected areas.
-- CSRF: `protect_from_forgery` for state‑changing actions.
-- Secure redirects: validate/allow‑list targets.
-- Headers/CORS: set secure defaults; configure `rack-cors` carefully.
+- SQLi：常にパラメータ化、LIKEパターンには`sanitize_sql_like`を使用。
+- XSS：デフォルト自動エスケープ、信頼できないデータに`raw`、`html_safe`を避ける、`sanitize`許可リストを使用。
+- セッション：機密アプリにはデータベースバックエンドストアを使用、HTTPS強制（`config.force_ssl = true`）。
+- 認証：Deviseまたはプロヴンなライブラリーを使用、ルートと保護領域を設定。
+- CSRF：状態変更アクションに`protect_from_forgery`を使用。
+- セキュアリダイレクト：ターゲットを検証/許可リスト化。
+- ヘッダー/CORS：セキュアデフォルトを設定、`rack-cors`を慎重に設定。
 
 ### .NET (ASP.NET Core)
-- Keep runtime and NuGet packages updated; enable SCA in CI.
-- Authz: use `[Authorize]` attributes; perform server‑side checks; prevent IDOR.
-- Authn/sessions: ASP.NET Identity; lockouts; cookies `HttpOnly`/`Secure`; short timeouts.
-- Crypto: use PBKDF2 for passwords, AES‑GCM for encryption; DPAPI for local secrets; TLS 1.2+.
-- Injection: parameterize SQL/LDAP; validate with allow‑lists.
-- Config: enforce HTTPS redirects; remove version headers; set CSP/HSTS/X‑Content‑Type‑Options.
-- CSRF: anti‑forgery tokens on state‑changing actions; validate on server.
+- ランタイムとNuGetパッケージを最新に保ち、CIでSCAを有効化。
+- 認可：`[Authorize]`属性を使用、サーバー側チェックを実行、IDORを防止。
+- 認証/セッション：ASP.NET Identity、ロックアウト、Cookie `HttpOnly`/`Secure`、短いタイムアウト。
+- 暗号化：パスワードにPBKDF2、暗号化にAES-GCM、ローカルシークレットにDPAPI、TLS 1.2+。
+- インジェクション：SQL/LDAPをパラメータ化、許可リストで検証。
+- 設定：HTTPSリダイレクトを強制、バージョンヘッダーを削除、CSP/HSTS/X-Content-Type-Optionsを設定。
+- CSRF：状態変更アクションにアンチフォージェリトークン、サーバーで検証。
 
-### Java and JAAS
-- SQL/JPA: use `PreparedStatement`/named parameters; never concatenate input.
-- XSS: allow‑list validation; sanitize output with reputable libs; encode for context.
-- Logging: parameterized logging to prevent log injection.
-- Crypto: AES‑GCM; secure random nonces; never hardcode keys; use KMS/HSM.
-- JAAS: configure `LoginModule` stanzas; implement `initialize/login/commit/abort/logout`; avoid exposing credentials; segregate public/private credentials; manage subject principals properly.
+### JavaとJAAS
+- SQL/JPA：`PreparedStatement`または名前付きパラメータを使用、入力を連結しない。
+- XSS：許可リスト検証、信頼できるライブラリーで出力をサニタイズ、コンテキストに応じてエンコード。
+- ロギング：ログインジェクションを防ぐためパラメータ化されたロギング。
+- 暗号化：AES-GCM、セキュアランダムノンス、キーのハードコーディング禁止、KMS/HSMを使用。
+- JAAS：`LoginModule`スタンザを設定、`initialize/login/commit/abort/logout`を実装、資格情報の露出を避ける、パブリック/プライベート資格情報を分離、サブジェクトプリンシパルを適切に管理。
 
 ### Node.js
-- Limit request sizes; validate and sanitize input; escape output.
-- Avoid `eval`, `child_process.exec` with user input; use `helmet` for headers; `hpp` for parameter pollution.
-- Rate limit auth endpoints; monitor event loop health; handle uncaught exceptions cleanly.
-- Cookies: set `secure`, `httpOnly`, `sameSite`; set `NODE_ENV=production`.
-- Keep packages updated; run `npm audit`; use security linters and ReDoS testing.
+- リクエストサイズを制限、入力を検証・サニタイズ、出力をエスケープ。
+- ユーザー入力で`eval`、`child_process.exec`を避ける、ヘッダーに`helmet`、パラメータ汚染に`hpp`を使用。
+- 認証エンドポイントをレート制限、イベントループの健全性を監視、未キャッチ例外を適切に処理。
+- Cookie：`secure`、`httpOnly`、`sameSite`を設定、`NODE_ENV=production`を設定。
+- パッケージを最新に保つ、`npm audit`を実行、セキュリティリンターとReDoSテストを使用。
 
-### PHP Configuration
-- Production php.ini: `expose_php=Off`, log errors not display; restrict `allow_url_fopen/include`; set `open_basedir`.
-- Disable dangerous functions; set session cookie flags (`Secure`, `HttpOnly`, `SameSite=Strict`); enable strict session mode.
-- Constrain upload size/number; set resource limits (memory, post size, execution time).
-- Use Snuffleupagus or similar for additional hardening.
+### PHP設定
+- 本番環境php.ini：`expose_php=Off`、エラーを表示せずログに記録、`allow_url_fopen/include`を制限、`open_basedir`を設定。
+- 危険な関数を無効化、セッションCookieフラグ（`Secure`、`HttpOnly`、`SameSite=Strict`）を設定、厳密セッションモードを有効化。
+- アップロードサイズ/数を制約、リソース制限（メモリ、postサイズ、実行時間）を設定。
+- 追加の堅牢化にSnuffleupagusまたは類似ツールを使用。
 
-### Implementation Checklist
-- Use each framework’s built‑in CSRF/XSS/session protections and secure cookie flags.
-- Parameterize all data access; avoid dangerous OS/exec functions with untrusted input.
-- Enforce HTTPS/HSTS; set secure headers.
-- Centralize secret management; never hardcode secrets; lock down debug in production.
-- Validate/allow‑list redirects and dynamic identifiers.
-- Keep dependencies and frameworks updated; run SCA and static analysis regularly.
+### 実装チェックリスト
+- 各フレームワークの組み込みCSRF/XSS/セッション保護とセキュアCookieフラグを使用。
+- すべてのデータアクセスをパラメータ化、信頼できない入力で危険なOS/実行関数を避けます。
+- HTTPS/HSTSを強制、セキュアヘッダーを設定。
+- シークレット管理を集中化、シークレットのハードコーディング禁止、本番環境でデバッグをロック。
+- リダイレクトと動的識別子を検証/許可リスト化。
+- 依存関係とフレームワークを最新に保ち、定期的にSCAと静的解析を実行。

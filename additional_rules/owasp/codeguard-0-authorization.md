@@ -1,5 +1,5 @@
 ---
-description: Authorization Security Best Practices
+description: 認可セキュリティのベストプラクティス
 languages:
 - c
 - go
@@ -13,50 +13,50 @@ languages:
 alwaysApply: false
 ---
 
-Implementing robust authorization is critical to ensure users can only access the data and features they are permitted to. While authentication confirms who a user is, authorization determines what they can do.
+堅牢な認可を実装することは、ユーザーが許可されたデータと機能のみにアクセスできることを保証するために不可欠です。認証はユーザーが誰であるかを確認しますが、認可はユーザーが何をできるかを決定します。
 
-### Core Principles of Secure Authorization
+### 安全な認可の基本原則
 
-1.  **Deny by Default:** The default for any access request should be 'deny'. Explicitly grant permissions to roles or users rather than explicitly denying them. When no allow rule matches, return HTTP 403 Forbidden.
-2.  **Principle of Least Privilege:** Grant users the minimum level of access required to perform their job functions. Regularly audit permissions to ensure they are not excessive.
-3.  **Validate Permissions on Every Request:** Check authorization for every single request, regardless of source (AJAX, API, direct). Use middleware/filters to ensure consistent enforcement.
-4.  **Prefer ABAC/ReBAC over RBAC:** Use Attribute-Based Access Control (ABAC) or Relationship-Based Access Control (ReBAC) for fine-grained permissions instead of simple role-based access control.
+1.  **デフォルトで拒否：** 任意のアクセスリクエストのデフォルトは「拒否」とします。明示的に拒否するのではなく、ロールまたはユーザーに権限を明示的に付与します。許可ルールが一致しない場合、HTTP 403 Forbiddenを返します。
+2.  **最小権限の原則：** ユーザーには職務を遂行するために必要な最小限のアクセスレベルを付与します。権限が過剰でないことを確認するため、定期的に監査します。
+3.  **すべてのリクエストで権限を検証：** ソースに関係なく（AJAX、API、直接）、すべてのリクエストで認可をチェックします。ミドルウェア/フィルターを使用して一貫した強制を確保します。
+4.  **RBACよりABAC/ReBACを優先：** シンプルなロールベースアクセス制御の代わりに、属性ベースアクセス制御（ABAC）または関係ベースアクセス制御（ReBAC）を使用して詳細な権限を実現します。
 
-### Server-Side Enforcement is Non-Negotiable
+### サーバーサイド強制は交渉の余地なし
 
-All authorization decisions must be enforced on the server-side for every request. Client-side checks are for user experience only and can be easily bypassed.
+すべての認可決定は、すべてのリクエストに対してサーバーサイドで強制される必要があります。クライアントサイドチェックはユーザーエクスペリエンスのみを目的としており、容易にバイパスされます。
 
-**What to Avoid (Anti-Pattern):**
+**避けるべきこと（アンチパターン）：**
 
 ```javascript
-// Insecure: Client-side check that can be bypassed by an attacker.
+// 安全でない：攻撃者がバイパスできるクライアントサイドチェック。
 if (currentUser.isAdmin) {
   showAdminDashboard();
-} // The server must also check if the user is an admin before returning data.
+} // データを返す前に、サーバーもユーザーが管理者であるかをチェックする必要があります。
 ```
 
-**Best Practice:**
+**ベストプラクティス：**
 
-Use centralized middleware or decorators in your backend framework to enforce authorization checks consistently across all relevant endpoints.
+バックエンドフレームワークで集中化されたミドルウェアまたはデコレーターを使用して、すべての関連エンドポイント全体で認可チェックを一貫して強制します。
 
-**Example (Express.js middleware showing deny-by-default):**
+**例（デフォルト拒否を示すExpress.jsミドルウェア）：**
 
 ```javascript
 function canViewProject(req, res, next) {
   const project = await db.getProject(req.params.id);
 
-  // Explicit allow conditions
+  // 明示的な許可条件
   if (project.ownerId === req.user.id) {
-    return next(); // Owner can view
+    return next(); // 所有者は表示可能
   }
   if (req.user.isAdmin) {
-    return next(); // Admin can view
+    return next(); // 管理者は表示可能
   }
   if (project.isPublic && req.user.isVerified) {
-    return next(); // Verified users can view public projects
+    return next(); // 検証済みユーザーは公開プロジェクトを表示可能
   }
 
-  // Deny by default - no allow rule matched
+  // デフォルトで拒否 - 許可ルールが一致しない
   return res.status(403).json({
     error: 'Access denied',
     message: 'You do not have permission to view this resource'
@@ -64,33 +64,33 @@ function canViewProject(req, res, next) {
 }
 
 app.get('/projects/:id', isAuthenticated, canViewProject, (req, res) => {
-  // return project data
+  // プロジェクトデータを返す
 });
 ```
 
-### Prevent Insecure Direct Object References (IDOR)
+### 安全でない直接オブジェクト参照（IDOR）の防止
 
-An IDOR vulnerability occurs when an application uses a user-supplied identifier (like a database ID) to access an object directly, without verifying the user has permission to access *that specific object*.
+IDOR脆弱性は、アプリケーションがユーザー提供の識別子（データベースIDなど）を使用してオブジェクトに直接アクセスする際に、ユーザーが*その特定のオブジェクト*にアクセスする権限を持っているか検証しない場合に発生します。
 
-**What to Avoid (Anti-Pattern):**
+**避けるべきこと（アンチパターン）：**
 
 ```javascript
-// Insecure: The code checks if the user is authenticated, but not if they
-// are authorized to view the invoice with the given ID.
+// 安全でない：コードはユーザーが認証されているかをチェックしますが、
+// 指定されたIDの請求書を表示する権限があるかをチェックしません。
 app.get('/invoices/:id', isAuthenticated, (req, res) => {
-  const invoice = await db.getInvoice(req.params.id); // Attacker can cycle through IDs
+  const invoice = await db.getInvoice(req.params.id); // 攻撃者はIDを巡回可能
   res.json(invoice);
 });
 ```
 
-**Best Practice:**
+**ベストプラクティス：**
 
-Always verify that the authenticated user has the necessary permissions for the specific object they are requesting.
+認証されたユーザーが要求している特定のオブジェクトに対して必要な権限を持っていることを常に検証します。
 
-### Additional Best Practices
+### 追加のベストプラクティス
 
-*   **Token Lifecycle Management:** Implement token revocation for logout/role changes and session invalidation when permissions change.
-*   **Centralized Error Handling:** Return generic error messages (403 Forbidden or 404 Not Found) when authorization fails to avoid information leakage.
-*   **Comprehensive Logging:** Log all authorization failures with user ID, resource, action, and timestamp for security monitoring.
-*   **Testing:** Write unit and integration tests for authorization logic. Test both positive (should have access) and negative (should be denied) cases.
-*   **Static Resources:** Apply authorization checks to static files, cloud storage, and other resources, not just API endpoints.
+*   **トークンライフサイクル管理：** ログアウト/ロール変更時のトークン取り消しと、権限変更時のセッション無効化を実装します。
+*   **集中化されたエラー処理：** 認可失敗時には情報漏洩を避けるため、汎用的なエラーメッセージ（403 Forbiddenまたは404 Not Found）を返します。
+*   **包括的なログ：** セキュリティ監視のため、ユーザーID、リソース、アクション、タイムスタンプを含むすべての認可失敗をログに記録します。
+*   **テスト：** 認可ロジックの単体テストと統合テストを記述します。肯定的（アクセス可能であるべき）および否定的（拒否されるべき）の両方のケースをテストします。
+*   **静的リソース：** APIエンドポイントだけでなく、静的ファイル、クラウドストレージ、その他のリソースにも認可チェックを適用します。

@@ -1,5 +1,5 @@
 ---
-description: OS Command Injection Defense
+description: OSコマンドインジェクション防御
 languages:
 - c
 - go
@@ -13,85 +13,85 @@ languages:
 alwaysApply: false
 ---
 
-## OS Command Injection Defense Guidelines
+## OSコマンドインジェクション防御ガイドライン
 
-Essential practices for preventing OS command injection vulnerabilities when executing system commands in applications.
+アプリケーションでシステムコマンドを実行する際のOSコマンドインジェクション脆弱性を防ぐための必須プラクティス。
 
-### Understanding Command Injection
+### コマンドインジェクションの理解
 
-Command injection occurs when software constructs a system command using externally influenced input without properly neutralizing special elements that can modify the intended command.
+コマンドインジェクションは、ソフトウェアが外部から影響を受ける入力を使用してシステムコマンドを構築する際に、意図したコマンドを変更できる特殊要素を適切に無害化しない場合に発生します。
 
-Example of vulnerable input:
+脆弱な入力の例:
 ```
 calc & echo "test"
 ```
 
-This changes the meaning from executing just `calc` to executing both `calc` and `echo "test"`.
+これは`calc`だけを実行する意味から、`calc`と`echo "test"`の両方を実行する意味に変更されます。
 
-#### Argument Injection
+#### 引数インジェクション
 
-Every OS Command Injection is also an Argument Injection, where user input can be passed as arguments while executing a specific command. For example:
+すべてのOSコマンドインジェクションは引数インジェクションでもあり、特定のコマンドを実行する際にユーザー入力が引数として渡される可能性があります。例:
 
 ```php
 system("curl " . escape("--help"))
 ```
 
-Even with escaping, this shows the output of `curl --help` instead of the intended behavior.
+エスケープ処理があっても、これは意図した動作ではなく`curl --help`の出力を表示します。
 
-### Primary Defenses
+### 主要な防御策
 
-#### Defense Option 1: Avoid Calling OS Commands Directly
+#### 防御オプション1: OSコマンドの直接呼び出しを避ける
 
-The primary defense is to avoid calling OS commands directly. Built-in library functions are preferred as they cannot be manipulated to perform unintended tasks.
+主要な防御策は、OSコマンドを直接呼び出すことを避けることです。組み込みライブラリ関数は、意図しないタスクを実行するように操作できないため推奨されます。
 
-Example: Use `mkdir()` instead of `system("mkdir /dir_name")`.
+例: `system("mkdir /dir_name")`の代わりに`mkdir()`を使用します。
 
-#### Defense Option 2: Escape Values Added to OS Commands
+#### 防御オプション2: OSコマンドに追加される値をエスケープする
 
-Use language-specific escaping functions when OS commands cannot be avoided.
+OSコマンドを避けられない場合は、言語固有のエスケープ関数を使用します。
 
-PHP example using escapeshellarg():
-The `escapeshellarg()` function surrounds user input in single quotes, so malformed input like `& echo "hello"` becomes `calc '& echo "hello"'` which is parsed as a single argument.
+PHPでescapeshellarg()を使用する例:
+`escapeshellarg()`関数はユーザー入力をシングルクォートで囲むため、`& echo "hello"`のような不正な入力は`calc '& echo "hello"'`となり、単一の引数として解析されます。
 
-Note: Even with `escapeshellarg()`, an attacker can still pass a single argument to the command.
+注意: `escapeshellarg()`を使用しても、攻撃者はコマンドに単一の引数を渡すことができます。
 
-#### Defense Option 3: Parameterization with Input Validation
+#### 防御オプション3: 入力検証によるパラメータ化
 
-If system commands incorporating user input cannot be avoided, use two layers of defense:
+ユーザー入力を組み込んだシステムコマンドを避けられない場合は、2つの防御層を使用します:
 
-Layer 1 - Parameterization:
-Use structured mechanisms that automatically enforce separation between data and command, providing proper quoting and encoding.
+第1層 - パラメータ化:
+データとコマンド間の分離を自動的に強制し、適切な引用符とエンコーディングを提供する構造化されたメカニズムを使用します。
 
-Layer 2 - Input Validation:
-- Commands: Validate against a list of allowed commands
-- Arguments: Use positive/allowlist input validation where arguments are explicitly defined
-- Allowlist Regular Expression: Define allowed characters and maximum length, excluding metacharacters
+第2層 - 入力検証:
+- コマンド: 許可されたコマンドのリストに対して検証
+- 引数: 引数が明示的に定義される許可リスト/ホワイトリスト入力検証を使用
+- 許可リスト正規表現: 許可される文字と最大長を定義し、メタ文字を除外
 
-Example regex allowing only lowercase letters and numbers (3-10 characters): `^[a-z0-9]{3,10}$`
+小文字の英字と数字のみを許可する例（3〜10文字）: `^[a-z0-9]{3,10}$`
 
-POSIX Guideline: Use `--` delimiter to prevent argument injection:
+POSIXガイドライン: 引数インジェクションを防ぐために`--`デリミタを使用:
 ```
 curl -- $url
 ```
-This prevents argument injection even if `$url` contains additional arguments.
+これにより、`$url`に追加の引数が含まれていても引数インジェクションを防ぎます。
 
-Dangerous metacharacters to avoid:
+避けるべき危険なメタ文字:
 ```
 & |  ; $ > < ` \ ! ' " ( )
 ```
 
-### Code Examples
+### コード例
 
 #### Java
 
-Use ProcessBuilder with separated command and arguments:
+コマンドと引数を分離してProcessBuilderを使用:
 
-Incorrect usage:
+不適切な使用:
 ```java
 ProcessBuilder b = new ProcessBuilder("C:\DoStuff.exe -arg1 -arg2");
 ```
 
-Correct usage:
+正しい使用:
 ```java
 ProcessBuilder pb = new ProcessBuilder("TrustedCmd", "TrustedArg1", "TrustedArg2");
 
@@ -102,28 +102,28 @@ pb.directory(new File("TrustedDir"));
 Process p = pb.start();
 ```
 
-Note about Runtime.exec:
-Java's `Runtime.exec` does NOT invoke the shell and does not support shell metacharacters. It splits strings into arrays and executes the first word with the rest as parameters, making shell-based attacks ineffective.
+Runtime.execに関する注意:
+Javaの`Runtime.exec`はシェルを呼び出さず、シェルメタ文字をサポートしません。文字列を配列に分割し、最初の単語を残りをパラメータとして実行するため、シェルベースの攻撃は効果がありません。
 
 
 #### PHP
 
-Use escapeshellarg() or escapeshellcmd() rather than exec(), system(), or passthru().
+exec()、system()、passthru()ではなく、escapeshellarg()またはescapeshellcmd()を使用します。
 
-### Additional Defenses
+### 追加の防御策
 
-Implement defense in depth:
-- Applications should run with the lowest privileges required for necessary tasks
-- Create isolated accounts with limited privileges for single tasks
+多層防御を実装:
+- アプリケーションは必要なタスクに必要な最小限の権限で実行すべき
+- 単一のタスク用に限定された権限を持つ隔離されたアカウントを作成
 
-### Implementation Summary
+### 実装まとめ
 
-Secure command execution requires:
-- Avoiding OS commands when possible (use built-in libraries)
-- Using parameterized execution with separated commands and arguments
-- Implementing strict input validation with allowlists
-- Applying proper escaping functions when available
-- Running applications with minimal privileges
-- Using structured mechanisms that enforce data/command separation
+安全なコマンド実行には以下が必要:
+- 可能な場合はOSコマンドを避ける（組み込みライブラリを使用）
+- コマンドと引数を分離したパラメータ化された実行を使用
+- 許可リストによる厳格な入力検証を実装
+- 利用可能な場合は適切なエスケープ関数を適用
+- 最小限の権限でアプリケーションを実行
+- データ/コマンド分離を強制する構造化されたメカニズムを使用
 
-Following these practices significantly reduces the risk of OS command injection vulnerabilities in applications.
+これらのプラクティスに従うことで、アプリケーションのOSコマンドインジェクション脆弱性のリスクを大幅に削減できます。

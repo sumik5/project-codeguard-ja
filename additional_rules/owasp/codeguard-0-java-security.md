@@ -1,5 +1,5 @@
 ---
-description: Java Security Best Practices
+description: Javaセキュリティベストプラクティス
 languages:
 - c
 - java
@@ -10,83 +10,83 @@ languages:
 alwaysApply: false
 ---
 
-## Java Security Guidelines
+## Javaセキュリティガイドライン
 
-Key security practices for secure Java application development.
+セキュアなJavaアプリケーション開発のための主要なセキュリティプラクティス。
 
-### SQL Injection Prevention
+### SQLインジェクション防止
 
-Use parameterized queries to prevent SQL injection:
+SQLインジェクションを防ぐためパラメータ化クエリを使用します：
 
 ```java
-// Safe - PreparedStatement with parameters
+// 安全 - パラメータを伴うPreparedStatement
 String query = "select * from color where friendly_name = ?";
 try (PreparedStatement pStatement = con.prepareStatement(query)) {
     pStatement.setString(1, userInput);
     try (ResultSet rSet = pStatement.executeQuery()) {
-        // Process results
+        // 結果を処理
     }
 }
 ```
 
-### JPA Query Security
+### JPAクエリセキュリティ
 
-Use parameterized JPA queries:
+パラメータ化JPAクエリを使用します：
 
 ```java
-// Safe - Named parameters
+// 安全 - 名前付きパラメータ
 String queryPrototype = "select c from Color c where c.friendlyName = :colorName";
 Query queryObject = entityManager.createQuery(queryPrototype);
 Color c = (Color) queryObject.setParameter("colorName", userInput).getSingleResult();
 ```
 
-### XSS Prevention
+### XSS防止
 
-Apply input validation and output encoding:
+入力検証と出力エンコーディングを適用します：
 
 ```java
-// Input validation with allowlist
+// 許可リストを使用した入力検証
 if (!Pattern.matches("[a-zA-Z0-9\\s\\-]{1,50}", userInput)) {
     return false;
 }
 
-// Output sanitization
+// 出力サニタイゼーション
 PolicyFactory policy = new HtmlPolicyBuilder().allowElements("p", "strong").toFactory();
 String safeOutput = policy.sanitize(outputToUser);
 safeOutput = Encode.forHtml(safeOutput);
 ```
 
-### Secure Logging
+### セキュアロギング
 
-Use parameterized logging to prevent log injection:
+ログインジェクションを防ぐためパラメータ化されたロギングを使用します：
 
 ```java
-// Safe - parameterized logging
+// 安全 - パラメータ化されたロギング
 logger.warn("Login failed for user {}.", username);
 
-// Avoid - string concatenation
+// 避ける - 文字列連結
 // logger.warn("Login failed for user " + username);
 ```
 
-### Cryptography Best Practices
+### 暗号化ベストプラクティス
 
-Use trusted cryptographic libraries and secure algorithms:
+信頼できる暗号化ライブラリとセキュアなアルゴリズムを使用します：
 
 ```java
-// Use AES-GCM with proper nonce management
+// 適切なノンス管理を伴うAES-GCMを使用
 Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
 GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, nonce);
 cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmParameterSpec);
 
-// Generate secure random nonces
+// セキュアランダムノンスを生成
 byte[] nonce = new byte[12];
 SecureRandom.getInstanceStrong().nextBytes(nonce);
 ```
 
-### Key Security Requirements
+### 主要なセキュリティ要件
 
-- Never hardcode cryptographic keys in source code
-- Use Google Tink or similar trusted crypto libraries when possible
-- Avoid writing custom cryptographic implementations
-- Implement proper key rotation and management
-- Keep all dependencies updated with security patches
+- 暗号化キーをソースコードにハードコーディングしません
+- 可能な場合、Google Tinkまたは類似の信頼できる暗号化ライブラリを使用します
+- カスタム暗号化実装の記述を避けます
+- 適切なキーローテーションと管理を実装します
+- すべての依存関係をセキュリティパッチで最新に保ちます

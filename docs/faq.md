@@ -1,121 +1,120 @@
-# Frequently Asked Questions
+# よくある質問
 
-## Purpose Statement
+## 目的
 
-This FAQ document provides clear, concise answers to help developers seamlessly integrate Project CodeGuard security rules into AI-assisted coding workflows. Our goal is to ensure AI-generated code adheres to secure development practices without disrupting productivity.
-
----
-
-## Q: Where can I access the rules?
-
-**A:** You can access the rules in the [Project CodeGuard GitHub repository](https://github.com/project-codeguard/rules). The latest stable release is available on the [releases page](https://github.com/project-codeguard/rules/releases).
+このFAQドキュメントは、開発者がProject CodeGuardセキュリティルールをAI支援コーディングワークフローにスムーズに統合できるよう、明確で簡潔な回答を提供します。AIが生成するコードが、生産性を妨げることなく安全な開発プラクティスに従うことを目指しています。
 
 ---
 
-## Q: How can I use the rules in Windsurf, Cursor, or GitHub Copilot?
+## Q: ルールはどこで入手できますか？
 
-**A:** Detailed installation instructions are available in our [Getting Started guide](getting-started.md). In summary:
-
-1. Download the latest release from the [releases page](https://github.com/project-codeguard/rules/releases)
-2. Extract the archive and copy the IDE-specific rules to your project:
-   - **Cursor**: Copy `.cursor/` directory to your project root
-   - **Windsurf**: Copy `.windsurf/` directory to your project root
-   - **GitHub Copilot**: Copy `.github/instructions/` directory to your project root
-3. Restart your IDE and start coding - the AI assistant will automatically follow the security rules
-
----
-## Q: Will these rules consume a lot of the AI agent's **context window**?
-
-**A:** No. The always-on rules are designed to be lightweight and efficient, and should not consume a lot of the AI agent's context window. The "glob" rules are designed to be applied only to the related file types specified in the rule.
-
----
-## Q: What is the `additional_rules` folder?
-
-**A:** The `additional_rules` folder contains rules that can be used to supplement the Project CodeGuard core rules. These rules are not always-on and are not included in the downloaded release. They are only available in the `project-codeguard/rules` repository for code review and security assessments post-code generation.
+**A:** [Project CodeGuard GitHubリポジトリ](https://github.com/project-codeguard/rules)でルールを入手できます。最新の安定版リリースは[リリースページ](https://github.com/project-codeguard/rules/releases)から入手できます。
 
 ---
 
-## Q: How can I use the rules in my own AI agent?
+## Q: Windsurf、Cursor、GitHub Copilotでルールを使うには？
 
-**A:** You can use the rules in your own AI agent by creating a custom ruleset. You can create a custom ruleset by creating a new file in the `.cursor/rules`, `.windsurf/rules`, or `.github/instructions` directories and adding the rules you want to apply. You can also use the `project-codeguard/rules` repository as a template to create your own ruleset.
+**A:** 詳しいインストール手順は[はじめにガイド](getting-started.md)をご覧ください。要約すると：
+
+1. [リリースページ](https://github.com/project-codeguard/rules/releases)から最新リリースをダウンロード
+2. アーカイブを展開し、IDE用のルールをプロジェクトにコピー：
+   - **Cursor**: `.cursor/`ディレクトリをプロジェクトルートにコピー
+   - **Windsurf**: `.windsurf/`ディレクトリをプロジェクトルートにコピー
+   - **GitHub Copilot**: `.github/instructions/`ディレクトリをプロジェクトルートにコピー
+3. IDEを再起動してコーディング開始 - AIアシスタントが自動的にセキュリティルールに従います
+
+---
+## Q: これらのルールはAIエージェントの**コンテキストウィンドウ**を大量に消費しますか？
+
+**A:** いいえ。常時有効ルールは軽量で効率的に設計されており、AIエージェントのコンテキストウィンドウを大量に消費しません。「glob」ルールは、ルールで指定された関連ファイルタイプにのみ適用されるよう設計されています。
+
+---
+## Q: `additional_rules`フォルダとは何ですか？
+
+**A:** `additional_rules`フォルダには、Project CodeGuardコアルールを補完するルールが含まれています。これらのルールは常時有効ではなく、ダウンロードリリースには含まれません。コード生成後のコードレビューやセキュリティ評価のために、`project-codeguard/rules`リポジトリでのみ利用できます。
 
 ---
 
-## Q: Why does the downloaded release folder appear empty?
+## Q: 自分のAIエージェントでルールを使うには？
 
-**A:** After downloading and extracting the release, the folders may appear empty because the rule directories (`.cursor/`, `.windsurf/`, `.github/`) start with a dot (`.`) and are hidden by default on most operating systems.
+**A:** カスタムルールセットを作成することで、自分のAIエージェントでルールを使用できます。`.cursor/rules`、`.windsurf/rules`、または`.github/instructions`ディレクトリに新しいファイルを作成し、適用したいルールを追加してください。`project-codeguard/rules`リポジトリをテンプレートとして独自のルールセットを作成することもできます。
 
-**To show hidden files:**
+---
+
+## Q: ダウンロードしたリリースフォルダが空に見えるのはなぜですか？
+
+**A:** リリースをダウンロードして展開した後、フォルダが空に見えるのは、ルールディレクトリ（`.cursor/`、`.windsurf/`、`.github/`）がドット（`.`）で始まっており、ほとんどのOSでデフォルトで非表示になっているためです。
+
+**隠しファイルを表示するには：**
 
 === "macOS"
-    
-    In Finder, navigate to the extracted `ide_rules/` folder and press ++cmd+shift+period++ to toggle the visibility of hidden files. You should now see the `.cursor/`, `.windsurf/`, and `.github/` directories.
+
+    Finderで展開した`ide_rules/`フォルダに移動し、++cmd+shift+period++を押して隠しファイルの表示を切り替えます。`.cursor/`、`.windsurf/`、`.github/`ディレクトリが表示されます。
 
 === "Windows"
-    
-    In File Explorer:
-    
-    1. Navigate to the extracted `ide_rules/` folder
-    2. Click on the **View** tab in the ribbon
-    3. Check the **Hidden items** checkbox
+
+    ファイルエクスプローラーで：
+
+    1. 展開した`ide_rules/`フォルダに移動
+    2. リボンの**表示**タブをクリック
+    3. **隠しファイル**チェックボックスにチェック
 
 === "Linux"
-    
-    In your file manager, press ++ctrl+h++ to toggle hidden files, or use `ls -la` in the terminal to view all files including hidden ones.
 
-Once hidden files are visible, you can copy the appropriate directory (`.cursor/`, `.windsurf/`, or `.github/`) to your project root.
+    ファイルマネージャーで++ctrl+h++を押して隠しファイルを切り替えるか、ターミナルで`ls -la`を使用してすべてのファイル（隠しファイルを含む）を表示します。
 
----
-
-## Q: Can I use this with Claude Code?
-
-**A:** Yes! Claude Code automatically reads and follows instructions from a `CLAUDE.md` file in your project root. To use Project CodeGuard rules with Claude Code you can point to the Project CodeGuard rules in your `CLAUDE.md` file.
-
-When Claude Code operates in your project, it treats the Project CodeGuard security rules in `CLAUDE.md` as authoritative system instructions.
-
-
-## Q: How can I report a problem or enhancement to any of the rules?
-
-**A:** You can report problems, successes, or suggest enhancements to any of the rules by:
-
-1. **Creating a GitHub issue**: [Open an issue here](https://github.com/project-codeguard/rules/issues)
-2. **Provide details**: Include which rule(s) are affected, the issue you encountered, and your suggested improvement
-3. **Be specific**: If reporting a bug, include steps to reproduce and example code if possible
-
-We welcome all feedback - whether it's a bug report, success story, or enhancement suggestion!
+隠しファイルが表示されたら、適切なディレクトリ（`.cursor/`、`.windsurf/`、または`.github/`）をプロジェクトルートにコピーできます。
 
 ---
 
-## Q: Why do I get the following error message in GitHub for some of the rules?
+## Q: Claude Codeで使用できますか？
+
+**A:** はい！Claude Codeは、プロジェクトルートの`CLAUDE.md`ファイルから指示を自動的に読み込んで従います。Project CodeGuardルールをClaude Codeで使用するには、`CLAUDE.md`ファイルでProject CodeGuardルールを参照してください。
+
+Claude Codeがプロジェクト内で動作する際、`CLAUDE.md`内のProject CodeGuardセキュリティルールを権威あるシステム指示として扱います。
+
+
+## Q: ルールの問題や改善提案を報告するには？
+
+**A:** 以下の方法でルールの問題、成功事例、または改善提案を報告できます：
+
+1. **GitHub issueを作成**: [こちらでissueを開く](https://github.com/project-codeguard/rules/issues)
+2. **詳細を提供**: 影響を受けるルール、遭遇した問題、改善提案を含める
+3. **具体的に**: バグ報告の場合、再現手順とサンプルコードを含める
+
+バグ報告、成功事例、改善提案のいずれもフィードバックを歓迎します！
+
+---
+
+## Q: GitHubで一部のルールに次のエラーメッセージが表示されるのはなぜですか？
 
 ```
-Error in user YAML: (<unknown>): did not find expected alphabetic 
+Error in user YAML: (<unknown>): did not find expected alphabetic
 or numeric character while scanning an alias at line x column x
 ```
 
-**A:** You can safely ignore this error. GitHub attempts to parse YAML headers combined with markdown content, which can cause this warning. It does not affect rule functionality - the rules will work correctly in your IDE regardless of this GitHub display issue.
+**A:** このエラーは無視して問題ありません。GitHubがYAMLヘッダーとMarkdownコンテンツを組み合わせて解析しようとするため、この警告が発生します。ルールの機能には影響しません - GitHub表示の問題に関係なく、IDEでルールは正しく動作します。
 
 ---
 
-## Q: How can I contribute to these rules and this project?
+## Q: これらのルールやプロジェクトに貢献するには？
 
-**A:** You can contribute at any time by:
+**A:** いつでも以下の方法で貢献できます：
 
-1. **Creating a pull request**: Submit code, documentation, or rule improvements directly
-2. **Opening a GitHub issue**: Report bugs, suggest new rules, or propose enhancements
-3. **Participating in discussions**: Share your experience and help other users
-4. **Improving documentation**: Help make our docs clearer and more comprehensive
+1. **プルリクエストを作成**: コード、ドキュメント、ルール改善を直接送信
+2. **GitHub issueを開く**: バグ報告、新しいルールの提案、改善提案
+3. **ディスカッションに参加**: 経験を共有し、他のユーザーを支援
+4. **ドキュメント改善**: ドキュメントをより明確で包括的にする支援
 
-See [CONTRIBUTING.md](https://github.com/project-codeguard/rules/blob/main/CONTRIBUTING.md) for detailed guidelines on our contribution process.
+貢献プロセスの詳細なガイドラインは[CONTRIBUTING.md](https://github.com/project-codeguard/rules/blob/main/CONTRIBUTING.md)をご覧ください。
 
 ---
 
-## Still have questions?
+## まだ質問がありますか？
 
-**Can't find your answer?** 
+**答えが見つかりませんか？**
 
-- [Open an issue](https://github.com/project-codeguard/rules/issues) with your question
-- [Start a discussion](https://github.com/project-codeguard/rules/discussions) to chat with the community
-
+- [issueを開く](https://github.com/project-codeguard/rules/issues)で質問を投稿
+- [ディスカッションを開始](https://github.com/project-codeguard/rules/discussions)してコミュニティとチャット
 
 

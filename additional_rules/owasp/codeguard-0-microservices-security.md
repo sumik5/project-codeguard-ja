@@ -1,5 +1,5 @@
 ---
-description: Microservices Security Best Practices
+description: マイクロサービスセキュリティベストプラクティス
 languages:
 - c
 - go
@@ -12,140 +12,140 @@ languages:
 alwaysApply: false
 ---
 
-## Microservices Security Guidelines
+## マイクロサービスセキュリティガイドライン
 
-Essential security practices for implementing authentication, authorization, and logging in microservices-based systems.
+マイクロサービスベースシステムにおける認証、認可、ロギングを実装するための必須セキュリティプラクティス。
 
-### Edge-Level Authorization
+### エッジレベル認可
 
-API gateways can centralize authorization enforcement for downstream microservices, but have limitations:
-- Pushing all authorization decisions to the gateway becomes hard to manage in complex ecosystems
-- The API gateway may become a single point of decision violating "defense in depth"
-- Operation teams typically own gateways, slowing development velocity
+APIゲートウェイは下流のマイクロサービスのために認可の実施を一元化できますが、制限があります：
+- すべての認可決定をゲートウェイに押し込むと、複雑なエコシステムでは管理が困難になる
+- APIゲートウェイが単一の決定ポイントになり、「多層防御」に違反する可能性
+- 運用チームが通常ゲートウェイを所有するため、開発速度が低下
 
-**Recommendation**: Implement authorization at both edge level (coarse-grained) and service level (fine-grained).
+**推奨事項**: エッジレベル（粗粒度）とサービスレベル（細粒度）の両方で認可を実装。
 
-### Service-Level Authorization Patterns
+### サービスレベル認可パターン
 
-**NIST Components**:
-- Policy Administration Point (PAP): User interface for creating and managing access control rules
-- Policy Decision Point (PDP): Computes access decisions by evaluating access control policy
-- Policy Enforcement Point (PEP): Enforces policy decisions for protected objects
-- Policy Information Point (PIP): Retrieval source of attributes for policy evaluation
+**NISTコンポーネント**:
+- Policy Administration Point (PAP): アクセス制御ルールを作成・管理するためのユーザーインターフェース
+- Policy Decision Point (PDP): アクセス制御ポリシーを評価してアクセス決定を計算
+- Policy Enforcement Point (PEP): 保護されたオブジェクトのポリシー決定を実施
+- Policy Information Point (PIP): ポリシー評価のための属性の取得元
 
-#### Centralized Pattern with Embedded Policy Decision Point
+#### 埋め込みPolicy Decision Pointを使用した集中パターン
 
-**Recommended approach**: Access control rules defined centrally but stored and evaluated at microservice level.
+**推奨アプローチ**: アクセス制御ルールは一元的に定義されるが、マイクロサービスレベルで保存・評価される。
 
-1. Access control rules defined using PAP and delivered to embedded PDP with required attributes
-2. When subject invokes microservice endpoint, microservice code invokes the PDP 
-3. PDP generates access control policy decision by evaluating input against rules and attributes
-4. Microservice enforces authorization based on PDP decision
+1. PAPを使用してアクセス制御ルールを定義し、必要な属性とともに埋め込みPDPに配信
+2. サブジェクトがマイクロサービスエンドポイントを呼び出すと、マイクロサービスコードがPDPを呼び出す
+3. PDPは入力をルールと属性に対して評価してアクセス制御ポリシー決定を生成
+4. マイクロサービスはPDP決定に基づいて認可を実施
 
-**Implementation**: PDP implemented as microservice built-in library or sidecar in service mesh architecture.
+**実装**: PDPはマイクロサービス組み込みライブラリまたはサービスメッシュアーキテクチャのサイドカーとして実装。
 
-### Authorization Implementation Recommendations
+### 認可実装の推奨事項
 
-1. Use special language to express policy instead of hardcoding in source code
-2. Implement as platform-level solution managed by dedicated security team
-3. Use widely-adopted solutions rather than custom implementations
-4. Implement "defense in depth" principle:
-   - Gateway/proxy level: coarse-grained authorization
-   - Microservice level: fine-grained decisions using shared authorization components
-   - Business code level: business-specific access control rules
-5. Implement formal procedures for access control policy development, approval, and rollout
+1. ソースコードにハードコーディングする代わりに、特殊言語を使用してポリシーを表現
+2. 専任のセキュリティチームが管理するプラットフォームレベルソリューションとして実装
+3. カスタム実装ではなく広く採用されているソリューションを使用
+4. 「多層防御」原則を実装：
+   - ゲートウェイ/プロキシレベル: 粗粒度認可
+   - マイクロサービスレベル: 共有認可コンポーネントを使用した細粒度決定
+   - ビジネスコードレベル: ビジネス固有のアクセス制御ルール
+5. アクセス制御ポリシーの開発、承認、展開のための正式な手順を実装
 
-### External Entity Identity Propagation
+### 外部エンティティアイデンティティの伝播
 
-**Problem**: Internal services need caller context for fine-grained authorization decisions.
+**問題**: 内部サービスは細粒度認可決定のために呼び出し元のコンテキストが必要。
 
-**Anti-pattern**: Reusing external access tokens internally (insecure due to token leakage risk).
+**アンチパターン**: 外部アクセストークンを内部で再利用（トークン漏洩リスクのため安全でない）。
 
-#### Recommended Pattern: Signed Data Structure by Trusted Issuer
+#### 推奨パターン: 信頼できる発行者による署名されたデータ構造
 
-After edge authentication, generate data structure representing external entity identity (user ID, roles, permissions), signed or encrypted by trusted issuer and propagated to internal microservices.
+エッジ認証後、外部エンティティアイデンティティ（ユーザーID、ロール、権限）を表すデータ構造を生成し、信頼できる発行者によって署名または暗号化され、内部マイクロサービスに伝播。
 
-**Implementation Recommendations**:
-1. Decouple external access tokens from internal representation
-2. Use single data structure to represent and propagate external entity identity
-3. Sign internal entity representation structure (symmetric or asymmetric encryption)
-4. Make internal structure extensible for additional claims
-5. Never expose internal entity representation structure outside trusted boundary
+**実装の推奨事項**:
+1. 外部アクセストークンと内部表現を分離
+2. 外部エンティティアイデンティティを表現・伝播するために単一のデータ構造を使用
+3. 内部エンティティ表現構造に署名（対称または非対称暗号化）
+4. 追加のクレームのために内部構造を拡張可能にする
+5. 信頼境界外に内部エンティティ表現構造を絶対に公開しない
 
-### Service-to-Service Authentication
+### サービス間認証
 
-#### Mutual Transport Layer Security (mTLS)
+#### 相互トランスポート層セキュリティ (mTLS)
 
-Each microservice carries public/private key pair for authentication via mTLS. Provides:
-- Legitimate service identification
-- Confidentiality and integrity of transmitted data
+各マイクロサービスは、mTLSを介した認証のために公開鍵/秘密鍵ペアを保持。以下を提供：
+- 正規サービスの識別
+- 送信データの機密性と完全性
 
-**Challenges**: Key provisioning, trust bootstrap, certificate revocation, key rotation.
+**課題**: 鍵のプロビジョニング、信頼のブートストラップ、証明書の失効、鍵のローテーション。
 
-#### Token-Based Authentication
+#### トークンベース認証
 
-Token contains caller ID (microservice ID) and permissions (scopes). Process:
-1. Caller microservice obtains signed token from security token service using service ID and password
-2. Token attached to outgoing requests via HTTP headers
-3. Called microservice extracts and validates token online or offline
+トークンには呼び出し元ID（マイクロサービスID）と権限（スコープ）が含まれる。プロセス：
+1. 呼び出し元マイクロサービスがサービスIDとパスワードを使用してセキュリティトークンサービスから署名済みトークンを取得
+2. HTTPヘッダーを介して送信リクエストにトークンを添付
+3. 呼び出されたマイクロサービスがオンラインまたはオフラインでトークンを抽出・検証
 
-**Online validation**: Network call to centralized service (detects revoked tokens, high latency, for critical requests)
-**Offline validation**: Uses downloaded public key (may not detect revoked tokens, low latency, for non-critical requests)
+**オンライン検証**: 集中サービスへのネットワーク呼び出し（失効トークンを検出、高レイテンシ、重要なリクエスト向け）
+**オフライン検証**: ダウンロードした公開鍵を使用（失効トークンを検出できない可能性、低レイテンシ、非重要リクエスト向け）
 
-### Logging Architecture
+### ロギングアーキテクチャ
 
-**Principles**:
-- Each microservice writes log messages to local file using standard output
-- Logging agent periodically pulls log messages and publishes to message broker
-- Central logging service subscribes to message broker messages
+**原則**:
+- 各マイクロサービスは標準出力を使用してローカルファイルにログメッセージを書き込む
+- ロギングエージェントが定期的にログメッセージを取得しメッセージブローカーに公開
+- 集中ロギングサービスがメッセージブローカーメッセージをサブスクライブ
 
-**Key Requirements**:
+**主要要件**:
 
-1. **Local File Logging**: Microservices write to local files, not directly to central logging system
-2. **Dedicated Logging Agent**: Decoupled component deployed on same host as microservice
-3. **Asynchronous Pattern**: Message broker implements asynchronous connection between logging agent and central service
-4. **Mutual Authentication**: Logging agent and message broker use mutual authentication (TLS)
-5. **Access Control**: Message broker enforces access control policy with least privileges
-6. **Data Sanitization**: Filter/sanitize log messages to exclude sensitive data (PII, passwords, API keys)
-7. **Correlation ID**: Generate unique correlation ID for every call chain to group log messages
-8. **Health Monitoring**: Logging agent provides health and status data
-9. **Structured Format**: Publish log messages in structured format (JSON, CSV)
-10. **Context Data**: Append platform context (hostname, container name) and runtime context (class name, filename)
+1. **ローカルファイルロギング**: マイクロサービスは集中ロギングシステムに直接書き込まずローカルファイルに書き込む
+2. **専用ロギングエージェント**: マイクロサービスと同じホストに展開された分離コンポーネント
+3. **非同期パターン**: メッセージブローカーがロギングエージェントと集中サービス間の非同期接続を実装
+4. **相互認証**: ロギングエージェントとメッセージブローカーは相互認証を使用（TLS）
+5. **アクセス制御**: メッセージブローカーは最小権限でアクセス制御ポリシーを実施
+6. **データサニタイゼーション**: ログメッセージをフィルタリング/サニタイズして機密データを除外（PII、パスワード、APIキー）
+7. **相関ID**: すべての呼び出しチェーンに一意の相関IDを生成してログメッセージをグループ化
+8. **ヘルスモニタリング**: ロギングエージェントがヘルスとステータスデータを提供
+9. **構造化フォーマット**: ログメッセージを構造化フォーマット（JSON、CSV）で公開
+10. **コンテキストデータ**: プラットフォームコンテキスト（ホスト名、コンテナ名）とランタイムコンテキスト（クラス名、ファイル名）を追加
 
-### Security Architecture Documentation
+### セキュリティアーキテクチャドキュメント
 
-Essential documentation to support threat modeling, attack surface analysis, and least privilege enforcement:
+脅威モデリング、攻撃面分析、最小権限の実施をサポートするための必須ドキュメント：
 
-#### Service and Infrastructure Inventory
-- Document all application services and infrastructure components with unique IDs, business functions, API definitions including security schemes (scopes, API keys), source repositories, and team ownership
-- Include authentication, authorization, logging, monitoring, and discovery services
-- Document data storages (databases, caches) and message queues with software types
+#### サービスとインフラストラクチャインベントリ
+- 一意のID、ビジネス機能、スコープやAPIキーを含むセキュリティスキームを含むAPI定義、ソースリポジトリ、チーム所有権を持つすべてのアプリケーションサービスとインフラストラクチャコンポーネントを文書化
+- 認証、認可、ロギング、モニタリング、ディスカバリサービスを含める
+- ソフトウェアタイプを持つデータストレージ（データベース、キャッシュ）とメッセージキューを文書化
 
-#### Data Classification and Flow Mapping
-- Identify and classify all data assets by protection level (PII, confidential, public)
-- Map service-to-storage relationships with access types (read, read/write)
-- Document service-to-service communications (synchronous HTTP/gRPC, asynchronous messaging) with data exchanged
-- Track which assets are stored in which systems (golden source vs cache)
+#### データ分類とフローマッピング
+- 保護レベル（PII、機密、公開）でデータ資産を識別・分類
+- アクセスタイプ（読み取り、読み書き）を持つサービスとストレージの関係をマップ化
+- 交換されるデータを含むサービス間通信（同期HTTP/gRPC、非同期メッセージング）を文書化
+- どのアセットがどのシステムに保存されるかを追跡（ゴールデンソース vs キャッシュ）
 
-#### Architecture Visualization
-- Create graphical representations using service call graphs or data flow diagrams
-- Use tools like DOT language to visualize component relationships and trust boundaries
-- Maintain current architecture diagrams showing all connections and data flows
+#### アーキテクチャの視覚化
+- サービス呼び出しグラフまたはデータフロー図を使用してグラフィカル表現を作成
+- DOT言語などのツールを使用してコンポーネント関係と信頼境界を視覚化
+- すべての接続とデータフローを示す最新のアーキテクチャ図を維持
 
-#### Security Applications
-This documentation enables:
-- Attack surface enumeration from API definitions for focused security testing
-- Data leakage analysis by tracking sensitive data movement across service boundaries  
-- Least privilege implementation by defining minimal permissions based on documented interactions
-- Trust boundary validation and justification of all service communications
-- Centralized security control verification to avoid duplicate or missing protections
+#### セキュリティアプリケーション
+このドキュメントにより以下が可能：
+- API定義から攻撃面を列挙し、焦点を絞ったセキュリティテストを実施
+- サービス境界を越えた機密データの移動を追跡してデータ漏洩分析を実施
+- 文書化されたインタラクションに基づいて最小限の権限を定義して最小権限を実装
+- 信頼境界の検証とすべてのサービス通信の正当化
+- 重複または欠落した保護を避けるために集中セキュリティ制御を検証
 
-### Security Best Practices Summary
+### セキュリティベストプラクティスのまとめ
 
-- Implement defense-in-depth authorization at multiple layers
-- Use centralized policy management with embedded decision points
-- Propagate signed internal identity tokens, never external tokens
-- Choose mTLS for service authentication when possible, token-based for flexibility
-- Implement resilient, secure logging with proper data sanitization
-- Maintain comprehensive architecture documentation for threat modeling and security analysis
-- Apply formal governance procedures for all security policy changes
+- 複数レイヤーで多層防御認可を実装
+- 埋め込み決定ポイントを使用した集中ポリシー管理を使用
+- 署名された内部アイデンティティトークンを伝播、外部トークンは絶対に伝播しない
+- 可能な場合はサービス認証にmTLSを選択、柔軟性のためにトークンベースを選択
+- 適切なデータサニタイゼーションを備えた耐障害性の高い安全なロギングを実装
+- 脅威モデリングとセキュリティ分析のために包括的なアーキテクチャドキュメントを維持
+- すべてのセキュリティポリシー変更に正式なガバナンス手順を適用

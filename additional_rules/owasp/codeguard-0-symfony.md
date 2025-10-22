@@ -1,32 +1,32 @@
 ---
-description: Symfony Security Best Practices
+description: Symfonyセキュリティベストプラクティス
 languages:
 - php
 - yaml
 alwaysApply: false
 ---
 
-## Symfony Security Best Practices
+## Symfonyセキュリティベストプラクティス
 
-Essential security practices for developing secure Symfony applications, covering common vulnerabilities and framework-specific protections.
+セキュアなSymfonyアプリケーション開発のための重要なセキュリティプラクティス、一般的な脆弱性とフレームワーク固有の保護をカバー。
 
-### Cross-Site Scripting (XSS) Prevention
+### クロスサイトスクリプティング（XSS）防止
 
-Use Twig's default `{{ }}` output escaping for all variables. Only use `|raw` filter for trusted content requiring HTML rendering.
+すべての変数にTwigのデフォルト`{{ }}`出力エスケープを使用します。HTML描画が必要な信頼できるコンテンツにのみ`|raw`フィルタを使用します。
 
 ```twig
 <p>Hello {{name}}</p>
-{# if 'name' is '<script>alert('hello!')</script>', Twig will output this:
+{# 'name' が '<script>alert('hello!')</script>' の場合、Twigは以下を出力します:
 '<p>Hello &lt;script&gt;alert(&#39;hello!&#39;)&lt;/script&gt;</p>' #}
 
 <p>{{ product.title|raw }}</p>
-{# if 'product.title' is 'Lorem <strong>Ipsum</strong>', Twig will output
-exactly that instead of 'Lorem &lt;strong&gt;Ipsum&lt;/strong&gt;' #}
+{# 'product.title' が 'Lorem <strong>Ipsum</strong>' の場合、Twigは
+'Lorem &lt;strong&gt;Ipsum&lt;/strong&gt;' の代わりに正確にそれを出力します #}
 ```
 
-### CSRF Protection
+### CSRF保護
 
-Symfony Forms include CSRF tokens automatically. For manual handling, use `csrf_token()` and `isCsrfTokenValid()`.
+Symfonyフォームは自動的にCSRFトークンを含みます。手動処理には`csrf_token()`と`isCsrfTokenValid()`を使用します。
 
 ```php
 class PostForm extends AbstractType
@@ -34,16 +34,16 @@ class PostForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            // ... 
-            'csrf_protection' => true,  // enable/disable csrf protection for this form
+            // ...
+            'csrf_protection' => true,  // このフォームのCSRF保護を有効/無効化
             'csrf_field_name' => '_csrf_token',
-            'csrf_token_id'   => 'post_item', // change arbitrary string used to generate
+            'csrf_token_id'   => 'post_item', // 生成に使用される任意の文字列を変更
         ]);
     }
 }
 ```
 
-Manual CSRF token handling:
+手動CSRFトークン処理：
 ```twig
 <form action="{{ url('delete_post', { id: post.id }) }}" method="post">
     <input type="hidden" name="token" value="{{ csrf_token('delete-post') }}">
@@ -55,8 +55,8 @@ Manual CSRF token handling:
 class ExampleController extends AbstractController
 {
     #[Route('/posts/{id}', methods: ['DELETE'], name: 'delete_post')]
-    public function delete(Post $post, Request $request): Response 
-    { 
+    public function delete(Post $post, Request $request): Response
+    {
         $token = $request->request->get('token');
         if($this->isCsrfTokenValid($token)) {
             // ...
@@ -66,20 +66,20 @@ class ExampleController extends AbstractController
 }
 ```
 
-### SQL Injection Prevention
+### SQLインジェクション防止
 
-Use parameterized queries with Doctrine ORM. Never concatenate user input in SQL strings.
+Doctrine ORMでパラメータ化クエリを使用します。ユーザー入力をSQL文字列に連結しません。
 
 ```php
-// Repository method
+// リポジトリメソッド
 $post = $em->getRepository(Post::class)->findOneBy(['id' => $id]);
 
-// DQL with parameters
+// パラメータ付きDQL
 $query = $em->createQuery("SELECT p FROM App\Entity\Post p WHERE p.id = :id");
 $query->setParameter('id', $id);
 $post = $query->getSingleResult();
 
-// DBAL Query Builder
+// DBALクエリビルダー
 $qb = $em->createQueryBuilder();
 $post = $qb->select('p')
             ->from('posts','p')
@@ -89,27 +89,27 @@ $post = $qb->select('p')
             ->getSingleResult();
 ```
 
-### Command Injection Prevention
+### コマンドインジェクション防止
 
-Avoid `exec()`, `shell_exec()`, `system()` with user input. Use Symfony Filesystem component or native PHP functions.
+ユーザー入力と共に`exec()`、`shell_exec()`、`system()`を避けます。SymfonyファイルシステムコンポーネントまたはネイティブPHP関数を使用します。
 
 ```php
-// Vulnerable example
+// 脆弱な例
 $filename = $request->request->get('filename');
 exec(sprintf('rm %s', $filename));
 
-// Secure alternatives - use native PHP or Symfony Filesystem
+// セキュアな代替案 - ネイティブPHPまたはSymfony Filesystemを使用
 unlink($filename);
 
-// Or Symfony Filesystem component
+// またはSymfony Filesystemコンポーネント
 use Symfony\Component\Filesystem\Filesystem;
 $filesystem = new Filesystem();
 $filesystem->remove($filename);
 ```
 
-### File Upload Security
+### ファイルアップロードセキュリティ
 
-Validate file uploads with Symfony Validator constraints. Store files outside public directory with unique names.
+Symfonyバリデータ制約でファイルアップロードを検証します。一意の名前を持つ公開ディレクトリ外にファイルを保存します。
 
 ```php
 class UploadDto
@@ -124,9 +124,9 @@ class UploadDto
 }
 ```
 
-### Directory Traversal Prevention
+### ディレクトリトラバーサル防止
 
-Use `realpath()` and `basename()` to validate and sanitize file paths.
+`realpath()`と`basename()`を使用してファイルパスを検証およびサニタイズします。
 
 ```php
 $storagePath = $this->getParameter('kernel.project_dir') . '/storage';
@@ -136,19 +136,19 @@ $realBase = realpath($storagePath);
 $realPath = realpath($filePath);
 
 if ($realPath === false || !str_starts_with($realPath, $realBase)) {
-    //Directory Traversal!
+    //ディレクトリトラバーサル!
 }
 
-// Alternative: strip directory information
+// 代替案: ディレクトリ情報を削除
 $filePath = $storagePath . '/' . basename($filename);
 ```
 
-### Security Configuration
+### セキュリティ設定
 
-Configure session security, authentication, and access controls properly.
+セッションセキュリティ、認証、アクセス制御を適切に設定します。
 
 ```yaml
-# Session configuration
+# セッション設定
 framework:
     session:
         cookie_httponly: true
@@ -156,7 +156,7 @@ framework:
         cookie_samesite: lax
         cookie_secure: auto
 
-# Authentication providers, firewalls, and access control
+# 認証プロバイダー、ファイアウォール、アクセス制御
 security:
     providers:
         app_user_provider:
@@ -183,11 +183,11 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
 ```
 
-### Production Security
+### 本番環境セキュリティ
 
-- Set `APP_ENV=prod` and disable debug mode
-- Run regular security checks: `composer update` and `symfony check:security`
-- Use Symfony secrets for sensitive data
-- Configure CORS with `nelmio/cors-bundle` (avoid wildcard origins)
-- Implement security headers (HSTS, CSP, X-Frame-Options)
-- Enforce HTTPS and set proper file permissions
+- `APP_ENV=prod`を設定し、デバッグモードを無効化
+- 定期的なセキュリティチェックを実行: `composer update`と`symfony check:security`
+- 機密データにSymfonyシークレットを使用
+- `nelmio/cors-bundle`でCORSを設定（ワイルドカードオリジンを避ける）
+- セキュリティヘッダーを実装（HSTS、CSP、X-Frame-Options）
+- HTTPSを強制し、適切なファイル権限を設定

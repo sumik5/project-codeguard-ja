@@ -1,6 +1,5 @@
 ---
-description: Dependency & supply chain security (pinning, SBOM, provenance, integrity,
-  private registries)
+description: 依存関係とサプライチェーンセキュリティ（固定、SBOM、プロビナンス、整合性、プライベートレジストリ）
 languages:
 - docker
 - javascript
@@ -8,42 +7,42 @@ languages:
 alwaysApply: false
 ---
 
-## Dependency & Supply Chain Security
+## 依存関係とサプライチェーンセキュリティ
 
-Control third‑party risk across ecosystems, from selection and pinning to provenance, scanning, and rapid response.
+選択と固定からプロビナンス、スキャン、迅速な対応まで、エコシステム全体でサードパーティリスクを制御。
 
-### Policy and Governance
-- Maintain allow‑listed registries and scopes; disallow direct installs from untrusted sources.
-- Require lockfiles and version pinning; prefer digest pinning for images and vendored assets.
-- Generate SBOMs for apps/images; store with artifacts; attest provenance (SLSA, Sigstore).
+### ポリシーとガバナンス
+- 許可リストに登録されたレジストリとスコープを維持。信頼できないソースからの直接インストールを禁止。
+- ロックファイルとバージョン固定を要求。イメージとベンダー化されたアセットにはダイジェスト固定を優先。
+- アプリ/イメージのSBOMを生成。成果物と共に保存。プロビナンス（SLSA、Sigstore）を証明。
 
-### Package Hygiene (npm focus applicable to others)
-- Regularly audit (`npm audit`, ecosystem SCA) and patch; enforce SLAs by severity.
-- Use deterministic builds: `npm ci` (not `npm install`) in CI/CD; maintain lockfile consistency.
-- Avoid install scripts that execute on install when possible; review for risk.
-- Use `.npmrc` to scope private registries; avoid wildcard registries; enable integrity verification.
-- Enable account 2FA for publishing
+### パッケージハイジーン（npm焦点、他にも適用可能）
+- 定期的な監査（`npm audit`、エコシステムSCA）とパッチ適用。深刻度別のSLAを強制。
+- 決定論的ビルドを使用：CI/CDで`npm ci`（`npm install`ではない）を使用。ロックファイルの一貫性を維持。
+- 可能な限り、インストール時に実行されるインストールスクリプトを避ける。リスクをレビュー。
+- `.npmrc`を使用してプライベートレジストリをスコープ化。ワイルドカードレジストリを避ける。整合性検証を有効化。
+- 公開時にアカウント2FAを有効化。
 
-### Development Practices
-- Minimize dependency footprint; remove unused packages; prefer stdlib/first‑party for trivial tasks.
-- Protect against typosquatting and protestware: pin maintainers, monitor releases, and use provenance checks.
-- Hermetic builds: no network in compile/packaging stages unless required; cache with authenticity checks.
+### 開発プラクティス
+- 依存関係のフットプリントを最小化。未使用のパッケージを削除。些細なタスクにはstdlib/ファーストパーティを優先。
+- タイポスクワッティングとプロテストウェアから保護：メンテナーを固定し、リリースを監視し、プロビナンスチェックを使用。
+- ハーメティックビルド：必要でない限り、コンパイル/パッケージング段階でネットワークを使用しない。真正性チェックでキャッシュ。
 
-### CI/CD Integration
-- SCA, SAST, IaC scans in gates; fail on criticals; require approvals for overrides with compensating controls.
-- Sign artifacts; verify signatures at deploy; enforce policy in admission.
+### CI/CD統合
+- ゲートでSCA、SAST、IaCスキャンを実施。クリティカルな問題で失敗。補完制御を伴うオーバーライドには承認を要求。
+- 成果物に署名。デプロイ時に署名を検証。アドミッションでポリシーを強制。
 
-### Vulnerability Management
-- For patched vulnerabilities: test and deploy updates; document any API breaking changes.
-- For unpatched vulnerabilities: implement compensating controls (input validation, wrappers) based on CVE type; prefer direct dependency fixes over transitive workarounds.
-- Document risk decisions; escalate acceptance to appropriate authority with business justification.
+### 脆弱性管理
+- パッチ済み脆弱性の場合：更新をテストしてデプロイ。APIの破壊的変更を文書化。
+- 未パッチ脆弱性の場合：CVEタイプに基づいて補完制御（入力検証、ラッパー）を実装。推移的な回避策より直接依存関係の修正を優先。
+- リスク判断を文書化。ビジネス正当化を伴う適切な権限への受容をエスカレーション。
 
-### Incident Response
-- Maintain rapid rollback; isolate compromised packages; throttle rollouts; notify stakeholders.
-- Monitor threat intel feeds (e.g., npm advisories); auto‑open tickets for critical CVEs.
+### インシデント対応
+- 迅速なロールバックを維持。侵害されたパッケージを分離。ロールアウトをスロットル。ステークホルダーに通知。
+- 脅威インテリジェンスフィード（例：npm advisories）を監視。クリティカルなCVEに対して自動的にチケットを作成。
 
-### Implementation Checklist
-- Lockfiles present; integrity checks on; private registries configured.
-- SBOM + provenance stored; signatures verified pre‑deploy.
-- Automated dependency updates with tests and review gates.
-- High‑sev vulns remediated within SLA or mitigated and documented.
+### 実装チェックリスト
+- ロックファイルが存在。整合性チェックが有効。プライベートレジストリが設定済み。
+- SBOM + プロビナンスが保存済み。デプロイ前に署名が検証済み。
+- テストとレビューゲートを伴う自動化された依存関係更新。
+- 高深刻度の脆弱性がSLA内で修正、または緩和および文書化済み。

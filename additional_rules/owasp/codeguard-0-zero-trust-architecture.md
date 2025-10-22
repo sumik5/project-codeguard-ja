@@ -1,6 +1,5 @@
 ---
-description: Zero Trust Architecture Implementation - Security principles for designing
-  systems with no implicit trust
+description: ゼロトラストアーキテクチャ実装 - 暗黙の信頼がないシステム設計のためのセキュリティ原則
 languages:
 - c
 - go
@@ -18,72 +17,72 @@ languages:
 alwaysApply: false
 ---
 
-## Implementing Zero Trust Architecture
+## ゼロトラストアーキテクチャの実装
 
-Implementing Zero Trust Architecture (ZTA) principles in your applications is essential for modern security.
+アプリケーションにゼロトラストアーキテクチャ（ZTA）原則を実装することは、現代のセキュリティに不可欠です。
 
-Zero Trust is built on the principle of "never trust, always verify" and assumes that threats exist both outside and inside the network. Key concepts include:
+ゼロトラストは「決して信頼せず、常に検証する」という原則に基づいており、ネットワークの外部と内部の両方に脅威が存在すると想定します。主要な概念には以下が含まれます：
 
-- No implicit trust based on network location or asset ownership
-- Continuous verification of identity and device health
-- Least privilege access to resources and data
-- Microsegmentation of networks and applications
-- Continuous monitoring and analytics for threat detection
+- ネットワークの場所や資産の所有権に基づく暗黙の信頼がない
+- アイデンティティとデバイスヘルスの継続的な検証
+- リソースとデータへの最小権限アクセス
+- ネットワークとアプリケーションのマイクロセグメンテーション
+- 脅威検出のための継続的なモニタリングと分析
 
-### Authentication & Authorization
+### 認証と認可
 
-- Implement Strong Authentication using FIDO2/WebAuthn
+- FIDO2/WebAuthnを使用した強力な認証を実装
 
-- Implement Context-Aware Authorization
-Implement authorization that considers multiple factors:
+- コンテキスト認識型認可を実装
+複数の要因を考慮する認可を実装：
 
 ```java
-// Java example of context-aware authorization
+// Javaのコンテキスト認識型認可の例
 public class ZeroTrustAuthorizationService {
     public boolean authorizeAccess(User user, Resource resource, AccessContext context) {
-        // 1. Verify user identity
+        // 1. ユーザーアイデンティティを検証
         if (!identityService.verifyIdentity(user)) {
             logFailedAttempt("Identity verification failed", user, resource, context);
             return false;
         }
 
-        // 2. Check device health and compliance
+        // 2. デバイスヘルスとコンプライアンスをチェック
         if (!deviceService.isCompliant(context.getDeviceId())) {
             logFailedAttempt("Device not compliant", user, resource, context);
             return false;
         }
 
-        // 3. Evaluate risk score based on multiple factors
+        // 3. 複数の要因に基づいてリスクスコアを評価
         int riskScore = riskEngine.calculateScore(user, resource, context);
         if (riskScore > ACCEPTABLE_THRESHOLD) {
             logFailedAttempt("Risk score too high", user, resource, context);
             return false;
         }
 
-        // 4. Check if user has required permissions
+        // 4. ユーザーが必要な権限を持つかチェック
         if (!permissionService.hasPermission(user, resource, context.getRequestedAction())) {
             logFailedAttempt("Insufficient permissions", user, resource, context);
             return false;
         }
 
-        // 5. Log successful access
+        // 5. 成功したアクセスをログ
         auditLogger.logAccess(user, resource, context);
         return true;
     }
 }
 ```
 
-- Implement Short-Lived Access Tokens
+- 短命なアクセストークンを実装
 
-Implement token-based authentication with short lifetimes:
+短い有効期限を持つトークンベース認証を実装：
 
 ```python
-# Python example using JWT with short expiration
+# PythonのJWTを使用した短い有効期限の例
 import jwt
 from datetime import datetime, timedelta
 
 def generate_access_token(user_id, device_id, permissions):
-    # Set token to expire in 15 minutes
+    # トークンを15分で期限切れに設定
     expiration = datetime.utcnow() + timedelta(minutes=15)
 
     payload = {
@@ -92,45 +91,45 @@ def generate_access_token(user_id, device_id, permissions):
         'permissions': permissions,
         'exp': expiration,
         'iat': datetime.utcnow(),
-        'jti': str(uuid.uuid4())  # Unique token ID
+        'jti': str(uuid.uuid4())  # ユニークなトークンID
     }
 
-    # Sign with appropriate algorithm and key
+    # 適切なアルゴリズムと鍵で署名
     token = jwt.encode(payload, SECRET_KEY, algorithm='ES256')
 
-    # Store token metadata for potential revocation
+    # 潜在的な失効のためにトークンメタデータを保存
     store_token_metadata(user_id, payload['jti'], device_id, expiration)
 
     return token
 ```
 
-### Secure Communication
+### 安全な通信
 
-- Implement TLS 1.3 for all communications
+- すべての通信にTLS 1.3を実装
 
-- Implement API security measures:
+- APIセキュリティ対策を実装：
 
 ```typescript
-// TypeScript example of API security middleware
+// TypeScriptのAPIセキュリティミドルウェアの例
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 
 const app = express();
 
-// Set security headers
+// セキュリティヘッダーを設定
 app.use(helmet());
 
-// Rate limiting
+// レート制限
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000, // 15分
+  max: 100, // windowMsあたり各IPを100リクエストに制限
   standardHeaders: true,
   legacyHeaders: false,
 });
 app.use('/api/', apiLimiter);
 
-// API authentication middleware
+// API認証ミドルウェア
 app.use('/api/', (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
 
@@ -139,15 +138,15 @@ app.use('/api/', (req, res, next) => {
   }
 
   try {
-    // Verify token and extract user info
+    // トークンを検証しユーザー情報を抽出
     const user = verifyAndDecodeToken(token);
 
-    // Check if token has been revoked
+    // トークンが失効されているかチェック
     if (isTokenRevoked(token)) {
       return res.status(401).json({ error: 'Token revoked' });
     }
 
-    // Add user info to request for downstream handlers
+    // ダウンストリームハンドラーのためにリクエストにユーザー情報を追加
     req.user = user;
     next();
   } catch (error) {
@@ -155,26 +154,26 @@ app.use('/api/', (req, res, next) => {
   }
 });
 
-// Payload validation middleware
+// ペイロード検証ミドルウェア
 app.use(express.json({
   verify: (req, res, buf) => {
     try {
-      // Check if JSON is valid and meets schema requirements
+      // JSONが有効でスキーマ要件を満たすかチェック
       validateSchema(buf.toString(), req.path);
     } catch (e) {
       throw new Error('Invalid JSON payload');
     }
   },
-  limit: '100kb' // Limit payload size
+  limit: '100kb' // ペイロードサイズを制限
 }));
 ```
 
-### Monitoring and Logging
+### モニタリングとロギング
 
-- Implement Comprehensive Logging
+- 包括的なロギングを実装
 
 ```csharp
-// C# example of detailed security logging
+// C#の詳細なセキュリティロギングの例
 public class SecurityLogger
 {
     private readonly ILogger _logger;
@@ -200,7 +199,7 @@ public class SecurityLogger
             RiskScore = context.RiskScore
         };
 
-        // Log with appropriate level
+        // 適切なレベルでログ
         if (success)
         {
             _logger.LogInformation("Access granted: {Event}", JsonSerializer.Serialize(logEvent));
@@ -213,11 +212,11 @@ public class SecurityLogger
 }
 ```
 
-### Implement fine-grained network and application segmentation
+### 細粒度のネットワークとアプリケーションセグメンテーションを実装
 
 
 ```yaml
-# Kubernetes Network Policy example for microsegmentation
+# マイクロセグメンテーションのためのKubernetes Network Policyの例
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

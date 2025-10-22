@@ -1,5 +1,5 @@
 ---
-description: SAML Security Guidelines
+description: SAMLセキュリティガイドライン
 languages:
 - java
 - javascript
@@ -8,150 +8,150 @@ languages:
 alwaysApply: false
 ---
 
-## SAML Security Guidelines
+## SAMLセキュリティガイドライン
 
-Essential security practices for implementing Security Assertion Markup Language (SAML) integrations to prevent common vulnerabilities and attacks.
+一般的な脆弱性と攻撃を防ぐため、Security Assertion Markup Language（SAML）統合を実装するための重要なセキュリティプラクティス。
 
-### Transport Security
+### トランスポートセキュリティ
 
-Use TLS 1.2 or higher for all SAML message transport to guarantee confidentiality and integrity. This protects against eavesdropping, theft of authentication information, bearer token theft, message deletion/modification, and man-in-the-middle attacks.
+すべてのSAMLメッセージのトランスポートにTLS 1.2以降を使用し、機密性と完全性を保証します。これにより、盗聴、認証情報の盗難、ベアラートークンの盗難、メッセージの削除/変更、中間者攻撃から保護します。
 
-### Message Integrity and Authentication
+### メッセージの完全性と認証
 
-Digitally sign SAML messages using certified keys to guarantee message integrity and authentication. This prevents man-in-the-middle attacks, forged assertions, and message modifications.
+証明された鍵を使用してSAMLメッセージにデジタル署名を行い、メッセージの完全性と認証を保証します。これにより、中間者攻撃、偽造されたアサーション、メッセージの変更を防ぎます。
 
-Encrypt assertions via XMLEnc to prevent disclosure of sensitive attributes after transportation, protecting against theft of user authentication information.
+XMLEncを介してアサーションを暗号化し、転送後の機密属性の開示を防ぎ、ユーザー認証情報の盗難から保護します。
 
-### Protocol Usage Validation
+### プロトコル使用の検証
 
-Follow SAML Profile requirements strictly. The AVANTSSAR team identified these required elements:
+SAMLプロファイルの要件を厳格に遵守します。AVANTSSARチームは以下の必須要素を特定しました：
 
-AuthnRequest Requirements:
-- Must contain unique ID and SP (Service Provider) identifier
-- Request ID must be returned in response via InResponseTo attribute
+AuthnRequestの要件：
+- 一意のIDとSP（Service Provider）識別子を含む必要があります
+- リクエストIDはInResponseTo属性を介してレスポンスで返される必要があります
 
-Response Requirements:
-- Must contain unique ID, SP identifier, IdP identifier, and digitally signed assertion
-- InResponseTo must match previously sent request ID
+レスポンスの要件：
+- 一意のID、SP識別子、IdP識別子、デジタル署名されたアサーションを含む必要があります
+- InResponseToは以前に送信されたリクエストIDと一致する必要があります
 
-Authentication Assertion Requirements:
-- Must contain ID, client identifier, IdP identifier, and SP identifier
+認証アサーションの要件：
+- ID、クライアント識別子、IdP識別子、SP識別子を含む必要があります
 
-### XML Signature Security
+### XML署名セキュリティ
 
-Prevent XML Signature Wrapping attacks:
+XML署名ラッピング攻撃を防ぎます：
 
-Schema Validation:
-- Always perform schema validation before using XML for security purposes
-- Use local, trusted copies of schemas for validation
-- Never allow automatic schema downloads from third parties
-- Inspect and harden schemas to disable wildcard or relaxed processing
+スキーマ検証：
+- セキュリティ目的でXMLを使用する前に、常にスキーマ検証を実行
+- 検証にはローカルで信頼されたスキーマのコピーを使用
+- サードパーティからの自動スキーマダウンロードを決して許可しない
+- スキーマを検査し、ワイルドカードや緩いプロセッシングを無効化するよう強化
 
-Digital Signature Validation:
-- For single signing key: use StaticKeySelector with key obtained directly from IdP
-- For multiple signing keys: use X509KeySelector with keys stored in local JKS
-- Ignore KeyInfo elements in documents
-- For heterogeneous documents: implement full PKIX trust model with trusted root certificates
+デジタル署名の検証：
+- 単一の署名鍵の場合：IdPから直接取得した鍵でStaticKeySelectorを使用
+- 複数の署名鍵の場合：ローカルJKSに保存された鍵でX509KeySelectorを使用
+- ドキュメント内のKeyInfo要素を無視
+- 異種ドキュメントの場合：信頼されたルート証明書を持つ完全なPKIX信頼モデルを実装
 
-XML Processing Security:
-- Never use getElementsByTagName to select security elements without validation
-- Always use absolute XPath expressions to select elements
-- Use hardened schemas for validation
+XML処理セキュリティ：
+- 検証なしにセキュリティ要素を選択するためgetElementsByTagNameを決して使用しない
+- 要素を選択するため常に絶対XPath式を使用
+- 検証には強化されたスキーマを使用
 
-### Protocol Processing Rules
+### プロトコル処理ルール
 
-Validate all required processing steps:
+すべての必要な処理ステップを検証：
 
-AuthnRequest Processing:
-- Follow all SAML Core (3.4.1.4) processing rules
-- Prevents man-in-the-middle attacks
+AuthnRequest処理：
+- すべてのSAML Core（3.4.1.4）処理ルールに従う
+- 中間者攻撃を防ぐ
 
-Response Processing:
-- Follow all SAML Profiles (4.1.4.3) processing rules
-- Prevents stolen assertions, man-in-the-middle, forged assertions, and browser state exposure
+レスポンス処理：
+- すべてのSAML Profiles（4.1.4.3）処理ルールに従う
+- 盗まれたアサーション、中間者、偽造されたアサーション、ブラウザ状態の公開を防ぐ
 
-### Binding Implementation Security
+### バインディング実装セキュリティ
 
-HTTP Redirect Binding:
-- Follow SAML Binding (3.4) specifications
-- Properly encode/decode messages
+HTTPリダイレクトバインディング：
+- SAML Binding（3.4）仕様に従う
+- メッセージを適切にエンコード/デコード
 
-HTTP POST Binding:
-- Follow SAML Binding (3.5) specifications
-- Prevent caching of SAML messages to avoid stolen assertion and replay attacks
+HTTPPOSTバインディング：
+- SAML Binding（3.5）仕様に従う
+- 盗まれたアサーションとリプレイ攻撃を避けるため、SAMLメッセージのキャッシングを防ぐ
 
-### Security Countermeasures
+### セキュリティ対策
 
-Additional protection measures:
+追加の保護措置：
 
-IP Filtering:
-- Filter by IP address when appropriate
-- Provide separate endpoints for trusted partners
-- Prevents stolen assertions and man-in-the-middle attacks
+IPフィルタリング：
+- 適切な場合、IPアドレスでフィルタリング
+- 信頼されたパートナー向けに別のエンドポイントを提供
+- 盗まれたアサーションと中間者攻撃を防ぐ
 
-Response Lifetimes:
-- Use short lifetimes on SAML responses
-- Prevents stolen assertions and browser state exposure
+レスポンスのライフタイム：
+- SAMLレスポンスに短いライフタイムを使用
+- 盗まれたアサーションとブラウザ状態の公開を防ぐ
 
-OneTimeUse:
-- Mark responses as OneTimeUse
-- Prevents browser state exposure and replay attacks
+OneTimeUse：
+- レスポンスをOneTimeUseとしてマーク
+- ブラウザ状態の公開とリプレイ攻撃を防ぐ
 
-### IdP-Initiated SSO Security
+### IdP起動SSOセキュリティ
 
-Unsolicited responses are inherently less secure due to lack of CSRF protection. If required:
+非請求のレスポンスは、CSRF保護の欠如により本質的に安全性が低いです。必要な場合：
 
-- Follow SAML Profiles (4.1.5) validation process
-- Validate RelayState URLs against allowlists to prevent open redirects
-- Implement proper replay detection at response or assertion level
+- SAML Profiles（4.1.5）検証プロセスに従う
+- オープンリダイレクトを防ぐため、RelayState URLを許可リストに対して検証
+- レスポンスまたはアサーションレベルで適切なリプレイ検出を実装
 
-### Identity Provider Best Practices
+### Identity Providerのベストプラクティス
 
-- Validate X.509 certificates for algorithm compatibility and encryption strength
-- Use strong authentication for SAML token generation
-- Validate which IdP mints tokens
-- Use trusted root CAs when possible
-- Synchronize to common Internet time source
-- Define levels of assurance for identity verification
-- Use asymmetric identifiers over personally identifiable information
-- Sign individual assertions or entire response elements
+- アルゴリズムの互換性と暗号化強度のためX.509証明書を検証
+- SAMLトークン生成に強力な認証を使用
+- どのIdPがトークンを発行するか検証
+- 可能な場合、信頼されたルートCAを使用
+- 共通のインターネット時刻ソースに同期
+- アイデンティティ検証のための保証レベルを定義
+- 個人識別情報よりも非対称識別子を使用
+- 個別のアサーションまたはレスポンス要素全体に署名
 
-### Service Provider Best Practices
+### Service Providerのベストプラクティス
 
-- Validate session state for users
-- Ensure assertions or entire responses are signed
-- Validate signatures are from authorized IdPs
-- Validate IdP certificates for expiration and revocation (CRL/OCSP)
-- Validate NotBefore and NotOnOrAfter timestamps
-- Validate Recipient attributes
-- Exchange assertions only over secure transports
-- Define clear criteria for session management and SAML logout
-- Verify user identities from SAML assertions when possible
+- ユーザーのセッション状態を検証
+- アサーションまたはレスポンス全体が署名されていることを確認
+- 署名が認可されたIdPからのものであることを検証
+- IdP証明書の有効期限と失効を検証（CRL/OCSP）
+- NotBeforeとNotOnOrAfterタイムスタンプを検証
+- Recipient属性を検証
+- 安全なトランスポート経由でのみアサーションを交換
+- セッション管理とSAMLログアウトの明確な基準を定義
+- 可能な場合、SAMLアサーションからユーザーIDを検証
 
-### Input Validation
+### 入力検証
 
-Treat all SAML input as untrusted external data:
-- Perform proper input validation on all SAML providers and consumers
-- Validate all elements and attributes in SAML messages
-- Sanitize any data extracted from SAML assertions before use
+すべてのSAML入力を信頼できない外部データとして扱う：
+- すべてのSAMLプロバイダーとコンシューマーで適切な入力検証を実行
+- SAMLメッセージ内のすべての要素と属性を検証
+- SAMLアサーションから抽出されたデータを使用前にサニタイズ
 
-### Cryptographic Requirements
+### 暗号化要件
 
-- Use strong encryption for all SAML elements
-- Deprecate support for insecure XMLEnc algorithms (e.g., RSA 1.5)
-- Follow latest cryptoanalysis developments
-- Use modern, secure cryptographic algorithms only
+- すべてのSAML要素に強力な暗号化を使用
+- 安全でないXMLEncアルゴリズム（RSA 1.5など）のサポートを非推奨に
+- 最新の暗号解析の発展に従う
+- 最新の安全な暗号化アルゴリズムのみを使用
 
-### Summary
+### まとめ
 
-Secure SAML implementation requires:
-- TLS 1.2+ transport security with message signing and encryption
-- Strict validation of all protocol elements and processing rules
-- Protection against XML signature wrapping via schema validation and secure XML processing
-- Proper binding implementation with caching prevention
-- Security countermeasures including IP filtering, short lifetimes, and OneTimeUse
-- Careful handling of IdP-initiated SSO with CSRF and replay protection
-- Strong certificate validation and session management
-- Comprehensive input validation and modern cryptography
+安全なSAML実装には以下が必要です：
+- TLS 1.2+トランスポートセキュリティとメッセージの署名および暗号化
+- すべてのプロトコル要素と処理ルールの厳格な検証
+- スキーマ検証と安全なXML処理を介したXML署名ラッピングに対する保護
+- キャッシング防止を伴う適切なバインディング実装
+- IPフィルタリング、短いライフタイム、OneTimeUseを含むセキュリティ対策
+- CSRFとリプレイ保護を伴うIdP起動SSOの注意深い処理
+- 強力な証明書検証とセッション管理
+- 包括的な入力検証と最新の暗号化
 
-SAML security depends on following specifications exactly and treating all inputs as potentially malicious.
+SAMLセキュリティは、仕様に正確に従い、すべての入力を潜在的に悪意のあるものとして扱うことに依存します。

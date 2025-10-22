@@ -1,5 +1,5 @@
 ---
-description: HTTP Security Headers Best Practices
+description: HTTPセキュリティヘッダーベストプラクティス
 languages:
 - c
 - go
@@ -13,29 +13,29 @@ languages:
 alwaysApply: false
 ---
 
-## HTTP Security Headers Guidelines
+## HTTPセキュリティヘッダーガイドライン
 
-This rule enforces secure configuration of HTTP response headers to protect against common web vulnerabilities including XSS, Clickjacking, Information Disclosure, and MIME-type attacks.
+このルールは、XSS、クリックジャッキング、情報漏洩、MIMEタイプ攻撃を含む一般的なWeb脆弱性から保護するため、HTTPレスポンスヘッダーの安全な設定を強制します。
 
-### Required Security Headers
+### 必須セキュリティヘッダー
 
 1. Content Security Policy (CSP)
-   - Must include default-src directive
-   - Must include script-src directive with appropriate restrictions
-   - Must include frame-ancestors directive for clickjacking protection
-   - Example: `Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'none'`
+   - default-srcディレクティブを含める必要があります
+   - 適切な制限を伴うscript-srcディレクティブを含める必要があります
+   - クリックジャッキング保護のためframe-ancestorsディレクティブを含める必要があります
+   - 例：`Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'none'`
 
 2. Cookie Security
-   - All session/sensitive cookies must have Secure flag
-   - All session/sensitive cookies must have HttpOnly flag
-   - All cookies must have SameSite attribute (Strict or Lax)
-   - Example: `Set-Cookie: session=123; Secure; HttpOnly; SameSite=Strict`
+   - すべてのセッション/機密クッキーにSecureフラグが必要です
+   - すべてのセッション/機密クッキーにHttpOnlyフラグが必要です
+   - すべてのクッキーにSameSite属性（StrictまたはLax）が必要です
+   - 例：`Set-Cookie: session=123; Secure; HttpOnly; SameSite=Strict`
 
 3. Cross-Origin Isolation
-   - Must set Cross-Origin-Embedder-Policy (COEP)
-   - Must set Cross-Origin-Resource-Policy (CORP)
-   - Must set Cross-Origin-Opener-Policy (COOP)
-   - Examples:
+   - Cross-Origin-Embedder-Policy (COEP)を設定する必要があります
+   - Cross-Origin-Resource-Policy (CORP)を設定する必要があります
+   - Cross-Origin-Opener-Policy (COOP)を設定する必要があります
+   - 例：
      ```
      Cross-Origin-Embedder-Policy: require-corp
      Cross-Origin-Resource-Policy: same-origin
@@ -43,43 +43,43 @@ This rule enforces secure configuration of HTTP response headers to protect agai
      ```
 
 4. Transport Security
-   - Must set Strict-Transport-Security (HSTS)
-   - Must include appropriate max-age (minimum 1 year)
-   - Example: `Strict-Transport-Security: max-age=31536000; includeSubDomains`
+   - Strict-Transport-Security (HSTS)を設定する必要があります
+   - 適切なmax-age（最低1年）を含める必要があります
+   - 例：`Strict-Transport-Security: max-age=31536000; includeSubDomains`
 
 5. Cache Control
-   - Must set appropriate Cache-Control for sensitive data
-   - Example: `Cache-Control: no-store, max-age=0`
+   - 機密データには適切なCache-Controlを設定する必要があります
+   - 例：`Cache-Control: no-store, max-age=0`
 
 6. Content Type Protection
-   - Must set X-Content-Type-Options
-   - Example: `X-Content-Type-Options: nosniff`
+   - X-Content-Type-Optionsを設定する必要があります
+   - 例：`X-Content-Type-Options: nosniff`
 
-### Prohibited Headers
+### 禁止されているヘッダー
 
-The following headers must not be present or must be removed:
+以下のヘッダーは存在してはならない、または削除する必要があります：
 - X-Powered-By
-- Server (or must contain non-revealing value)
+- Server（または情報を明かさない値を含める必要があります）
 - X-AspNet-Version
 - X-AspNetMvc-Version
 
-### Required Header Combinations
+### 必須のヘッダー組み合わせ
 
-Certain security features require multiple headers to work effectively:
+特定のセキュリティ機能は複数のヘッダーが効果的に機能するために必要です：
 
-1. Clickjacking Protection:
-   - Must use CSP frame-ancestors OR
-   - Must use X-Frame-Options: DENY
+1. クリックジャッキング保護：
+   - CSP frame-ancestorsを使用する、または
+   - X-Frame-Options: DENYを使用する必要があります
 
-2. XSS Protection:
-   - Must use CSP with appropriate script-src
-   - Must not rely solely on X-XSS-Protection
+2. XSS保護：
+   - 適切なscript-srcを伴うCSPを使用する必要があります
+   - X-XSS-Protectionのみに依存してはなりません
 
-3. CORS Security:
-   - Must not use Access-Control-Allow-Origin: *
-   - Must explicitly list allowed origins
+3. CORSセキュリティ：
+   - Access-Control-Allow-Origin: *を使用してはなりません
+   - 許可されたオリジンを明示的にリストアップする必要があります
 
-### Implementation Examples
+### 実装例
 
 PHP:
 ```php
@@ -128,8 +128,8 @@ app.use(
 );
 ```
 
-### Testing Tools
+### テストツール
 
-Mozilla Observatory is an online tool which helps you to check your website's header status.
+Mozilla Observatoryは、Webサイトのヘッダー状態を確認できるオンラインツールです。
 
-SmartScanner has a dedicated test profile for testing security of HTTP headers. Online tools usually test the homepage of the given address. But SmartScanner scans the whole website, ensuring all web pages have the right HTTP Headers in place.
+SmartScannerには、HTTPヘッダーのセキュリティをテストするための専用テストプロファイルがあります。オンラインツールは通常、指定されたアドレスのホームページをテストしますが、SmartScannerはWebサイト全体をスキャンし、すべてのWebページに適切なHTTPヘッダーが設定されていることを確認します。

@@ -1,5 +1,5 @@
 ---
-description: Securing Cascading Style Sheets
+description: CSS（Cascading Style Sheets）のセキュリティ保護
 languages:
 - c
 - javascript
@@ -7,76 +7,76 @@ languages:
 alwaysApply: false
 ---
 
-## Securing Cascading Style Sheets
+## CSS（Cascading Style Sheets）のセキュリティ保護
 
-Prevent CSS files from exposing application features, user roles, and sensitive functionality to attackers performing reconnaissance.
+CSSファイルがアプリケーションの機能、ユーザーロール、機密性の高い機能を攻撃者の偵察活動に晒すことを防止します。
 
-### Security Risks
+### セキュリティリスク
 
-#### Risk 1: Information Disclosure Through CSS Selectors
-Motivated attackers examine CSS files to learn application features before attempting attacks. Global CSS files containing role-based selectors reveal:
-- Different user roles and permissions
-- Available features and functionality
-- Application structure and sensitive endpoints
+#### リスク1: CSSセレクタによる情報漏洩
+攻撃を試みる前にアプリケーションの機能を学習するため、攻撃者はCSSファイルを調査します。ロールベースのセレクタを含むグローバルCSSファイルは以下を明らかにします：
+- 異なるユーザーロールと権限
+- 利用可能な機能
+- アプリケーション構造と機密性の高いエンドポイント
 
-Example problematic selectors:
+問題のあるセレクタの例：
 - `.profileSettings`
 - `.addUsers`
-- `.deleteUsers` 
+- `.deleteUsers`
 - `.exportUserData`
 - `.addNewAdmin`
 
-#### Risk 2: Descriptive Selector Names
-Readable selector names help attackers map CSS classes to actual application features:
+#### リスク2: 説明的なセレクタ名
+読みやすいセレクタ名は、攻撃者がCSSクラスを実際のアプリケーション機能にマッピングするのを容易にします：
 - `.changePassword`
 - `.oldPassword`
 - `.newPassword`
 - `.confirmNewPassword`
 
-### Defensive Mechanisms
+### 防御メカニズム
 
-#### Defense 1: Isolate CSS by Access Control Level
-- Create separate CSS files per role (StudentStyling.CSS, AdministratorStyling.CSS)
-- Restrict CSS file access to users with proper access control level only
-- Implement server-side validation before serving CSS files
-- Log and alert on unauthorized CSS file access attempts (forced browsing)
-- Ensure authenticated users cannot access CSS files for other roles
+#### 防御1: アクセス制御レベル別にCSSを分離
+- ロールごとに個別のCSSファイルを作成（StudentStyling.CSS、AdministratorStyling.CSS）
+- 適切なアクセス制御レベルを持つユーザーのみがCSSファイルにアクセスできるよう制限
+- CSSファイルを提供する前にサーバーサイド検証を実装
+- 不正なCSSファイルアクセス試行（強制ブラウジング）をログに記録し、アラートを発行
+- 認証済みユーザーが他のロール用のCSSファイルにアクセスできないようにする
 
-#### Defense 2: Remove Identifying Information
-- Use consistent styling across pages to reduce need for specific selectors
-- Write general CSS rules that apply across multiple pages
-- Create CSS selectors targeting HTML elements without revealing functionality
+#### 防御2: 識別情報の削除
+- 特定のセレクタの必要性を減らすため、ページ間で一貫したスタイリングを使用
+- 複数のページに適用される汎用的なCSSルールを記述
+- 機能を明らかにしないHTML要素をターゲットとするCSSセレクタを作成
 
-Transform descriptive selectors:
+説明的なセレクタを変換：
 ```
-// Instead of this revealing selector:
+// この明示的なセレクタの代わりに:
 #UserPage .Toolbar .addUserButton
 
-// Use obscure structural targeting:
+// 曖昧な構造的ターゲティングを使用:
 #page_u header button:first-of-type
 ```
 
-Build-time and runtime obfuscation tools:
-- JSS (CSS in JS) with minify option generates class names like `.c001`, `.c002`
-- CSS Modules with modules and localIdentName options for obfuscation
-- .Net Blazor CSS Isolation creates scoped selectors like `button.add[b-3xxtam6d07]`
-- CSS libraries (Bootstrap, Tailwind) reduce need for specific selectors
+ビルド時およびランタイム難読化ツール：
+- JSS（CSS in JS）のminifyオプションで`.c001`、`.c002`のようなクラス名を生成
+- CSS ModulesのmodulesとlocalIdentNameオプションで難読化
+- .Net Blazor CSS Isolationで`button.add[b-3xxtam6d07]`のようなスコープ付きセレクタを作成
+- CSSライブラリ（Bootstrap、Tailwind）で特定のセレクタの必要性を削減
 
-#### Defense 3: Prevent Malicious CSS in User Content
-- Validate and sanitize user-authored HTML content
-- Restrict CSS styles allowed in user-generated content
-- Prevent uploaded HTML from using styles for unintended purposes
-- Be aware that CSS can be used for clickjacking attacks where clicking anywhere on the page loads malicious websites
+#### 防御3: ユーザーコンテンツ内の悪意あるCSSを防止
+- ユーザーが作成したHTMLコンテンツを検証してサニタイズ
+- ユーザー生成コンテンツで許可されるCSSスタイルを制限
+- アップロードされたHTMLが意図しない目的でスタイルを使用することを防止
+- CSSがクリックジャッキング攻撃に使用される可能性があることを認識する（ページ上のどこをクリックしても悪意あるWebサイトがロードされる）
 
-### Implementation Guidelines
+### 実装ガイドライン
 
-1. Segment CSS files by user roles and access levels
-2. Implement access control validation before serving CSS resources
-3. Use build-time tools to obfuscate class names and selectors
-4. Prefer structural and element-based selectors over feature-specific names
-5. Leverage CSS frameworks to minimize custom selectors
-6. Sanitize and restrict user-generated HTML content containing styles
-7. Monitor and log unauthorized attempts to access role-specific CSS files
-8. Avoid global CSS files that contain selectors for all user roles
-9. Use generic, non-descriptive class names that don't reveal functionality
-10. Test CSS access controls to ensure proper isolation between roles
+1. ユーザーロールとアクセスレベル別にCSSファイルをセグメント化
+2. CSSリソースを提供する前にアクセス制御検証を実装
+3. ビルド時ツールを使用してクラス名とセレクタを難読化
+4. 機能固有の名前よりも構造的および要素ベースのセレクタを優先
+5. CSSフレームワークを活用してカスタムセレクタを最小化
+6. スタイルを含むユーザー生成HTMLコンテンツをサニタイズして制限
+7. ロール固有のCSSファイルへの不正アクセス試行を監視してログに記録
+8. すべてのユーザーロールのセレクタを含むグローバルCSSファイルを避ける
+9. 機能を明らかにしない汎用的で説明的でないクラス名を使用
+10. ロール間の適切な分離を確保するためにCSSアクセス制御をテスト

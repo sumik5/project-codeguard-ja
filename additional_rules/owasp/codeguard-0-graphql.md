@@ -1,66 +1,66 @@
 ---
-description: GraphQL Security Best Practices
+description: GraphQLセキュリティのベストプラクティス
 languages:
 - javascript
 - typescript
 alwaysApply: false
 ---
 
-## GraphQL Security Guidelines
+## GraphQLセキュリティガイドライン
 
-This rule advises on secure GraphQL API development to prevent injection, DoS, unauthorized access, and information leakage:
+このルールは、インジェクション、DoS、不正アクセス、情報漏洩を防ぐための安全なGraphQL API開発についてアドバイスします：
 
-- Input Validation and Injection Prevention
-  - Use specific GraphQL data types (scalars, enums) for all input validation.
-  - Define custom GraphQL validators for complex validations and use custom scalars.
-  - Define schemas for mutation inputs with strict validation rules.
-  - Use allowlist approach for character validation (avoid denylists).
-  - Apply parameterized statements and safe APIs for database queries in resolvers.
-  - Use ORMs/ODMs properly to avoid ORM injection vulnerabilities.
-  - Gracefully reject invalid input without revealing internal API details.
+- 入力検証とインジェクション防止
+  - すべての入力検証に特定のGraphQLデータ型（スカラー、列挙型）を使用。
+  - 複雑な検証にはカスタムGraphQLバリデータを定義し、カスタムスカラーを使用。
+  - ミューテーション入力に厳格な検証ルールを持つスキーマを定義。
+  - 文字検証には許可リストアプローチを使用（拒否リストを避ける）。
+  - リゾルバーでのデータベースクエリにパラメータ化されたステートメントと安全なAPIを適用。
+  - ORMインジェクション脆弱性を避けるためORM/ODMを適切に使用。
+  - 内部API詳細を明かさずに無効な入力を適切に拒否。
 
-- DoS Prevention and Query Limiting
-  - Implement query depth limiting using libraries like graphql-depth-limit (JavaScript) or MaxQueryDepthInstrumentation (Java).
-  - Add query complexity analysis using graphql-cost-analysis or MaxQueryComplexityInstrumentation.
-  - Enforce query amount limiting with libraries like graphql-input-number.
-  - Implement pagination to limit data returned in single responses.
-  - Add query timeouts at application level using custom instrumentation.
-  - Apply rate limiting per IP or user to prevent basic DoS attacks.
-  - Use server-side batching and caching (like Facebook's DataLoader) for efficiency.
+- DoS防止とクエリ制限
+  - graphql-depth-limit（JavaScript）やMaxQueryDepthInstrumentation（Java）などのライブラリを使用してクエリ深度制限を実装。
+  - graphql-cost-analysisやMaxQueryComplexityInstrumentationを使用してクエリ複雑度分析を追加。
+  - graphql-input-numberなどのライブラリでクエリ量制限を強制。
+  - 単一レスポンスで返されるデータを制限するためページネーションを実装。
+  - カスタムインストルメンテーションを使用してアプリケーションレベルでクエリタイムアウトを追加。
+  - 基本的なDoS攻撃を防ぐためIPまたはユーザーごとのレート制限を適用。
+  - 効率化のためサーバーサイドバッチングとキャッシング（FacebookのDataLoaderなど）を使用。
 
-- Access Control and Authorization
-  - Validate requester authorization for all data viewing and mutation operations.
-  - Implement proper object-level authorization to prevent IDOR/BOLA vulnerabilities.
-  - Enforce authorization checks on both edges and nodes in GraphQL schema.
-  - Use Interfaces and Unions to return different object properties based on permissions.
-  - Add access control validation in Query and Mutation resolvers with RBAC middleware.
-  - Check for unintended node/nodes fields that allow direct object access by ID.
-  - Implement field-level access controls for sensitive data.
+- アクセス制御と認可
+  - すべてのデータ閲覧とミューテーション操作でリクエスト者の認可を検証。
+  - IDOR/BOLA脆弱性を防ぐため適切なオブジェクトレベル認可を実装。
+  - GraphQLスキーマのエッジとノードの両方で認可チェックを強制。
+  - 権限に基づいて異なるオブジェクトプロパティを返すためInterfaceとUnionを使用。
+  - RBACミドルウェアでQueryとMutationリゾルバーにアクセス制御検証を追加。
+  - IDによる直接オブジェクトアクセスを許可する意図しないnode/nodesフィールドをチェック。
+  - 機密データに対するフィールドレベルのアクセス制御を実装。
 
-- Batching Attack Prevention
-  - Limit the number of queries that can be batched and run simultaneously.
-  - Add object request rate limiting at code level to track instance requests.
-  - Prevent batching for sensitive objects (usernames, passwords, tokens, OTPs).
-  - Implement custom solutions to disable batching for critical operations.
-  - Monitor and log batching attempts for security analysis.
+- バッチング攻撃防止
+  - バッチ化して同時実行できるクエリ数を制限。
+  - インスタンスリクエストを追跡するためコードレベルでオブジェクトリクエストレート制限を追加。
+  - 機密オブジェクト（ユーザー名、パスワード、トークン、OTP）のバッチングを防止。
+  - 重要な操作のバッチングを無効化するカスタムソリューションを実装。
+  - セキュリティ分析のためバッチング試行を監視しログ記録。
 
-- Secure Configuration Management
-  - Disable GraphQL introspection in production environments using NoIntrospectionGraphqlFieldVisibility (Java) or validation rules (JavaScript).
-  - Disable GraphiQL and similar exploration tools in production.
-  - Configure error masking to prevent stack traces and debug information exposure.
-  - Set NODE_ENV to 'production' or use debug: false in Apollo Server configuration.
-  - Disable field suggestion hints when introspection is disabled.
+- 安全な設定管理
+  - 本番環境でNoIntrospectionGraphqlFieldVisibility（Java）または検証ルール（JavaScript）を使用してGraphQLイントロスペクションを無効化。
+  - 本番環境でGraphiQLと類似の探索ツールを無効化。
+  - スタックトレースとデバッグ情報の露出を防ぐためエラーマスキングを設定。
+  - NODE_ENVを'production'に設定するか、Apollo Server設定でdebug: falseを使用。
+  - イントロスペクションが無効の場合、フィールド提案ヒントを無効化。
 
-- Authentication and Session Management
-  - Require authentication for all GraphQL endpoints (unless explicitly public).
-  - Implement proper session management with secure token validation.
-  - Use JWT or session-based authentication with proper validation in resolvers.
-  - Apply CSRF protection for GraphQL mutations when using cookie-based authentication.
-  - Validate authentication state before processing any queries or mutations.
+- 認証とセッション管理
+  - すべてのGraphQLエンドポイントに認証を要求（明示的に公開でない限り）。
+  - 安全なトークン検証を伴う適切なセッション管理を実装。
+  - リゾルバーで適切な検証を伴うJWTまたはセッションベース認証を使用。
+  - Cookieベース認証を使用する場合、GraphQLミューテーションにCSRF保護を適用。
+  - クエリやミューテーションを処理する前に認証状態を検証。
 
-Code Examples (from OWASP):
+コード例（OWASPより）：
 
-Disable Introspection - Java:
+イントロスペクション無効化 - Java：
 ```java
 GraphQLSchema schema = GraphQLSchema.newSchema()
     .query(StarWarsSchema.queryType)
@@ -68,7 +68,7 @@ GraphQLSchema schema = GraphQLSchema.newSchema()
     .build();
 ```
 
-Disable Introspection & GraphiQL - JavaScript:
+イントロスペクションとGraphiQL無効化 - JavaScript：
 ```javascript
 app.use('/graphql', graphqlHTTP({
   schema: MySessionAwareGraphQLSchema,
@@ -77,14 +77,14 @@ app.use('/graphql', graphqlHTTP({
 }));
 ```
 
-Query Depth Example:
+クエリ深度の例：
 ```javascript
-query evil {            # Depth: 0
-  album(id: 42) {       # Depth: 1
-    songs {             # Depth: 2
-      album {           # Depth: 3
-        songs {         # Depth: 4
-          album {id: N} # Depth: N
+query evil {            # 深度: 0
+  album(id: 42) {       # 深度: 1
+    songs {             # 深度: 2
+      album {           # 深度: 3
+        songs {         # 深度: 4
+          album {id: N} # 深度: N
         }
       }
     }
@@ -92,7 +92,7 @@ query evil {            # Depth: 0
 }
 ```
 
-Excessive Amount Request Example:
+過剰量リクエストの例：
 ```javascript
 query {
   author(id: "abc") {
@@ -103,7 +103,7 @@ query {
 }
 ```
 
-Batching Attack Example:
+バッチング攻撃の例：
 ```javascript
 [
   {
@@ -121,5 +121,5 @@ Batching Attack Example:
 ]
 ```
 
-Summary:  
-Secure GraphQL APIs through comprehensive input validation, query limiting, proper access controls, batching attack prevention, secure configuration management, and robust authentication mechanisms while preventing common attack vectors like injection, DoS, and unauthorized data access.
+要約：
+包括的な入力検証、クエリ制限、適切なアクセス制御、バッチング攻撃防止、安全な設定管理、堅牢な認証メカニズムを通じてGraphQL APIを保護し、インジェクション、DoS、不正データアクセスなどの一般的な攻撃ベクターを防止します。

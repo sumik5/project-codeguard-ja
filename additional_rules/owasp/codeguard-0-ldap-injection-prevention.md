@@ -1,5 +1,5 @@
 ---
-description: LDAP Injection Prevention
+description: LDAPインジェクションの防止
 languages:
 - c
 - go
@@ -14,33 +14,33 @@ languages:
 alwaysApply: false
 ---
 
-## LDAP Injection Prevention Guidelines
+## LDAPインジェクションの防止ガイドライン
 
-Essential practices for preventing LDAP injection vulnerabilities in applications that use directory services.
+ディレクトリサービスを使用するアプリケーションでLDAPインジェクション脆弱性を防ぐための必須プラクティス。
 
-### Understanding LDAP Injection
+### LDAPインジェクションの理解
 
-LDAP injection occurs when untrusted user input is improperly incorporated into LDAP queries, potentially allowing attackers to bypass authentication, access unauthorized data, or modify directory information.
+LDAPインジェクションは、信頼されていないユーザー入力が不適切にLDAPクエリに組み込まれることで発生し、攻撃者が認証をバイパスしたり、認可されていないデータにアクセスしたり、ディレクトリ情報を変更したりする可能性があります。
 
-Two main components vulnerable to injection:
-- **Distinguished Names (DNs)**: Unique identifiers like `cn=Richard Feynman, ou=Physics Department, dc=Caltech, dc=edu`
-- **Search Filters**: Query criteria using boolean logic in Polish notation
+インジェクションに脆弱な2つの主要コンポーネント：
+- **識別名（DN）**：`cn=Richard Feynman, ou=Physics Department, dc=Caltech, dc=edu`のような一意の識別子
+- **検索フィルター**：ポーランド記法でブール論理を使用するクエリ条件
 
-### Primary Defense: Proper Escaping
+### 主要な防御策：適切なエスケープ
 
-#### Distinguished Name Escaping
+#### 識別名（DN）のエスケープ
 
-Characters that must be escaped in DNs: `\ # + < > , ; " =` and leading or trailing spaces.
+DNでエスケープする必要がある文字：`\ # + < > , ; " =`および先頭または末尾のスペース
 
-Characters allowed in DNs (no escaping needed): `* ( ) . & - _ [ ] ` ~ | @ $ % ^ ? : { } ! '`
+DNで許可される文字（エスケープ不要）：`* ( ) . & - _ [ ] ` ~ | @ $ % ^ ? : { } ! '`
 
-#### Search Filter Escaping
+#### 検索フィルターのエスケープ
 
-Characters that must be escaped in search filters: `* ( ) \ NUL`
+検索フィルターでエスケープする必要がある文字：`* ( ) \ NUL`
 
-### Safe Java Example
+### 安全なJavaの例
 
-The original OWASP document provides this allowlist validation approach:
+元のOWASPドキュメントでは、この許可リスト検証アプローチを提供しています：
 
 ```java
 // String userSN = "Sherlock Holmes"; // Valid
@@ -54,43 +54,43 @@ if (!userSN.matches("[\\w\\s]*") || !userPassword.matches("[\\w]*")) {
 }
 
 String filter = "(&(sn = " + userSN + ")(userPassword=" + userPassword + "))";
-// ... remainder of LDAPInjection.searchRecord()... 
+// ... remainder of LDAPInjection.searchRecord()...
 ```
 
-### Safe .NET Encoding
+### 安全な.NETエンコーディング
 
-Use .NET AntiXSS (now the Encoder class) LDAP encoding functions:
-- `Encoder.LdapFilterEncode(string)` - encodes according to RFC4515
-- `Encoder.LdapDistinguishedNameEncode(string)` - encodes according to RFC2253
-- `LdapDistinguishedNameEncode(string, bool, bool)` - with optional initial/final character escaping
+.NET AntiXSS（現在はEncoderクラス）のLDAPエンコーディング関数を使用：
+- `Encoder.LdapFilterEncode(string)` - RFC4515に従ってエンコード
+- `Encoder.LdapDistinguishedNameEncode(string)` - RFC2253に従ってエンコード
+- `LdapDistinguishedNameEncode(string, bool, bool)` - オプションの初期/最終文字エスケープ付き
 
-### Framework-Based Protection
+### フレームワークベースの保護
 
-Use frameworks that automatically protect from LDAP injection:
-- **Java**: OWASP ESAPI with `encodeForLDAP(String)` and `encodeForDN(String)`
-- **.NET**: LINQ to LDAP (for .NET Framework 4.5 or lower) provides automatic LDAP encoding
+LDAPインジェクションから自動的に保護するフレームワークを使用：
+- **Java**：`encodeForLDAP(String)`および`encodeForDN(String)`を持つOWASP ESAPI
+- **.NET**：LINQ to LDAP（.NET Framework 4.5以前）は自動的なLDAPエンコーディングを提供
 
-### Additional Defenses
+### 追加の防御策
 
-#### Least Privilege
-- Minimize privileges assigned to LDAP binding accounts
-- Use read-only accounts where possible
-- Avoid administrative accounts for application connections
+#### 最小権限
+- LDAPバインディングアカウントに割り当てられる権限を最小化
+- 可能な場合は読み取り専用アカウントを使用
+- アプリケーション接続には管理者アカウントを避ける
 
-#### Bind Authentication
-- Configure LDAP with bind authentication to add verification and authorization checks
-- Prevent anonymous connections and unauthenticated binds
+#### バインド認証
+- 検証と認可チェックを追加するため、バインド認証を使用してLDAPを設定
+- 匿名接続と未認証バインドを防止
 
-#### Allow-List Input Validation
-- Validate input against known-safe characters before LDAP query construction
-- Normalize user input before validation
-- Store sensitive data in sanitized form
+#### 許可リスト入力検証
+- LDAPクエリ構築前に既知の安全な文字に対して入力を検証
+- 検証前にユーザー入力を正規化
+- 機密データをサニタイズした形式で保存
 
-### Key Security Requirements
+### 主要なセキュリティ要件
 
-- Always escape untrusted data before incorporating into LDAP queries
-- Use context-appropriate escaping (DN vs search filter)
-- Implement comprehensive input validation with allowlists
-- Use established security libraries rather than custom escaping
-- Apply principle of least privilege to LDAP connections
-- Enable proper authentication mechanisms to prevent bypass attacks
+- LDAPクエリに組み込む前に、信頼されていないデータを常にエスケープ
+- コンテキストに適したエスケープを使用（DN vs 検索フィルター）
+- 許可リストを使用した包括的な入力検証を実装
+- カスタムエスケープではなく確立されたセキュリティライブラリを使用
+- LDAP接続に最小権限の原則を適用
+- バイパス攻撃を防ぐための適切な認証メカニズムを有効化

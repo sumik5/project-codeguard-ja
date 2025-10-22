@@ -1,5 +1,5 @@
 ---
-description: HTML5 Security Best Practices
+description: HTML5セキュリティベストプラクティス
 languages:
 - c
 - go
@@ -14,83 +14,83 @@ languages:
 alwaysApply: false
 ---
 
-## HTML5 Security Guidelines
+## HTML5セキュリティガイドライン
 
-This rule advises on secure HTML5 development practices to prevent vulnerabilities in modern web applications:
+このルールは、モダンなWebアプリケーションにおける脆弱性を防ぐための安全なHTML5開発プラクティスについてアドバイスします。
 
-- Web Messaging Security
-  - Always specify exact target origin in postMessage calls, never use "*" wildcard.
-  - Verify event.origin strictly against trusted full domain names in message handlers.
-  - Avoid partial domain matching that could allow subdomain takeover attacks.
-  - Validate and sanitize all data received through postMessage before processing.
-  - Never use eval() or Function() constructor on message data.
-  - Use textContent instead of innerHTML when setting received message content.
-  - Treat all cross-origin message data as untrusted input requiring validation.
+- Webメッセージングのセキュリティ
+  - postMessage呼び出しでは必ず正確なターゲットオリジンを指定し、"*"ワイルドカードは決して使用しない
+  - メッセージハンドラーでevent.originを信頼できる完全なドメイン名に対して厳密に検証する
+  - サブドメイン乗っ取り攻撃を許す可能性がある部分的なドメインマッチングを避ける
+  - postMessageを通じて受信したすべてのデータを処理前に検証およびサニタイズする
+  - メッセージデータに対してeval()やFunction()コンストラクタを決して使用しない
+  - 受信したメッセージコンテンツを設定する際はinnerHTMLではなくtextContentを使用する
+  - すべてのクロスオリジンメッセージデータを検証が必要な信頼されていない入力として扱う
 
-- Cross-Origin Resource Sharing (CORS) Security
-  - Restrict Access-Control-Allow-Origin to specific trusted origins, avoid "*" wildcard.
-  - Validate URLs passed to XMLHttpRequest.open to prevent open redirects.
-  - Implement proper CSRF protection even when using CORS (CORS doesn't prevent CSRF).
-  - Reject mixed content requests (HTTP requests from HTTPS origins).
-  - Don't rely solely on Origin header for access control as it can be spoofed outside browsers.
-  - Use preflight requests for non-simple requests and validate Access-Control headers.
+- クロスオリジンリソース共有（CORS）のセキュリティ
+  - Access-Control-Allow-Originを特定の信頼されたオリジンに制限し、"*"ワイルドカードを避ける
+  - オープンリダイレクトを防ぐためXMLHttpRequest.openに渡されるURLを検証する
+  - CORSを使用していてもCSRF保護を適切に実装する（CORSはCSRFを防がない）
+  - 混合コンテンツリクエスト（HTTPSオリジンからのHTTPリクエスト）を拒否する
+  - ブラウザ外で偽装可能なため、アクセス制御をOriginヘッダーのみに依存しない
+  - 非シンプルリクエストにはプリフライトリクエストを使用し、Access-Controlヘッダーを検証する
 
-- WebSocket Security
-  - Use only secure wss:// protocol, never unencrypted ws:// in production.
-  - Implement application-level authentication and authorization for WebSocket connections.
-  - Verify Origin header against allowlist during WebSocket handshake.
-  - Validate and parse all WebSocket messages safely using JSON.parse() with error handling.
-  - Implement connection limits and message size restrictions to prevent DoS attacks.
-  - Use JWT or similar tokens for WebSocket authentication with proper validation.
-  - Implement token invalidation and denylist mechanisms for revoked access.
+- WebSocketのセキュリティ
+  - 本番環境では安全なwss://プロトコルのみを使用し、暗号化されていないws://は決して使用しない
+  - WebSocket接続にアプリケーションレベルの認証と認可を実装する
+  - WebSocketハンドシェイク中にOriginヘッダーを許可リストに対して検証する
+  - エラーハンドリングを含むJSON.parse()を使用してすべてのWebSocketメッセージを安全に検証および解析する
+  - DoS攻撃を防ぐため接続制限とメッセージサイズ制限を実装する
+  - WebSocket認証には適切な検証を伴うJWTまたは類似のトークンを使用する
+  - 取り消されたアクセスのためのトークン無効化と拒否リストメカニズムを実装する
 
-- Client-Side Storage Security
-  - Never store sensitive data (passwords, tokens, API keys, PII) in localStorage or sessionStorage.
-  - Use sessionStorage instead of localStorage when persistence across browser sessions is not required.
-  - Validate and sanitize all data retrieved from client-side storage before use.
-  - Implement data encryption for sensitive information stored client-side when absolutely necessary.
-  - Avoid hosting multiple applications on same origin to prevent storage access conflicts.
+- クライアント側ストレージのセキュリティ
+  - 機密データ（パスワード、トークン、APIキー、個人情報）をlocalStorageやsessionStorageに決して保存しない
+  - ブラウザセッションをまたいだ永続化が不要な場合はlocalStorageの代わりにsessionStorageを使用する
+  - クライアント側ストレージから取得したすべてのデータを使用前に検証およびサニタイズする
+  - 絶対に必要な場合はクライアント側に保存する機密情報のデータ暗号化を実装する
+  - ストレージアクセスの競合を防ぐため、同一オリジン上で複数のアプリケーションをホストすることを避ける
 
-- DOM Manipulation and Link Security
-  - Add rel="noopener noreferrer" attribute to all external links with target="_blank".
-  - Set window.opener = null when using window.open() for external URLs.
-  - Use iframe sandbox attribute with minimal permissions for untrusted content.
-  - Implement X-Frame-Options header alongside iframe sandbox for defense-in-depth.
-  - Avoid innerHTML with user-supplied content; use textContent, createElement, or trusted templating.
-  - When innerHTML must be used, sanitize content with DOMPurify or similar libraries.
+- DOM操作とリンクのセキュリティ
+  - target="_blank"を持つすべての外部リンクにrel="noopener noreferrer"属性を追加する
+  - 外部URLにwindow.open()を使用する際はwindow.opener = nullを設定する
+  - 信頼できないコンテンツには最小限のパーミッションでiframe sandbox属性を使用する
+  - 多層防御のためiframe sandboxと併せてX-Frame-Optionsヘッダーを実装する
+  - ユーザー提供のコンテンツでinnerHTMLを避ける。textContent、createElement、または信頼できるテンプレートを使用する
+  - innerHTMLを使用する必要がある場合は、DOMPurifyまたは類似のライブラリでコンテンツをサニタイズする
 
-- Input Field Security and CSRF Protection
-  - Use autocomplete="off" on sensitive input fields (passwords, credit cards, SSN).
-  - Add spellcheck="false", autocorrect="off", autocapitalize="off" on credential inputs.
-  - Implement CSRF tokens on all state-changing forms and AJAX requests.
-  - Use secure cookie attributes: HttpOnly, Secure, SameSite=Strict for session cookies.
-  - Validate CSRF tokens on server-side for all POST, PUT, DELETE requests.
+- 入力フィールドのセキュリティとCSRF保護
+  - 機密性の高い入力フィールド（パスワード、クレジットカード、社会保障番号）にautocomplete="off"を使用する
+  - 認証情報入力にspellcheck="false"、autocorrect="off"、autocapitalize="off"を追加する
+  - すべての状態を変更するフォームとAJAXリクエストにCSRFトークンを実装する
+  - セッションクッキーに安全なクッキー属性を使用する：HttpOnly、Secure、SameSite=Strict
+  - すべてのPOST、PUT、DELETEリクエストでサーバー側のCSRFトークンを検証する
 
-- Secure Cookie Configuration
-  - Set HttpOnly flag on session cookies to prevent JavaScript access.
-  - Use Secure flag to ensure cookies are only sent over HTTPS connections.
-  - Implement SameSite=Strict or SameSite=Lax to prevent CSRF attacks.
-  - Use __Secure- or __Host- cookie prefixes for additional security.
-  - Set appropriate cookie expiration and path restrictions.
+- 安全なクッキー設定
+  - JavaScriptアクセスを防ぐためセッションクッキーにHttpOnlyフラグを設定する
+  - クッキーがHTTPS接続でのみ送信されるようSecureフラグを使用する
+  - CSRF攻撃を防ぐためSameSite=StrictまたはSameSite=Laxを実装する
+  - 追加のセキュリティのため__Secure-または__Host-クッキープレフィックスを使用する
+  - 適切なクッキーの有効期限とパス制限を設定する
 
-- Web Workers and Service Workers Security
-  - Validate all messages sent to and received from Web Workers.
-  - Never create Web Workers from user-supplied URLs or content.
-  - Implement proper error handling and timeout mechanisms for Worker communications.
-  - Use Content Security Policy to restrict Worker script sources.
-  - Validate Service Worker registration and update mechanisms.
+- Web WorkersとService Workersのセキュリティ
+  - Web Workersへ送信および受信するすべてのメッセージを検証する
+  - ユーザー提供のURLやコンテンツからWeb Workersを決して作成しない
+  - Worker通信に適切なエラーハンドリングとタイムアウトメカニズムを実装する
+  - Content Security Policyを使用してWorkerスクリプトソースを制限する
+  - Service Workerの登録と更新メカニズムを検証する
 
-- Geolocation and Device API Security
-  - Require explicit user permission before accessing Geolocation API.
-  - Validate geolocation data before sending to servers.
-  - Implement proper error handling for geolocation failures.
-  - Use HTTPS when transmitting location data to prevent interception.
+- 位置情報とデバイスAPIのセキュリティ
+  - Geolocation APIにアクセスする前に明示的なユーザー許可を要求する
+  - サーバーに送信する前に位置情報データを検証する
+  - 位置情報の失敗に対する適切なエラーハンドリングを実装する
+  - 位置データの傍受を防ぐため送信時はHTTPSを使用する
 
-- Offline Application Security
-  - Require user consent before caching application data offline.
-  - Validate integrity of cached resources to prevent cache poisoning.
-  - Use HTTPS for all manifest files and cached resources.
-  - Implement proper cache invalidation mechanisms for security updates.
+- オフラインアプリケーションのセキュリティ
+  - アプリケーションデータをオフラインでキャッシュする前にユーザーの同意を要求する
+  - キャッシュポイズニングを防ぐためキャッシュされたリソースの整合性を検証する
+  - すべてのマニフェストファイルとキャッシュされたリソースにHTTPSを使用する
+  - セキュリティ更新のための適切なキャッシュ無効化メカニズムを実装する
 
-Summary:  
-Implement comprehensive HTML5 security controls through proper origin validation, secure storage practices, CSRF protection, secure cookie configuration, safe DOM manipulation, and robust authentication mechanisms to prevent XSS, CSRF, clickjacking, and data leakage vulnerabilities.
+要約：
+XSS、CSRF、クリックジャッキング、データ漏洩の脆弱性を防ぐため、適切なオリジン検証、安全なストレージプラクティス、CSRF保護、安全なクッキー設定、安全なDOM操作、堅牢な認証メカニズムを通じて包括的なHTML5セキュリティコントロールを実装します。

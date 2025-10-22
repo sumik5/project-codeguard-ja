@@ -1,5 +1,5 @@
 ---
-description: Node.js Security Best Practices
+description: Node.jsセキュリティベストプラクティス
 languages:
 - c
 - javascript
@@ -7,18 +7,18 @@ languages:
 alwaysApply: false
 ---
 
-## Node.js Security Guidelines
+## Node.jsセキュリティガイドライン
 
-Essential security practices for developing secure Node.js applications to prevent common vulnerabilities and attacks.
+一般的な脆弱性と攻撃を防ぐために安全なNode.jsアプリケーションを開発するための必須セキュリティプラクティス。
 
-### Application Security
+### アプリケーションセキュリティ
 
-#### Use Flat Promise Chains
+#### フラットPromiseチェーンを使用
 
-Avoid callback hell and improve error handling by using flat Promise chains or async/await:
+コールバック地獄を避け、Promise チェーンまたはasync/awaitを使用してエラーハンドリングを改善：
 
 ```javascript
-// Avoid callback hell
+// コールバック地獄を避ける
 func1("input1")
    .then(function (result){
       return func2("input2");
@@ -34,7 +34,7 @@ func1("input1")
    });
 ```
 
-Using async/await:
+async/awaitを使用：
 ```javascript
 (async() => {
   try {
@@ -48,16 +48,16 @@ Using async/await:
 })();
 ```
 
-#### Set Request Size Limits
+#### リクエストサイズ制限を設定
 
-Prevent resource exhaustion by limiting request body sizes:
+リクエストボディサイズを制限してリソース枯渇を防止：
 
 ```javascript
 app.use(express.urlencoded({ extended: true, limit: "1kb" }));
 app.use(express.json({ limit: "1kb" }));
 ```
 
-For custom limits using raw-body:
+raw-bodyを使用したカスタム制限の場合：
 ```JavaScript
 const contentType = require('content-type')
 const express = require('express')
@@ -83,17 +83,17 @@ app.use(function (req, res, next) {
 })
 ```
 
-#### Perform Input Validation
+#### 入力検証を実行
 
-Use allowlists and sanitize all inputs to prevent injection attacks. Consider modules like validator and express-mongo-sanitize for input validation.
+インジェクション攻撃を防ぐために許可リストを使用しすべての入力をサニタイズ。入力検証にはvalidatorやexpress-mongo-sanitizeなどのモジュールを検討。
 
-#### Perform Output Escaping
+#### 出力エスケープを実行
 
-Escape all HTML and JavaScript content to prevent XSS attacks using libraries like escape-html or node-esapi.
+XSS攻撃を防ぐためにescape-htmlやnode-esapiなどのライブラリを使用してすべてのHTMLとJavaScriptコンテンツをエスケープ。
 
-#### Monitor Event Loop Health
+#### イベントループの健全性をモニタリング
 
-Use monitoring to detect when your server is overloaded:
+サーバーが過負荷状態になったときを検出するためにモニタリングを使用：
 
 ```javascript
 const toobusy = require('toobusy-js');
@@ -106,9 +106,9 @@ app.use(function(req, res, next) {
 });
 ```
 
-#### Prevent Brute Force Attacks
+#### ブルートフォース攻撃を防止
 
-Implement rate limiting and delays for authentication endpoints:
+認証エンドポイントのためにレート制限と遅延を実装：
 
 ```javascript
 const bouncer = require('express-bouncer');
@@ -123,22 +123,22 @@ app.post("/login", bouncer.block, function(req, res) {
 });
 ```
 
-#### Use Anti-CSRF Protection
+#### アンチCSRF保護を使用
 
-Protect state-changing requests against Cross-Site Request Forgery. Note: csurf package is deprecated; use alternative CSRF protection packages.
+クロスサイトリクエストフォージェリに対して状態変更リクエストを保護。注意：csurfパッケージは非推奨、代替のCSRF保護パッケージを使用。
 
-#### Prevent HTTP Parameter Pollution
+#### HTTPパラメータ汚染を防止
 
-Use the hpp module to handle multiple parameters with the same name:
+同じ名前を持つ複数のパラメータを処理するためにhppモジュールを使用：
 
 ```javascript
 const hpp = require('hpp');
 app.use(hpp());
 ```
 
-#### Return Only Necessary Data
+#### 必要なデータのみを返す
 
-Limit data exposure by returning only required fields:
+必要なフィールドのみを返すことでデータ露出を制限：
 
 ```javascript
 exports.sanitizeUser = function(user) {
@@ -150,11 +150,11 @@ exports.sanitizeUser = function(user) {
 };
 ```
 
-### Error and Exception Handling
+### エラーと例外処理
 
-#### Handle Uncaught Exceptions
+#### キャッチされない例外を処理
 
-Bind to uncaughtException events to clean up resources before shutdown:
+シャットダウン前にリソースをクリーンアップするためにuncaughtExceptionイベントにバインド：
 
 ```javascript
 process.on("uncaughtException", function(err) {
@@ -164,9 +164,9 @@ process.on("uncaughtException", function(err) {
 });
 ```
 
-#### Handle EventEmitter Errors
+#### EventEmitterエラーを処理
 
-Always listen to error events when using EventEmitter objects:
+EventEmitterオブジェクトを使用する際は常にerrorイベントをリッスン：
 
 ```javascript
 const events = require('events');
@@ -176,11 +176,11 @@ emitter.on('error', function(err){
 });
 ```
 
-### Server Security
+### サーバーセキュリティ
 
-#### Set Secure Cookie Flags
+#### 安全なCookieフラグを設定
 
-Configure cookies with appropriate security flags:
+適切なセキュリティフラグでCookieを設定：
 
 ```javascript
 const session = require('express-session');
@@ -191,55 +191,55 @@ app.use(session({
 }));
 ```
 
-#### Use Security Headers
+#### セキュリティヘッダーを使用
 
-Implement security headers using helmet:
+helmetを使用してセキュリティヘッダーを実装：
 
 ```javascript
 const helmet = require("helmet");
 app.use(helmet()); // Add various HTTP headers
 ```
 
-Key headers include:
+主要なヘッダーには以下が含まれます：
 - HSTS: `app.use(helmet.hsts());`
-- Frame protection: `app.use(helmet.frameguard());`
-- XSS protection: `app.use(helmet.xssFilter());`
-- Content Security Policy: `app.use(helmet.contentSecurityPolicy({...}));`
-- Content type protection: `app.use(helmet.noSniff());`
-- Hide powered by: `app.use(helmet.hidePoweredBy());`
+- フレーム保護: `app.use(helmet.frameguard());`
+- XSS保護: `app.use(helmet.xssFilter());`
+- コンテンツセキュリティポリシー: `app.use(helmet.contentSecurityPolicy({...}));`
+- コンテンツタイプ保護: `app.use(helmet.noSniff());`
+- Powered By隠蔽: `app.use(helmet.hidePoweredBy());`
 
-### Platform Security
+### プラットフォームセキュリティ
 
-#### Keep Packages Updated
+#### パッケージを最新に保つ
 
-Regularly audit and update dependencies:
+依存関係を定期的に監査・更新：
 
 ```bash
 npm audit
 npm audit fix
 ```
 
-Use tools like OWASP Dependency-Check and Retire.js to identify vulnerable packages.
+脆弱なパッケージを識別するためにOWASP Dependency-CheckやRetire.jsなどのツールを使用。
 
-#### Avoid Dangerous Functions
+#### 危険な関数を避ける
 
-Exercise caution with potentially dangerous functions:
-- Avoid `eval()` with user input (remote code execution risk)
-- Be careful with `child_process.exec` (command injection risk)
-- Sanitize inputs when using `fs` module (directory traversal risk)
-- Use `vm` module within proper sandboxes
+潜在的に危険な関数には注意を払う：
+- ユーザー入力で`eval()`を避ける（リモートコード実行リスク）
+- `child_process.exec`に注意（コマンドインジェクションリスク）
+- `fs`モジュール使用時は入力をサニタイズ（ディレクトリトラバーサルリスク）
+- `vm`モジュールは適切なサンドボックス内で使用
 
-#### Prevent ReDoS Attacks
+#### ReDoS攻撃を防止
 
-Test regular expressions for denial of service vulnerabilities using tools like vuln-regex-detector.
+vuln-regex-detectorなどのツールを使用してサービス拒否脆弱性の正規表現をテスト。
 
-#### Use Security Linters
+#### セキュリティリンターを使用
 
-Implement static analysis tools like ESLint and JSHint with security-focused rules in your development workflow.
+開発ワークフローにセキュリティ重視ルールを持つESLintやJSHintなどの静的分析ツールを実装。
 
-#### Enable Strict Mode
+#### 厳格モードを有効化
 
-Always use strict mode to catch common JavaScript errors:
+一般的なJavaScriptエラーをキャッチするために常に厳格モードを使用：
 
 ```javascript
 "use strict";
@@ -250,9 +250,9 @@ function func() {
 }
 ```
 
-### Application Activity Logging
+### アプリケーションアクティビティロギング
 
-Implement comprehensive logging for security monitoring:
+セキュリティモニタリングのために包括的なロギングを実装：
 
 ```javascript
 const logger = new (Winston.Logger) ({
@@ -264,4 +264,4 @@ const logger = new (Winston.Logger) ({
 });
 ```
 
-By following these practices, you can significantly improve the security posture of your Node.js applications and protect against common web application vulnerabilities.
+これらのプラクティスに従うことで、Node.jsアプリケーションのセキュリティ姿勢を大幅に改善し、一般的なWebアプリケーション脆弱性から保護できます。

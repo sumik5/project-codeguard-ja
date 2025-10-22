@@ -1,5 +1,5 @@
 ---
-description: Certificate and Public Key Pinning Security
+description: 証明書と公開鍵ピンニングセキュリティ
 languages:
 - c
 - java
@@ -12,116 +12,116 @@ languages:
 alwaysApply: false
 ---
 
-## Certificate and Public Key Pinning Guidelines
+## 証明書と公開鍵ピンニングガイドライン
 
-Essential practices for implementing certificate and public key pinning to prevent Man-in-the-Middle attacks in hostile environments.
+敵対的な環境で中間者攻撃を防ぐための証明書と公開鍵ピンニングを実装するための重要なプラクティス。
 
-### Understanding the Problem
+### 問題の理解
 
-TLS channels can be vulnerable to MITM attacks when certificate-based trust is compromised through:
-1. Attackers acquiring rogue certificates from trusted CAs for victim sites
-2. Attackers injecting dangerous CAs into client trust stores
+TLSチャネルは、以下を通じて証明書ベースの信頼が侵害された場合、MITM攻撃に対して脆弱になる可能性があります：
+1. 攻撃者が被害者サイトのために信頼されたCAから不正な証明書を取得
+2. 攻撃者がクライアントのトラストストアに危険なCAを注入
 
-Pinning associates a host with its expected X509 certificate or public key, creating a pinset that advertised credentials must match.
+ピンニングは、ホストをその期待されるX509証明書または公開鍵に関連付け、広告された認証情報が一致する必要があるピンセットを作成します。
 
-### When NOT to Pin (Critical Decision Criteria)
+### ピンニングすべきでない場合（重要な決定基準）
 
-Avoid pinning in these situations:
-- You don't control both client and server sides of the connection
-- You cannot update the pinset securely without app redeployment
-- Certificate key pairs cannot be predicted before being put into service
-- Application is not a native mobile application
-- Updating pinset is disruptive to operations
+以下の状況ではピンニングを避けます：
+- 接続のクライアントとサーバーの両側を制御していない
+- アプリの再デプロイなしでピンセットを安全に更新できない
+- サービスに投入される前に証明書キーペアを予測できない
+- アプリケーションがネイティブモバイルアプリケーションでない
+- ピンセットの更新が運用に支障をきたす
 
-The risk of outages almost always outweighs security benefits given modern certificate authority security advancements.
+最新の認証局セキュリティの進歩を考えると、停止のリスクはセキュリティの利点をほぼ常に上回ります。
 
-### When Pinning May Be Appropriate
+### ピンニングが適切な場合
 
-Consider pinning only when:
-- You control both endpoints and can manage certificate lifecycles
-- You can implement secure pin update mechanisms
-- Your threat model specifically requires protection against CA compromise
-- You have tested thoroughly and planned for certificate rotation
+以下の場合のみピンニングを検討：
+- 両端点を制御し、証明書ライフサイクルを管理できる
+- 安全なピン更新メカニズムを実装できる
+- 脅威モデルがCA侵害に対する保護を特に必要とする
+- 徹底的にテストし、証明書ローテーションの計画を立てた
 
-### Implementation Approaches by Platform
+### プラットフォーム別実装アプローチ
 
 #### Android
-Use Android's Network Security Configuration feature with `<pin-set>` configuration settings. Alternatively, use established libraries like OkHTTP for programmatic pinning. Avoid implementing custom SSL validation from scratch.
+Androidのネットワークセキュリティ設定機能を`<pin-set>`設定で使用します。または、プログラムによるピンニングのためにOkHTTPなどの確立されたライブラリを使用します。カスタムSSL検証をゼロから実装することは避けてください。
 
 #### iOS
-Apple suggests pinning CA public keys via `Info.plist` under App Transport Security Settings. Use TrustKit library for easier implementation. Custom implementation requires SecTrustEvaluate logic following HTTPS Server Trust Evaluation guidelines.
+AppleはApp Transport Security Settings配下の`Info.plist`を介してCA公開鍵をピンニングすることを提案しています。より簡単な実装のためTrustKitライブラリを使用します。カスタム実装には、HTTPS Server Trust Evaluationガイドラインに従ったSecTrustEvaluateロジックが必要です。
 
 #### .Net
-Implement using ServicePointManager callbacks for certificate validation.
+証明書検証のためServicePointManagerコールバックを使用して実装します。
 
 #### OpenSSL
-Use verify_callback or post-connection validation via SSL_get_peer_certificate. Must call SSL_get_verify_result (verify X509_V_OK) and SSL_get_peer_certificate (verify non-NULL). Fail connection and tear down socket on validation errors.
+verify_callbackまたはSSL_get_peer_certificateによる接続後検証を使用します。SSL_get_verify_result（X509_V_OKを検証）とSSL_get_peer_certificate（非NULLを検証）を呼び出す必要があります。検証エラー時に接続を失敗させ、ソケットを破棄します。
 
 #### Electron
-Use electron-ssl-pinning library or ses.setCertificateVerifyProc for custom certificate validation.
+カスタム証明書検証のためelectron-ssl-pinningライブラリまたはses.setCertificateVerifyProcを使用します。
 
-### What to Pin
+### ピンニングするもの
 
-Pin selection strategy:
-1. Leaf certificate pinning (recommended): Provides 100% certainty but requires backup pins for intermediate CAs to prevent app breakage during certificate rotation
-2. Intermediate CA pinning: Reduces risk but trusts all certificates issued by that CA
-3. Root CA pinning: Not recommended due to high risk from trusting all intermediate CAs
+ピン選択戦略：
+1. リーフ証明書ピンニング（推奨）：100%の確実性を提供しますが、証明書ローテーション中のアプリ破損を防ぐため中間CAのバックアップピンが必要
+2. 中間CAピンニング：リスクを削減しますが、そのCAによって発行されたすべての証明書を信頼
+3. ルートCAピンニング：すべての中間CAを信頼する高リスクのため推奨されません
 
-Pin type options:
-- Whole certificate: Easiest to implement but requires frequent updates for certificate rotation
-- Public key (subjectPublicKeyInfo): More flexible, allows certificate renewal with same key, provides access to key parameters and algorithm context
-- Hash: Convenient and fixed-length but lacks contextual information
+ピンタイプオプション：
+- 証明書全体：実装が最も簡単だが、証明書ローテーションのため頻繁な更新が必要
+- 公開鍵（subjectPublicKeyInfo）：より柔軟、同じ鍵で証明書更新を許可、鍵パラメータとアルゴリズムコンテキストへのアクセスを提供
+- ハッシュ：便利で固定長だがコンテキスト情報が不足
 
-Prefer subjectPublicKeyInfo pinning for balance of flexibility and security context.
+柔軟性とセキュリティコンテキストのバランスのため、subjectPublicKeyInfoピンニングを優先します。
 
-### Pin Management Best Practices
+### ピン管理のベストプラクティス
 
-#### Pin Addition Timing
-Add pins at development time (preloading) rather than Trust On First Use (TOFU). Preloading out-of-band prevents attackers from tainting pins.
+#### ピン追加タイミング
+Trust On First Use（TOFU）ではなく、開発時にピンを追加（プリロード）します。帯域外のプリロードにより、攻撃者がピンを汚染することを防ぎます。
 
-#### Backup Strategy
-Always include backup pins (intermediate CA or alternate certificates) to prevent application outages during certificate updates.
+#### バックアップ戦略
+証明書更新中のアプリケーション停止を防ぐため、常にバックアップピン（中間CAまたは代替証明書）を含めます。
 
-#### Update Mechanisms
-Plan secure pin update methods that don't require app redeployment. Consider remote configuration with authenticated channels.
+#### 更新メカニズム
+アプリの再デプロイを必要としない安全なピン更新方法を計画します。認証されたチャネルでのリモート設定を検討します。
 
-#### Failure Handling
-Never allow users to bypass pin validation failures. Log failures client-side but terminate connections on pin mismatches.
+#### 失敗処理
+ユーザーにピン検証失敗のバイパスを決して許可しません。失敗をクライアント側でログに記録しますが、ピンの不一致時に接続を終了します。
 
-### Corporate Environment Considerations
+### 企業環境の考慮事項
 
-For organizations using interception proxies as part of Data Loss Prevention:
-- Do not automatically allow-list interception proxies
-- Add proxy public keys to pinset only after explicit risk acceptance approval
-- Treat corporate proxies as "good bad actors" that still break end-to-end security
+データ損失防止の一環として傍受プロキシを使用する組織の場合：
+- 傍受プロキシを自動的に許可リストに追加しません
+- 明示的なリスク受容承認後のみ、プロキシ公開鍵をピンセットに追加
+- 企業プロキシを、エンドツーエンドセキュリティを依然として破る「良い悪者」として扱います
 
-### Testing and Validation
+### テストと検証
 
-Thoroughly test pinning implementations using OWASP Mobile Security Testing Guide network communication guidelines:
-- Verify pin validation occurs correctly
-- Test certificate rotation scenarios
-- Validate failure handling paths
-- Ensure backup pins function properly
+OWASPモバイルセキュリティテストガイドのネットワーク通信ガイドラインを使用してピンニング実装を徹底的にテスト：
+- ピン検証が正しく行われることを検証
+- 証明書ローテーションシナリオをテスト
+- 失敗処理パスを検証
+- バックアップピンが適切に機能することを確認
 
-### Operational Considerations
+### 運用上の考慮事項
 
-#### Certificate Lifecycle Management
-- Coordinate with backend teams on certificate rotation schedules
-- Plan pin updates in advance of certificate expiration
-- Monitor certificate validity periods
-- Implement alerts for approaching pin expiration
+#### 証明書ライフサイクル管理
+- バックエンドチームと証明書ローテーションスケジュールを調整
+- 証明書有効期限に先立ってピン更新を計画
+- 証明書有効期間を監視
+- ピン有効期限が近づいていることをアラート実装
 
-#### Risk Assessment
-Understand that pinning creates operational risk of application outages if not managed properly. The security benefit must outweigh availability risks for your specific threat model.
+#### リスク評価
+ピンニングは適切に管理されない場合、アプリケーション停止の運用リスクを生じることを理解します。セキュリティの利点は、特定の脅威モデルの可用性リスクを上回る必要があります。
 
-### Common Implementation Errors to Avoid
+### 避けるべき一般的な実装エラー
 
-- Custom TLS or pinning implementations instead of vetted libraries
-- Pinning without backup strategies
-- Allowing user bypass of pin failures
-- Inadequate testing of certificate rotation scenarios
-- Pinning root CAs without understanding the expanded trust implications
+- 検証済みライブラリの代わりにカスタムTLSまたはピンニング実装
+- バックアップ戦略なしのピンニング
+- ピン失敗のユーザーバイパスを許可
+- 証明書ローテーションシナリオの不十分なテスト
+- 拡張された信頼の影響を理解せずにルートCAをピンニング
 
-### Summary
+### まとめ
 
-Certificate and public key pinning can provide additional protection against sophisticated MITM attacks but introduces significant operational complexity and availability risks. Most applications should rely on standard certificate validation rather than implementing pinning. When pinning is necessary, use platform-native solutions or well-established libraries, implement comprehensive backup strategies, and thoroughly test all scenarios including certificate rotation.
+証明書と公開鍵ピンニングは、洗練されたMITM攻撃に対する追加保護を提供できますが、重大な運用の複雑さと可用性リスクをもたらします。ほとんどのアプリケーションは、ピンニングを実装するのではなく、標準的な証明書検証に依存すべきです。ピンニングが必要な場合、プラットフォームネイティブソリューションまたは確立されたライブラリを使用し、包括的なバックアップ戦略を実装し、証明書ローテーションを含むすべてのシナリオを徹底的にテストします。

@@ -1,58 +1,43 @@
-# Security Policies and Procedures
+# セキュリティポリシーと手順
 
-This document outlines security procedures and general policies for the
-Project CodeGuard project.
+このドキュメントは、Project CodeGuardプロジェクトのセキュリティ手順と一般的なポリシーの概要を示します。
 
-- [Disclosing a security issue](#disclosing-a-security-issue)
-- [Vulnerability management](#vulnerability-management)
-- [Suggesting changes](#suggesting-changes)
+- [セキュリティイシューの開示](#セキュリティイシューの開示)
+- [脆弱性管理](#脆弱性管理)
+- [変更の提案](#変更の提案)
 
-## Disclosing a security issue
+## セキュリティイシューの開示
 
-The Project CodeGuard maintainers take all security issues in the project
-seriously. Thank you for improving the security of Project CodeGuard. We
-appreciate your dedication to responsible disclosure and will make every effort to
-acknowledge your contributions.
+Project CodeGuardのメンテナーは、プロジェクトにおけるすべてのセキュリティイシューを真剣に受け止めています。Project CodeGuardのセキュリティ向上にご協力いただきありがとうございます。責任ある開示へのあなたの献身に感謝し、あなたの貢献を認めるためにあらゆる努力をします。
 
-Project CodeGuard leverages GitHub's private vulnerability reporting.
+Project CodeGuardは、GitHubのプライベート脆弱性報告機能を活用しています。
 
-To learn more about this feature and how to submit a vulnerability report,
-review [GitHub's documentation on private
-reporting](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability).
+この機能の詳細と脆弱性レポートの提出方法については、[GitHubのプライベート報告に関するドキュメント](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability)を参照してください。
 
-Here are some helpful details to include in your report:
+レポートに含めると役立つ詳細は以下の通りです：
 
-- a detailed description of the issue
-- the steps required to reproduce the issue
-- versions of the project that may be affected by the issue
-- if known, any mitigations for the issue
+- 問題の詳細な説明
+- 問題を再現するために必要な手順
+- 問題の影響を受ける可能性があるプロジェクトのバージョン
+- 既知の場合、問題の緩和策
 
-A maintainer will acknowledge the report within three (3) business days, and
-will send a more detailed response within an additional three (3) business days
-indicating the next steps in handling your report.
+メンテナーは3営業日以内にレポートを確認し、さらに3営業日以内に、レポートの処理における次のステップを示すより詳細な回答を送信します。
 
-If you've been unable to successfully draft a vulnerability report via GitHub
-or have not received a response during the alloted response window, please
-reach out via the [Cisco Open security contact email](mailto:oss-security@cisco.com).
+GitHub経由で脆弱性レポートを正常に作成できなかった場合、または割り当てられた応答期間内に応答を受け取っていない場合は、[Cisco Openセキュリティ連絡先メール](mailto:oss-security@cisco.com)を介してご連絡ください。
 
-After the initial reply to your report, the maintainers will endeavor to keep
-you informed of the progress towards a fix and full announcement, and may ask
-for additional information or guidance.
+レポートへの最初の返信後、メンテナーは修正と完全なアナウンスへの進捗状況について通知し、追加情報やガイダンスを求めることがあります。
 
-## Vulnerability management
+## 脆弱性管理
 
-When the maintainers receive a disclosure report, they will assign it to a
-primary handler.
+メンテナーが開示レポートを受け取ると、プライマリハンドラーに割り当てられます。
 
-This person will coordinate the fix and release process, which involves the
-following steps:
+この担当者は、修正とリリースプロセスを調整します。このプロセスには以下のステップが含まれます：
 
-- confirming the issue
-- determining affected versions of the project
-- auditing code to find any potential similar problems
-- preparing fixes for all releases under maintenance
+- 問題の確認
+- プロジェクトの影響を受けるバージョンの特定
+- 類似の潜在的な問題を見つけるためのコード監査
+- メンテナンス中のすべてのリリースの修正を準備
 
-## Suggesting changes
+## 変更の提案
 
-If you have suggestions on how this process could be improved please submit an
-issue or pull request.
+このプロセスの改善方法について提案がある場合は、イシューまたはプルリクエストを提出してください。

@@ -1,5 +1,5 @@
 ---
-description: Error Handling Security Best Practices
+description: エラーハンドリングセキュリティベストプラクティス
 languages:
 - c
 - java
@@ -10,39 +10,39 @@ languages:
 alwaysApply: false
 ---
 
-## Error Handling Security Guidelines
+## エラーハンドリングセキュリティガイドライン
 
-This rule advises on secure error handling practices to prevent information leakage and ensure proper logging:
+このルールは、情報漏洩を防ぎ、適切なロギングを確保するための安全なエラーハンドリングプラクティスを示します。
 
-- General Error Handling Security
-  - Implement global error handlers to catch all unhandled exceptions.
-  - Return generic error messages without exposing stack traces, file paths, or version information.
-  - Log detailed error information securely on the server side for investigation.
-  - Use appropriate HTTP status codes: 4xx for client errors, 5xx for server errors.
+- 一般的なエラーハンドリングセキュリティ
+  - すべての未処理例外をキャッチするためグローバルエラーハンドラーを実装します。
+  - スタックトレース、ファイルパス、バージョン情報を露出せず、汎用的なエラーメッセージを返します。
+  - 調査用にサーバー側で詳細なエラー情報を安全にログに記録します。
+  - 適切なHTTPステータスコードを使用：クライアントエラーには4xx、サーバーエラーには5xx。
 
-- Production Environment Configuration
-  - Disable detailed error pages and debug information in production.
-  - Set `customErrors mode="RemoteOnly"` in web.config for ASP.NET applications.
-  - Disable development exception pages in ASP.NET Core production environments.
-  - Configure proper error page redirects to generic error handlers.
+- 本番環境設定
+  - 本番環境で詳細なエラーページとデバッグ情報を無効化します。
+  - ASP.NETアプリケーションのweb.configで`customErrors mode="RemoteOnly"`を設定します。
+  - ASP.NET Core本番環境で開発例外ページを無効化します。
+  - 汎用エラーハンドラーへの適切なエラーページリダイレクトを設定します。
 
-- Secure Error Logging
-  - Log exceptions with sufficient context (user ID, IP address, timestamp) for forensics.
-  - Never log sensitive data like passwords, tokens, or personal information in error logs.
-  - Use structured logging for better analysis and monitoring.
-  - Implement log rotation and secure storage for error logs.
+- セキュアエラーロギング
+  - フォレンジックのため十分なコンテキスト（ユーザーID、IPアドレス、タイムスタンプ）で例外をログに記録します。
+  - エラーログにパスワード、トークン、個人情報などの機密データをログに記録しません。
+  - より良い分析と監視のため構造化ロギングを使用します。
+  - エラーログのログローテーションと安全なストレージを実装します。
 
-- Error Response Security
-  - Return consistent error response formats using standards like RFC 7807.
-  - Add security headers to error responses to prevent XSS and information disclosure.
-  - Ensure error response content is properly escaped to prevent injection attacks.
-  - Remove server version headers and technology stack information from error responses.
+- エラーレスポンスセキュリティ
+  - RFC 7807などの標準を使用して一貫したエラーレスポンス形式を返します。
+  - XSSと情報開示を防ぐためエラーレスポンスにセキュリティヘッダーを追加します。
+  - エラーレスポンスコンテンツが適切にエスケープされインジェクション攻撃を防ぐことを確認します。
+  - エラーレスポンスからサーバーバージョンヘッダーと技術スタック情報を削除します。
 
-Code Examples (from OWASP):
+コード例（OWASPから）：
 
-Standard Java Web Application:
+標準的なJava Webアプリケーション：
 ```xml
-<!-- web.xml configuration -->
+<!-- web.xml設定 -->
 <error-page>
     <exception-type>java.lang.Exception</exception-type>
     <location>/error.jsp</location>
@@ -54,19 +54,19 @@ Standard Java Web Application:
     pageEncoding="UTF-8"%>
 <%
 String errorMessage = exception.getMessage();
-//Log the exception via the content of the implicit variable named "exception"
+//「exception」という名前の暗黙変数の内容を介して例外をログに記録
 //...
-//We build a generic response with a JSON format because we are in a REST API app context
-//We also add an HTTP response header to indicate to the client app that the response is an error
+//REST APIアプリコンテキストであるため、JSON形式で汎用レスポンスを構築
+//また、レスポンスがエラーであることをクライアントアプリに示すHTTPレスポンスヘッダーを追加
 response.setHeader("X-ERROR", "true");
-//Note that we're using an internal server error response
-//In some cases it may be prudent to return 4xx error codes, when we have misbehaving clients
+//内部サーバーエラーレスポンスを使用していることに注意
+//場合によっては、誤動作しているクライアントがいる場合、4xxエラーコードを返すのが賢明
 response.setStatus(500);
 %>
-{"message":"An error occur, please retry"}
+{"message":"エラーが発生しました。再試行してください"}
 ```
 
-Spring Boot Global Error Handler:
+Spring Bootグローバルエラーハンドラー：
 ```java
 
 @RestControllerAdvice
@@ -74,17 +74,17 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value = {Exception.class})
     public ProblemDetail handleGlobalError(RuntimeException exception, WebRequest request) {
-        //Log the exception via the content of the parameter named "exception"
+        //「exception」という名前のパラメータの内容を介して例外をログに記録
         //...
-        //Note that we're using an internal server error response
-        //In some cases it may be prudent to return 4xx error codes, if we have misbehaving clients
-        //By specification, the content-type can be "application/problem+json" or "application/problem+xml"
-        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An error occur, please retry");
+        //内部サーバーエラーレスポンスを使用していることに注意
+        //場合によっては、誤動作しているクライアントがいる場合、4xxエラーコードを返すのが賢明
+        //仕様により、content-typeは「application/problem+json」または「application/problem+xml」が可能
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "エラーが発生しました。再試行してください");
     }
 }
 ```
 
-ASP.NET Core Error Controller:
+ASP.NET Core エラーコントローラー：
 ```csharp
 [Route("api/[controller]")]
 [ApiController]
@@ -100,18 +100,18 @@ public class ErrorController : ControllerBase
     [HttpPatch]
     public JsonResult Handle()
     {
-        //Get the exception that has implied the call to this controller
+        //このコントローラーの呼び出しを引き起こした例外を取得
         Exception exception = HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error;
-        //Log the exception via the content of the variable named "exception" if it is not NULL
+        //「exception」という名前の変数の内容を介して例外をログに記録（NULLでない場合）
         //...
-        //We build a generic response with a JSON format because we are in a REST API app context
-        //We also add an HTTP response header to indicate to the client app that the response is an error
+        //REST APIアプリコンテキストであるため、JSON形式で汎用レスポンスを構築
+        //また、レスポンスがエラーであることをクライアントアプリに示すHTTPレスポンスヘッダーを追加
         var responseBody = new Dictionary<String, String>{ {
-            "message", "An error occur, please retry"
+            "message", "エラーが発生しました。再試行してください"
         } };
         JsonResult response = new JsonResult(responseBody);
-        //Note that we're using an internal server error response
-        //In some cases it may be prudent to return 4xx error codes, if we have misbehaving clients
+        //内部サーバーエラーレスポンスを使用していることに注意
+        //場合によっては、誤動作しているクライアントがいる場合、4xxエラーコードを返すのが賢明
         response.StatusCode = (int)HttpStatusCode.InternalServerError;
         Request.HttpContext.Response.Headers.Remove("X-ERROR");
         Request.HttpContext.Response.Headers.Add("X-ERROR", "true");
@@ -120,7 +120,7 @@ public class ErrorController : ControllerBase
 }
 ```
 
-ASP.NET Web.config Security Configuration:
+ASP.NET Web.configセキュリティ設定：
 ```xml
 <configuration>
     <system.web>
@@ -130,5 +130,5 @@ ASP.NET Web.config Security Configuration:
 </configuration>
 ```
 
-Summary:  
-Implement centralized error handling with generic user messages while logging detailed error information securely. Disable debug information in production and ensure error responses don't leak sensitive system details.
+まとめ：
+集中化されたエラーハンドリングを汎用的なユーザーメッセージで実装し、詳細なエラー情報を安全にログに記録します。本番環境でデバッグ情報を無効化し、エラーレスポンスが機密システム詳細を漏洩しないことを確保します。

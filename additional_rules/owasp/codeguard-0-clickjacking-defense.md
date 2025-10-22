@@ -1,5 +1,5 @@
 ---
-description: Clickjacking Defense Best Practices
+description: クリックジャッキング防御のベストプラクティス
 languages:
 - c
 - html
@@ -9,97 +9,97 @@ languages:
 alwaysApply: false
 ---
 
-## Protecting Your Web Application Against Clickjacking
+## クリックジャッキングからWebアプリケーションを保護
 
-Clickjacking (UI redress attacks) can trick users into performing unintended actions by hiding or disguising interactive elements. These attacks embed your site in an invisible iframe, allowing attackers to capture clicks meant for their site and redirect them to your application.
+クリックジャッキング（UI詐称攻撃）は、インタラクティブ要素を隠したり偽装したりすることで、ユーザーに意図しない操作を実行させます。これらの攻撃は、サイトを見えないiframeに埋め込むことで、攻撃者のサイト向けのクリックを捕捉し、アプリケーションにリダイレクトします。
 
-### Defense Strategy: Multiple Layers of Protection
+### 防御戦略：多層防御
 
-#### 1. HTTP Headers: Your First Line of Defense
+#### 1. HTTPヘッダー：第一の防御線
 
-**Content Security Policy (CSP)** is the modern, recommended approach that supersedes X-Frame-Options in modern browsers:
+**Content Security Policy（CSP）**は、モダンブラウザでX-Frame-Optionsに代わる推奨アプローチです：
 
 ```http
 Content-Security-Policy: frame-ancestors 'none';
 ```
 
-This directive prevents any site from framing your content. If you need to allow specific sites to frame your content, use:
+このディレクティブは、あらゆるサイトがコンテンツをフレーム化することを防ぎます。特定のサイトにフレーム化を許可する必要がある場合は、以下を使用します：
 
 ```http
 Content-Security-Policy: frame-ancestors 'self' https://trusted-site.com;
 ```
 
-**Important:** CSP frame-ancestors takes precedence over X-Frame-Options when both are present. For older browsers that don't support CSP, implement the **X-Frame-Options** header as a fallback:
+**重要：** CSP frame-ancestorsは、両方が存在する場合X-Frame-Optionsより優先されます。CSPをサポートしない古いブラウザ向けに、フォールバックとして**X-Frame-Options**ヘッダーを実装してください：
 
 ```http
 X-Frame-Options: DENY
 ```
 
-or
+または
 
 ```http
 X-Frame-Options: SAMEORIGIN
 ```
 
-**Important:** Never use `X-Frame-Options: ALLOW-FROM` as it's obsolete and not supported by modern browsers.
+**重要：** `X-Frame-Options: ALLOW-FROM`は廃止され、モダンブラウザでサポートされていないため、決して使用しないでください。
 
-#### 2. Cookie Protection
+#### 2. Cookie保護
 
-Protect your session cookies from being included in cross-origin requests:
+セッションCookieをクロスオリジンリクエストに含めないよう保護します：
 
 ```http
 Set-Cookie: sessionid=abc123; SameSite=Lax; Secure; HttpOnly
 ```
 
-Options for the SameSite attribute:
-- `Strict`: Cookies are only sent in first-party context (most secure)
-- `Lax`: Cookies are sent when navigating to your site from another site (good balance)
+SameSite属性のオプション：
+- `Strict`: ファーストパーティコンテキストでのみCookieを送信（最も安全）
+- `Lax`: 他サイトからの遷移時にCookieを送信（バランスが良い）
 
-#### 3. JavaScript Frame-Buster
+#### 3. JavaScript フレームバスター
 
-For legacy browsers or as an additional layer, implement this defensive code in your page's `<head>` section:
+レガシーブラウザ向け、または追加の防御層として、ページの`<head>`セクションにこの防御コードを実装します：
 
 ```html
 <style id="antiClickjack">body{display:none !important;}</style>
 <script type="text/javascript">
   if (self === top) {
-    // Not framed, remove the style that hides content
+    // フレーム化されていない場合、コンテンツを隠すスタイルを削除
     var antiClickjack = document.getElementById("antiClickjack");
     antiClickjack.parentNode.removeChild(antiClickjack);
   } else {
-    // Framed, break out of the frame
+    // フレーム化されている場合、フレームから抜け出す
     top.location = self.location;
   }
 </script>
 ```
 
-This approach first hides the page content, then only reveals it if the page is not framed. If framed, it attempts to break out of the frame. **Note:** Frame-busters can be defeated by advanced attackers and should not be your only defense.
+このアプローチは、まずページコンテンツを非表示にし、ページがフレーム化されていない場合のみ表示します。フレーム化されている場合、フレームから抜け出そうとします。**注意：** フレームバスターは高度な攻撃者に破られる可能性があり、唯一の防御策にすべきではありません。
 
-#### 4. Special Cases: When Your Site Must Be Framed
+#### 4. 特殊ケース：サイトがフレーム化される必要がある場合
 
-If your application legitimately needs to be framed (e.g., it's designed to be embedded):
+アプリケーションが正当にフレーム化される必要がある場合（例：埋め込み用に設計されている）：
 
-1. Use CSP to whitelist only specific domains:
+1. CSPで特定のドメインのみを許可リスト化：
    ```http
    Content-Security-Policy: frame-ancestors 'self' https://trusted-partner.com;
    ```
 
-2. Implement additional confirmation for sensitive actions:
+2. 機密操作に対する追加確認を実装：
    ```javascript
    if (sensitiveAction && window !== window.top) {
-     if (!window.confirm('Confirm this action?')) {
-       return false; // Cancel the action if not confirmed
+     if (!window.confirm('この操作を確認しますか？')) {
+       return false; // 確認されなければ操作をキャンセル
      }
    }
    ```
 
-### Implementation Best Practices
+### 実装のベストプラクティス
 
-1. **Apply Globally:** Add these protections to all pages, not just sensitive ones.
-2. **Automate Header Injection:** Configure your web server, CDN, or application framework to automatically inject headers rather than manually adding them to each page.
-3. **Use CSP Report-Only for Testing:** Deploy `Content-Security-Policy-Report-Only: frame-ancestors 'none';` first to monitor violations before enforcing.
-4. **Test Thoroughly:** Verify your defenses work across different browsers and with proxies.
-5. **Defense in Depth:** Combine all three protection methods for maximum security.
-6. **Monitor and Verify:** Use tools like the OWASP ZAP scanner to confirm your headers are properly set and monitor CSP reports for violations.
+1. **グローバルに適用：** 機密ページだけでなく、すべてのページにこれらの保護を追加してください。
+2. **ヘッダーインジェクションの自動化：** 各ページに手動で追加するのではなく、Webサーバー、CDN、またはアプリケーションフレームワークを設定して自動的にヘッダーを注入してください。
+3. **テスト用にCSP Report-Onlyを使用：** 強制前に違反を監視するため、まず`Content-Security-Policy-Report-Only: frame-ancestors 'none';`をデプロイしてください。
+4. **徹底的にテスト：** 異なるブラウザやプロキシで防御が機能することを検証してください。
+5. **多層防御：** 最大限のセキュリティのため、3つの保護手法をすべて組み合わせてください。
+6. **監視と検証：** OWASP ZAPスキャナーなどのツールを使用してヘッダーが適切に設定されていることを確認し、CSPレポートで違反を監視してください。
 
-By implementing these defenses, you significantly reduce the risk of clickjacking attacks against your web application.
+これらの防御を実装することで、Webアプリケーションに対するクリックジャッキング攻撃のリスクを大幅に軽減できます。

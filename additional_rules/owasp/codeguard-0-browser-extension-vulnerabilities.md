@@ -1,5 +1,5 @@
 ---
-description: Browser Extension Security Best Practices
+description: ブラウザ拡張機能セキュリティベストプラクティス
 languages:
 - c
 - javascript
@@ -7,14 +7,14 @@ languages:
 alwaysApply: false
 ---
 
-A browser extension can access sensitive user data and modify web page content, making security a top priority. Here are the key areas to focus on when developing extensions.
+ブラウザ拡張機能は機密性の高いユーザーデータにアクセスでき、Webページコンテンツを変更できるため、セキュリティが最優先事項です。拡張機能を開発する際に焦点を当てるべき主要な領域を以下に示します。
 
-### 1. The Manifest: Your Security Foundation
+### 1. マニフェスト：セキュリティの基盤
 
-Your `manifest.json` file is the heart of your extension's security model. Configure it with the principle of least privilege.
+`manifest.json`ファイルは拡張機能のセキュリティモデルの中核です。最小権限の原則で設定してください。
 
-*   **Permissions:** Only request the permissions your extension absolutely needs to function. Avoid broad host permissions like `<all_urls>` or `http://*/*`. If you only need to access a few sites, specify them explicitly.
-*   **Content Security Policy (CSP):** Define a strict CSP to mitigate XSS and other injection attacks. A good starting point is:
+*   **権限:** 拡張機能が機能するために絶対に必要な権限のみを要求。`<all_urls>`や`http://*/*`などの広範なホスト権限を避ける。いくつかのサイトにのみアクセスする必要がある場合は、明示的に指定。
+*   **コンテンツセキュリティポリシー（CSP）:** XSSや他のインジェクション攻撃を軽減するために厳格なCSPを定義。良い出発点：
 
     ```json
     "content_security_policy": {
@@ -22,35 +22,35 @@ Your `manifest.json` file is the heart of your extension's security model. Confi
     }
     ```
 
-    This policy disallows inline scripts and `eval()`, and restricts script and object sources to your extension's own package.
+    このポリシーはインラインスクリプトと`eval()`を禁止し、スクリプトとオブジェクトのソースを拡張機能自身のパッケージに制限。
 
-### 2. Secure Coding Practices
+### 2. 安全なコーディングプラクティス
 
-*   **Avoid Dynamic Code Execution:** Never use `eval()`, `new Function()`, `setTimeout()` with strings, or dynamic `import()` of remote URLs. These are major security risks.
+*   **動的コード実行を避ける:** `eval()`、`new Function()`、文字列を伴う`setTimeout()`、リモートURLの動的`import()`を決して使用しない。これらは重大なセキュリティリスク。
 
-*   **Sanitize DOM Inputs:** To prevent XSS from content scripts, never use `.innerHTML` with data that isn't fully sanitized. Prefer safer APIs like `.textContent`, or use a trusted library like DOMPurify.
+*   **DOM入力をサニタイズ:** コンテンツスクリプトからのXSSを防ぐために、完全にサニタイズされていないデータで`.innerHTML`を決して使用しない。`.textContent`などのより安全なAPIを優先するか、DOMPurifyなどの信頼されたライブラリを使用。
 
-    **Example:**
+    **例:**
     ```javascript
-    // Insecure:
+    // 安全でない:
     document.getElementById('user-greeting').innerHTML = `Welcome, ${userInput}!`;
 
-    // Secure:
+    // 安全:
     document.getElementById('user-greeting').textContent = `Welcome, ${userInput}!`;
     ```
 
-### 3. Data Storage and Communication
+### 3. データストレージと通信
 
-*   **Use `chrome.storage`:** Avoid `localStorage` for storing any sensitive information. `localStorage` is accessible by any script on the same origin, including potentially malicious scripts injected into the page. Use the `chrome.storage` API instead, which is isolated to your extension.
-*   **Encrypt Sensitive Data:** Before storing any sensitive user data, encrypt it.
-*   **Use HTTPS:** All network communication must use HTTPS (`wss://` for WebSockets) to protect data in transit. Monitor network requests to prevent unauthorized data exfiltration.
+*   **`chrome.storage`を使用:** 機密情報を保存するために`localStorage`を避ける。`localStorage`は同じオリジン上のすべてのスクリプトからアクセス可能で、ページに注入された潜在的に悪意のあるスクリプトも含まれます。代わりに拡張機能に隔離された`chrome.storage` APIを使用。
+*   **機密データを暗号化:** 機密ユーザーデータを保存する前に暗号化。
+*   **HTTPSを使用:** すべてのネットワーク通信はHTTPS（WebSocketsには`wss://`）を使用して転送中のデータを保護。ネットワークリクエストをモニタリングして不正なデータ流出を防止。
 
-### 4. Interacting with Web Pages
+### 4. Webページとの相互作用
 
-*   **Isolate Sensitive UI:** Do not inject sensitive information directly into a web page's DOM. A malicious script on the page could scrape this data. Instead, display sensitive information in extension-owned UI elements like popups, sidebars, or options pages.
-*   **Use Message Passing:** Use the standard message passing APIs (`chrome.runtime.sendMessage`, `chrome.tabs.sendMessage`) for communication between your content scripts and background scripts. Do not use the DOM as a communication channel.
+*   **機密UIを隔離:** 機密情報をWebページのDOMに直接注入しない。ページ上の悪意のあるスクリプトがこのデータをスクレイピングできます。代わりに、ポップアップ、サイドバー、オプションページなどの拡張機能所有のUI要素に機密情報を表示。
+*   **メッセージパッシングを使用:** コンテンツスクリプトとバックグラウンドスクリプト間の通信に標準のメッセージパッシングAPI（`chrome.runtime.sendMessage`、`chrome.tabs.sendMessage`）を使用。通信チャネルとしてDOMを使用しない。
 
-### 5. Supply Chain Security
+### 5. サプライチェーンセキュリティ
 
-*   **Audit Dependencies:** Regularly audit your third-party libraries using tools like `npm audit`. A malicious or vulnerable dependency can compromise your entire extension.
-*   **No Remote Code:** Do not fetch and execute remote code. All of your extension's logic should be included in its initial package. This is a requirement for most browser extension marketplaces.
+*   **依存関係を監査:** `npm audit`などのツールを使用してサードパーティライブラリを定期的に監査。悪意のあるまたは脆弱な依存関係は拡張機能全体を侵害する可能性があります。
+*   **リモートコードなし:** リモートコードを取得して実行しない。拡張機能のすべてのロジックは初期パッケージに含まれるべきです。これはほとんどのブラウザ拡張マーケットプレイスの要件です。

@@ -1,5 +1,5 @@
 ---
-description: DOM Clobbering Prevention Best Practices
+description: DOMクロバリング防止のベストプラクティス
 languages:
 - c
 - html
@@ -10,47 +10,47 @@ languages:
 alwaysApply: false
 ---
 
-## DOM Clobbering Prevention Security Rule
+## DOMクロバリング防止セキュリティルール
 
-**RULE ENFORCEMENT:** This rule prevents DOM clobbering attacks where malicious HTML elements with `id` or `name` attributes override JavaScript variables and browser APIs, potentially leading to XSS and security bypasses.
+**ルール適用：** このルールは、`id`または`name`属性を持つ悪意のあるHTML要素がJavaScript変数やブラウザAPIを上書きし、XSSやセキュリティバイパスにつながる可能性があるDOMクロバリング攻撃を防ぎます。
 
-## Rule 1: HTML Sanitization Requirements
+## ルール1：HTMLサニタイゼーション要件
 
-**YOU MUST sanitize all user-provided HTML** using DOMPurify or Sanitizer API:
+**すべてのユーザー提供HTMLをサニタイズする必要があります**。DOMPurifyまたはSanitizer APIを使用：
 
 ```javascript
-// REQUIRED: DOMPurify configuration
+// 必須：DOMPurify設定
 const clean = DOMPurify.sanitize(userInput, {
-  SANITIZE_DOM: true,           // Protects built-in APIs
-  SANITIZE_NAMED_PROPS: true,   // MANDATORY: Protects custom variables  
-  FORBID_ATTR: ['id', 'name']   // REQUIRED: Remove clobbering attributes
+  SANITIZE_DOM: true,           // 組み込みAPIを保護
+  SANITIZE_NAMED_PROPS: true,   // 必須：カスタム変数を保護
+  FORBID_ATTR: ['id', 'name']   // 必須：クロバリング属性を削除
 });
 
-// ALTERNATIVE: Sanitizer API
+// 代替：Sanitizer API
 const sanitizer = new Sanitizer({
   blockAttributes: [{'name': 'id', elements: '*'}, {'name': 'name', elements: '*'}]
 });
 element.setHTML(userInput, {sanitizer});
 ```
 
-**YOU ARE PROHIBITED FROM:**
-* Using `innerHTML` with unsanitized user input
-* Allowing `id` or `name` attributes in user-generated content
-* Disabling `SANITIZE_NAMED_PROPS` in DOMPurify configuration
+**禁止事項：**
+* サニタイズされていないユーザー入力で`innerHTML`を使用
+* ユーザー生成コンテンツで`id`または`name`属性を許可
+* DOMPurify設定で`SANITIZE_NAMED_PROPS`を無効化
 
-## Rule 2: Content Security Policy Requirements
+## ルール2：Content Security Policy要件
 
-**YOU MUST implement strict CSP** to prevent DOM clobbering exploitation:
+**DOMクロバリング悪用を防ぐため厳格なCSPを実装する必要があります：**
 
 ```http
-Content-Security-Policy: 
+Content-Security-Policy:
   script-src 'self' 'nonce-{random}';
   object-src 'none';
   base-uri 'self';
   require-trusted-types-for 'script';
 ```
 
-**YOU MUST use Trusted Types** for DOM manipulation:
+**DOM操作にTrusted Typesを使用する必要があります：**
 
 ```javascript
 const policy = trustedTypes.createPolicy('dompurify', {
@@ -59,68 +59,68 @@ const policy = trustedTypes.createPolicy('dompurify', {
 element.innerHTML = policy.createHTML(userInput);
 ```
 
-## Rule 3: Variable Declaration Requirements
+## ルール3：変数宣言要件
 
-**YOU MUST use explicit variable declarations** to prevent global namespace pollution:
+**グローバル名前空間の汚染を防ぐため明示的な変数宣言を使用する必要があります：**
 
 ```javascript
-"use strict";                       // REQUIRED in all JavaScript files
-const config = { isAdmin: false };  // REQUIRED: Explicit declarations
-let userState = {};                 // REQUIRED: Block-scoped variables
+"use strict";                       // すべてのJavaScriptファイルで必須
+const config = { isAdmin: false };  // 必須：明示的な宣言
+let userState = {};                 // 必須：ブロックスコープ変数
 
-// PROHIBITED: Creates vulnerable globals
-config = { isAdmin: false };        // WILL BE FLAGGED AS VIOLATION
+// 禁止：脆弱なグローバルを作成
+config = { isAdmin: false };        // 違反としてフラグ付けされる
 ```
 
-**YOU ARE PROHIBITED FROM:**
-* Storing sensitive data on `window` or `document` objects
-* Using implicit global variables without declaration keywords
-* Accessing user input on the left side of assignment expressions
+**禁止事項：**
+* `window`または`document`オブジェクトに機密データを保存
+* 宣言キーワードなしで暗黙的なグローバル変数を使用
+* 代入式の左辺でユーザー入力にアクセス
 
-## Rule 4: Object Validation Requirements
+## ルール4：オブジェクト検証要件
 
-**YOU MUST validate object types** before accessing potentially clobbered properties:
+**潜在的にクロバリングされたプロパティにアクセスする前にオブジェクトタイプを検証する必要があります：**
 
 ```javascript
-// REQUIRED: Type validation before use
+// 必須：使用前の型検証
 function safePropertyAccess(obj, property) {
   if (obj && typeof obj === 'object' && !(obj instanceof Element)) {
     return obj[property];
   }
-  throw new Error('Potential DOM clobbering detected');
+  throw new Error('潜在的なDOMクロバリングが検出されました');
 }
 
-// REQUIRED: Validate built-in APIs
+// 必須：組み込みAPIの検証
 if (typeof document.getElementById === 'function') {
   const element = document.getElementById('myId');
 }
 ```
 
-## Rule 5: Dynamic Attribute Restrictions
+## ルール5：動的属性制限
 
-**YOU MUST validate all dynamic HTML attributes:**
+**すべての動的HTML属性を検証する必要があります：**
 
 ```javascript
 function setElementAttribute(element, name, value) {
   const forbidden = ['id', 'name', 'onclick', 'onload', 'onerror'];
   if (forbidden.includes(name.toLowerCase())) {
-    throw new Error(`Attribute ${name} is prohibited for security`);
+    throw new Error(`セキュリティ上、属性${name}は禁止されています`);
   }
   element.setAttribute(name, DOMPurify.sanitize(value, {ALLOWED_TAGS: []}));
 }
 ```
 
-**YOU ARE PROHIBITED FROM:**
-* Setting `id` or `name` attributes from user input
-* Using dynamic attribute assignment without validation
-* Bypassing sanitization for `data-` or `aria-` attributes
+**禁止事項：**
+* ユーザー入力から`id`または`name`属性を設定
+* 検証なしで動的属性代入を使用
+* `data-`または`aria-`属性のサニタイゼーションをバイパス
 
-## Rule 6: Framework Security Requirements
+## ルール6：フレームワークセキュリティ要件
 
-**React/Vue applications MUST use sanitized HTML rendering:**
+**React/VueアプリケーションはサニタイズされたHTMLレンダリングを使用する必要があります：**
 
 ```javascript
-// REACT: Required safe HTML component
+// REACT：必須の安全なHTMLコンポーネント
 function SafeHtmlComponent({ userContent }) {
   const clean = DOMPurify.sanitize(userContent, {
     SANITIZE_NAMED_PROPS: true,
@@ -129,7 +129,7 @@ function SafeHtmlComponent({ userContent }) {
   return <div dangerouslySetInnerHTML={{__html: clean}} />;
 }
 
-// VUE: Required directive
+// VUE：必須のディレクティブ
 Vue.directive('safe-html', {
   update(el, binding) {
     el.innerHTML = DOMPurify.sanitize(binding.value, {
@@ -140,16 +140,16 @@ Vue.directive('safe-html', {
 });
 ```
 
-## Rule 7: Runtime Monitoring Requirements
+## ルール7：ランタイム監視要件
 
-**YOU MUST implement DOM clobbering detection:**
+**DOMクロバリング検出を実装する必要があります：**
 
 ```javascript
-// REQUIRED: Runtime monitoring
+// 必須：ランタイム監視
 function detectClobbering() {
   ['config', 'api', 'user', 'admin'].forEach(global => {
     if (window[global] instanceof Element) {
-      console.error(`SECURITY VIOLATION: DOM Clobbering detected on ${global}`);
+      console.error(`セキュリティ違反：${global}でDOMクロバリングが検出されました`);
       securityLogger.warn('DOM_CLOBBERING_DETECTED', { variable: global });
     }
   });
@@ -157,39 +157,39 @@ function detectClobbering() {
 setInterval(detectClobbering, 5000);
 ```
 
-## Rule Violation Detection
+## ルール違反検出
 
-**The following patterns will trigger security violations:**
+**以下のパターンはセキュリティ違反をトリガーします：**
 
 ```javascript
-// VIOLATION: Implicit global creation
+// 違反：暗黙的なグローバル作成
 config = { sensitive: true };
 
-// VIOLATION: Storing sensitive data on window
+// 違反：windowに機密データを保存
 window.userRole = 'admin';
 
-// VIOLATION: Unvalidated innerHTML usage
+// 違反：未検証のinnerHTML使用
 element.innerHTML = userInput;
 
-// VIOLATION: Dynamic property access without validation
+// 違反：検証なしの動的プロパティアクセス
 obj[userControlledProperty] = value;
 
-// VIOLATION: Missing sanitization
+// 違反：サニタイゼーションの欠如
 document.body.appendChild(htmlFromUser);
 ```
 
-## Mandatory Compliance Checks
+## 必須コンプライアンスチェック
 
-The following checks MUST be performed:
+以下のチェックを実行する必要があります：
 
-✅ **DOMPurify imported and configured with `SANITIZE_NAMED_PROPS: true`**
-✅ **No direct `innerHTML` usage without sanitization**
-✅ **Strict mode enabled in all JavaScript files**
-✅ **CSP headers implemented with `script-src 'self'`**
-✅ **No `id` or `name` attributes in user content**
-✅ **Runtime clobbering detection implemented**
-✅ **Type validation before property access**
+✅ **DOMPurifyがインポートされ、`SANITIZE_NAMED_PROPS: true`で設定されている**
+✅ **サニタイゼーションなしの直接的な`innerHTML`使用がない**
+✅ **すべてのJavaScriptファイルでStrictモードが有効**
+✅ **`script-src 'self'`を含むCSPヘッダーが実装されている**
+✅ **ユーザーコンテンツに`id`または`name`属性がない**
+✅ **ランタイムクロバリング検出が実装されている**
+✅ **プロパティアクセス前の型検証**
 
-**NON-COMPLIANCE CONSEQUENCES:** Code that violates these rules creates DOM clobbering vulnerabilities that can lead to XSS attacks and privilege escalation.
+**非コンプライアンスの結果：** これらのルールに違反するコードは、XSS攻撃や権限昇格につながる可能性のあるDOMクロバリング脆弱性を作成します。
 
-**TEST PAYLOAD:** `<a id=config><a id=config name=isAdmin href=true>` must be properly sanitized or blocked.
+**テストペイロード：** `<a id=config><a id=config name=isAdmin href=true>`は適切にサニタイズまたはブロックされる必要があります。

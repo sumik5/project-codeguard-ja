@@ -1,6 +1,5 @@
 ---
-description: API & Web services security (REST/GraphQL/SOAP), schema validation, authn/z,
-  SSRF
+description: API・Webサービスのセキュリティ（REST/GraphQL/SOAP）、スキーマ検証、認証/認可、SSRF対策
 languages:
 - c
 - go
@@ -15,68 +14,68 @@ languages:
 alwaysApply: false
 ---
 
-## API & Web Services Security
+## API・Webサービスのセキュリティ
 
-Secure REST, GraphQL, and SOAP/WS services end‑to‑end: transport, authn/z, schema validation, SSRF controls, DoS limits, and microservice‑safe patterns.
+REST、GraphQL、SOAP/WSサービスをエンドツーエンドで保護：トランスポート、認証/認可、スキーマ検証、SSRF制御、DoS制限、マイクロサービス安全パターン。
 
-### Transport and TLS
-- HTTPS only; consider mTLS for high‑value/internal services. Validate certs (CN/SAN, revocation) and prevent mixed content.
+### トランスポートとTLS
+- HTTPSのみ使用；高価値/内部サービスにはmTLSを検討。証明書（CN/SAN、失効）を検証し、混在コンテンツを防止。
 
-### Authentication and Tokens
-- Use standard flows (OAuth2/OIDC) for clients; avoid custom schemes. For services, use mTLS or signed service tokens.
-- JWTs: pin algorithms; validate iss/aud/exp/nbf; short lifetimes; rotation; denylist on logout/revoke. Prefer opaque tokens when revocation is required and central store is available.
-- API keys: scope narrowly; rate limit; monitor usage; do not use alone for sensitive operations.
+### 認証とトークン
+- クライアントには標準フロー（OAuth2/OIDC）を使用；独自スキームは避ける。サービスにはmTLSまたは署名付きサービストークンを使用。
+- JWT：アルゴリズムを固定；iss/aud/exp/nbfを検証；短いライフタイム；ローテーション；ログアウト/失効時は拒否リストへ。失効が必要で中央ストアが利用可能な場合は、不透明トークンを優先。
+- APIキー：スコープを狭く限定；レート制限；使用状況を監視；機密操作には単独で使用しない。
 
-### Authorization
-- Enforce per‑endpoint, per‑resource checks server‑side; deny by default.
-- For microservices, authorize at gateway (coarse) and service (fine) layers; propagate signed internal identity, not external tokens.
+### 認可
+- エンドポイントごと、リソースごとのチェックをサーバー側で強制；デフォルトで拒否。
+- マイクロサービスの場合、ゲートウェイ（粗粒度）とサービス（細粒度）レイヤーで認可；外部トークンではなく署名付き内部IDを伝播。
 
-### Input and Content Handling
-- Validate inputs via contracts: OpenAPI/JSON Schema, GraphQL SDL, XSD. Reject unknown fields and oversize payloads; set limits.
-- Content types: enforce explicit Content‑Type/Accept; reject unsupported combinations. Harden XML parsers against XXE/expansion.
+### 入力とコンテンツ処理
+- コントラクトで入力を検証：OpenAPI/JSON Schema、GraphQL SDL、XSD。不明なフィールドと過大なペイロードを拒否；制限を設定。
+- Content Type：明示的なContent-Type/Acceptを強制；サポートされていない組み合わせを拒否。XMLパーサーをXXE/展開攻撃から保護。
 
-### SQL/Injection Safety in Resolvers and Handlers
-- Use parameterized queries/ORM bind parameters; never concatenate user input into queries or commands.
+### リゾルバとハンドラでのSQL/インジェクション安全性
+- パラメータ化クエリ/ORM bindパラメータを使用；ユーザー入力をクエリやコマンドに連結しない。
 
-### GraphQL‑Specific Controls
-- Limit query depth and overall complexity; enforce pagination; timeouts on execution; disable introspection and IDEs in production.
-- Implement field/object‑level authorization to prevent IDOR/BOLA; validate batching and rate limit per object type.
+### GraphQL固有の制御
+- クエリの深さと全体的な複雑さを制限；ページネーションを強制；実行時のタイムアウト；本番環境ではイントロスペクションとIDEを無効化。
+- フィールド/オブジェクトレベルの認可を実装してIDOR/BOLAを防止；バッチ処理を検証し、オブジェクトタイプごとにレート制限。
 
-### SSRF Prevention for Outbound Calls
-- Do not accept raw URLs. Validate domains/IPs using libraries; restrict to HTTP/HTTPS only (block file://, gopher://, ftp://, etc.).
-- Case 1 (fixed partners): strict allow‑lists; disable redirects; network egress allow‑lists.
-- Case 2 (arbitrary): block private/link‑local/localhost ranges; resolve and verify all IPs are public; require signed tokens from the target where feasible.
+### 外部呼び出しのSSRF防止
+- 生のURLを受け入れない。ライブラリを使用してドメイン/IPを検証；HTTP/HTTPSのみに制限（file://、gopher://、ftp://等をブロック）。
+- ケース1（固定パートナー）：厳格な許可リスト；リダイレクトを無効化；ネットワーク出力許可リスト。
+- ケース2（任意）：プライベート/リンクローカル/localhostレンジをブロック；すべてのIPを解決してパブリックであることを確認；可能であればターゲットからの署名付きトークンを要求。
 
-### SOAP/WS and XML Safety
-- Validate SOAP payloads with XSD; limit message sizes; enable XML signatures/encryption where required.
-- Configure parsers against XXE, entity expansion, and recursive payloads; scan attachments.
+### SOAP/WSとXMLの安全性
+- XSDでSOAPペイロードを検証；メッセージサイズを制限；必要に応じてXML署名/暗号化を有効化。
+- XXE、エンティティ展開、再帰的ペイロードに対してパーサーを設定；添付ファイルをスキャン。
 
-### Rate Limiting and DoS
-- Apply per‑IP/user/client limits, circuit breakers, and timeouts. Use server‑side batching and caching to reduce load.
+### レート制限とDoS
+- IP/ユーザー/クライアントごとの制限、サーキットブレーカー、タイムアウトを適用。サーバー側のバッチ処理とキャッシングで負荷を軽減。
 
-### Management Endpoints
-- Do not expose over the Internet. Require strong auth (MFA), network restrictions, and separate ports/hosts.
+### 管理エンドポイント
+- インターネット上に公開しない。強力な認証（MFA）、ネットワーク制限、別ポート/ホストを要求。
 
-### Testing and Assessment
-- Maintain formal API definitions; drive contract tests and fuzzing from specs.
-- Assess endpoints for authn/z bypass, SSRF, injection, and information leakage; log token validation failures.
+### テストと評価
+- 正式なAPI定義を維持；仕様からコントラクトテストとファジングを実施。
+- 認証/認可バイパス、SSRF、インジェクション、情報漏洩についてエンドポイントを評価；トークン検証失敗をログに記録。
 
-### Microservices Practices
-- Policy‑as‑code with embedded decision points; sidecar or library PDPs.
-- Service identity via mTLS or signed tokens; never reuse external tokens internally.
-- Centralized structured logging with correlation IDs; sanitize sensitive data.
+### マイクロサービスのプラクティス
+- 組み込み決定ポイントを持つPolicy-as-code；サイドカーまたはライブラリPDP。
+- mTLSまたは署名付きトークンによるサービスID；外部トークンを内部で再利用しない。
+- 相関IDを使用した中央集中型構造化ログ；機密データをサニタイズ。
 
-### Implementation Checklist
-- HTTPS/mTLS configured; certs managed; no mixed content.
-- Contract validation at the edge and service; unknown fields rejected; size/time limits enforced.
-- Strong authn/z per endpoint; GraphQL limits applied; introspection disabled in prod.
-- SSRF protections at app and network layers; redirects disabled; allow‑lists where possible.
-- Rate limiting, circuit breakers, and resilient patterns in place.
-- Management endpoints isolated and strongly authenticated.
-- Logs structured and privacy‑safe with correlation IDs.
+### 実装チェックリスト
+- HTTPS/mTLSを設定；証明書を管理；混在コンテンツなし。
+- エッジとサービスでコントラクト検証；不明なフィールドを拒否；サイズ/時間制限を強制。
+- エンドポイントごとに強力な認証/認可；GraphQL制限を適用；本番環境ではイントロスペクション無効化。
+- アプリとネットワークレイヤーでSSRF保護；リダイレクトを無効化；可能な場合は許可リスト。
+- レート制限、サーキットブレーカー、復元力のあるパターンを導入。
+- 管理エンドポイントを分離し、強力に認証。
+- 相関IDを持つ構造化されたプライバシー安全なログ。
 
-### Test Plan
-- Contract tests for schema adherence; fuzzing with schema‑aware tools.
-- Pen tests for SSRF, IDOR/BOLA, and authz bypass; performance tests for DoS limits.
-- Test all HTTP methods per endpoint; discover parameters in URL paths, headers, and structured data beyond obvious query strings.
-- Automated checks for token validation and revocation behavior.
+### テストプラン
+- スキーマ準拠のコントラクトテスト；スキーマ対応ツールでのファジング。
+- SSRF、IDOR/BOLA、認可バイパスのペネトレーションテスト；DoS制限のパフォーマンステスト。
+- エンドポイントごとにすべてのHTTPメソッドをテスト；明白なクエリ文字列以外のURLパス、ヘッダー、構造化データのパラメータを発見。
+- トークン検証と失効動作の自動チェック。

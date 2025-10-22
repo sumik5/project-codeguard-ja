@@ -1,33 +1,32 @@
 ---
-description: Kubernetes hardening (RBAC, admission policies, network policies, secrets,
-  supply chain)
+description: Kubernetesのハードニング（RBAC、アドミッションポリシー、ネットワークポリシー、シークレット、サプライチェーン）
 languages:
 - javascript
 - yaml
 alwaysApply: false
 ---
 
-## Cloud & Orchestration (Kubernetes)
+## クラウド & オーケストレーション（Kubernetes）
 
-Kubernetes cluster and workload hardening: identity, policy, networking, secrets, and supply chain controls.
+Kubernetesクラスタとワークロードのハードニング：ID管理、ポリシー、ネットワーク、シークレット、サプライチェーン制御。
 
-### Controls
-- Identity & RBAC: least privilege for users and service accounts; separate namespaces; bind only needed roles.
-- Policy: admission controls (OPA/Gatekeeper/Kyverno) for image sources, capabilities, root, network policies, and required labels/annotations.
-- Networking: default‑deny with network policies; explicit egress allow‑lists; service identity/mTLS within mesh where applicable.
-- Secrets: use KMS providers; avoid plaintext in manifests; rotate regularly; restrict secret mount paths.
-- Nodes: hardened OS, auto‑updates, minimal attack surface; isolate sensitive workloads with taints/tolerations and dedicated nodes.
-- Supply chain: verify image signatures; enforce provenance (SLSA/Sigstore) in admission.
+### 制御項目
+- ID管理とRBAC：ユーザーとサービスアカウントに最小権限を付与。ネームスペースを分離し、必要なロールのみをバインド。
+- ポリシー：アドミッション制御（OPA/Gatekeeper/Kyverno）でイメージソース、ケーパビリティ、root実行、ネットワークポリシー、必須のラベル/アノテーションを検証。
+- ネットワーク：ネットワークポリシーでデフォルト拒否を設定。明示的なエグレス許可リストを定義。メッシュ内ではサービスIDとmTLSを使用。
+- シークレット：KMSプロバイダーを使用。マニフェストに平文を記載しない。定期的にローテーション。シークレットマウントパスを制限。
+- ノード：ハードニングされたOS、自動更新、最小限の攻撃対象領域。taint/tolerationと専用ノードで機密ワークロードを分離。
+- サプライチェーン：イメージ署名を検証。アドミッションでプロビナンス（SLSA/Sigstore）を強制。
 
-### Checklist
-- Namespaces per team/app; RBAC roles scoped; audit logging enabled.
-- Admission policies enforce image provenance, non‑root, dropped capabilities, read‑only root FS, and network policy presence.
-- Network policies in place for ingress/egress; service accounts scoped per deployment.
+### チェックリスト
+- チーム/アプリごとにネームスペースを分離。RBACロールのスコープを限定。監査ログを有効化。
+- アドミッションポリシーでイメージプロビナンス、非root実行、ケーパビリティ削減、読み取り専用ルートFS、ネットワークポリシーの存在を強制。
+- ingress/egressのネットワークポリシーを配置。デプロイメントごとにサービスアカウントのスコープを限定。
 
-### Verification
-- Cluster conformance and CIS benchmark scans.
-- Policy tests in CI for manifests (OPA unit tests); periodic admission dry‑run.
+### 検証
+- クラスタ適合性とCISベンチマークスキャンを実施。
+- CIでマニフェストのポリシーテスト（OPAユニットテスト）を実行。定期的なアドミッションドライランを実施。
 
-### Incident Readiness
-- Enable audit logs and centralize; restrict access to etcd; backup/restore tested.
-- Define break‑glass roles with MFA and time‑bound approvals.
+### インシデント対応準備
+- 監査ログを有効化し、集中管理。etcdへのアクセスを制限。バックアップ/リストアをテスト。
+- MFAと期限付き承認を備えたブレークグラスロールを定義。

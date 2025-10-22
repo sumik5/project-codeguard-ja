@@ -1,5 +1,5 @@
 ---
-description: CI/CD Security Best Practices
+description: CI/CDセキュリティのベストプラクティス
 languages:
 - javascript
 - powershell
@@ -9,56 +9,56 @@ languages:
 alwaysApply: false
 ---
 
-The CI/CD pipeline is the backbone of a software development process. It's also a high-value target for attackers. Securing the pipeline is essential for protecting code, infrastructure, and users.
+CI/CDパイプラインはソフトウェア開発プロセスのバックボーンです。同時に攻撃者にとって高価値なターゲットでもあります。パイプラインを保護することは、コード、インフラストラクチャ、ユーザーを保護するために不可欠です。
 
-### 1. Secure Your Source Code
+### 1. ソースコードを保護
 
-The pipeline starts with your source code repository.
+パイプラインはソースコードリポジトリから始まります。
 
-*   **Protected Branches:** Configure protected branches (e.g., `main`, `develop`) in your SCM (GitHub, GitLab, etc.). Require code reviews and passing status checks before any code can be merged.
-*   **Commit Signing:** Enforce commit signing (e.g., with GPG keys) to verify the author of every commit and prevent spoofing.
+*   **保護されたブランチ：** SCM（GitHub、GitLabなど）で保護されたブランチ（例：`main`、`develop`）を設定します。コードがマージされる前にコードレビューと合格したステータスチェックを要求します。
+*   **コミット署名：** コミット署名（例：GPGキーを使用）を強制して、すべてのコミットの作成者を検証し、なりすましを防ぎます。
 
-### 2. Don't Hardcode Secrets
+### 2. シークレットをハードコーディングしない
 
-Never, ever hardcode secrets (API keys, passwords, tokens) in your pipeline configuration files or source code.
+パイプライン設定ファイルやソースコードにシークレット（APIキー、パスワード、トークン）を決してハードコーディングしないでください。
 
-*   **Best Practice:** Use a dedicated secrets management solution (like HashiCorp Vault, AWS Secrets Manager, or your CI platform's built-in secret store). Your pipeline should fetch secrets at runtime. Ensure that secrets are masked and never appear in logs.
+*   **ベストプラクティス：** 専用のシークレット管理ソリューション（HashiCorp Vault、AWS Secrets Manager、またはCIプラットフォームの組み込みシークレットストアなど）を使用します。パイプラインは実行時にシークレットを取得する必要があります。シークレットがマスクされ、ログに決して表示されないようにします。
 
-    **Example (GitHub Actions):**
+    **例（GitHub Actions）：**
 
     steps:
       - name: Deploy to production
         run: ./deploy.sh
         env:
-          API_KEY: ${{ secrets.PROD_API_KEY }} # Fetches from GitHub's encrypted secrets
+          API_KEY: ${{ secrets.PROD_API_KEY }} # GitHubの暗号化されたシークレットから取得
     ```
 
-### 3. Harden Your Pipeline Configuration
+### 3. パイプライン設定をハードニング
 
-*   **Least Privilege:** Grant the minimum level of permissions necessary to your pipeline's identities and build agents. If a job only needs to build code, it shouldn't have deployment credentials.
-*   **Isolated Build Environments:** Use ephemeral, isolated build environments (containers or VMs) that are destroyed after each job to prevent cross-contamination and lateral movement.
-*   **Automated Security Scanning:** Integrate security scanning directly into your pipeline. This creates a security gate that prevents vulnerabilities from moving down the line.
-    *   **SAST (Static Analysis):** Scans your source code for vulnerabilities.
-    *   **SCA (Software Composition Analysis):** Scans your dependencies for known vulnerabilities.
-    *   **DAST (Dynamic Analysis):** Scans your running application in a test environment.
-    *   **IaC Scanning:** Scans your Infrastructure-as-Code files (Terraform, CloudFormation) for misconfigurations.
+*   **最小権限：** パイプラインのID とビルドエージェントに必要最小限のレベルの権限を付与します。ジョブがコードのビルドのみを必要とする場合、デプロイ認証情報を持つべきではありません。
+*   **分離されたビルド環境：** 各ジョブ後に破棄されるエフェメラルで分離されたビルド環境（コンテナまたはVM）を使用して、クロスコンタミネーションと横方向の移動を防ぎます。
+*   **自動化されたセキュリティスキャン：** セキュリティスキャンをパイプラインに直接統合します。これにより、脆弱性が下流に移動するのを防ぐセキュリティゲートが作成されます。
+    *   **SAST（静的解析）：** ソースコードの脆弱性をスキャン。
+    *   **SCA（ソフトウェア構成解析）：** 依存関係の既知の脆弱性をスキャン。
+    *   **DAST（動的解析）：** テスト環境で実行中のアプリケーションをスキャン。
+    *   **IaCスキャン：** Infrastructure-as-Codeファイル（Terraform、CloudFormation）の誤設定をスキャン。
 
-### 4. Secure Your Dependencies
+### 4. 依存関係を保護
 
-Your software is only as secure as its dependencies.
+ソフトウェアは依存関係と同じくらいしか安全ではありません。
 
-*   **Pin Versions:** Use a lock file (`package-lock.json`, `yarn.lock`, `Gemfile.lock`) to pin your dependencies to specific, trusted versions. This prevents a malicious package from being automatically pulled in.
-*   **Validate Integrity:** Use package manager features that validate package integrity using hashes or checksums.
-*   **Use Private Registries:** For sensitive internal packages, use a private registry to avoid dependency confusion attacks.
+*   **バージョン固定：** ロックファイル（`package-lock.json`、`yarn.lock`、`Gemfile.lock`）を使用して、依存関係を特定の信頼できるバージョンに固定します。これにより、悪意のあるパッケージが自動的に取り込まれるのを防ぎます。
+*   **整合性の検証：** ハッシュまたはチェックサムを使用してパッケージの整合性を検証するパッケージマネージャー機能を使用します。
+*   **プライベートレジストリの使用：** 機密性の高い内部パッケージには、依存関係の混乱攻撃を避けるためにプライベートレジストリを使用します。
 
-### 5. Sign Everything
+### 5. すべてに署名
 
-To ensure the integrity of your supply chain, cryptographically sign your important assets.
+サプライチェーンの整合性を保証するため、重要な資産に暗号的に署名します。
 
-*   **Best Practice:**
-    *   Sign your Git commits.
-    *   Sign your build artifacts (e.g., Docker images, JAR files).
-    *   **Verify signatures** before deployment: ensure all artifacts are signed by trusted keys and reject unsigned or invalidly signed artifacts.
-    *   Consider frameworks like **SLSA (Supply-chain Levels for Software Artifacts)** to create a verifiable chain of custody for your software.
+*   **ベストプラクティス：**
+    *   Gitコミットに署名。
+    *   ビルド成果物（例：Dockerイメージ、JARファイル）に署名。
+    *   デプロイ前に**署名を検証**：すべての成果物が信頼できるキーで署名されていることを確認し、署名されていないまたは無効に署名された成果物を拒否します。
+    *   **SLSA（Supply-chain Levels for Software Artifacts）**などのフレームワークを検討して、ソフトウェアの検証可能な管理連鎖を作成します。
 
-By embedding these practices into your daily workflow, you can build a CI/CD pipeline that is not only fast and efficient but also secure and resilient.
+これらのプラクティスを日常のワークフローに組み込むことで、高速で効率的であるだけでなく、安全で堅牢なCI/CDパイプラインを構築できます。

@@ -1,97 +1,97 @@
 ---
-description: NPM Security Best Practices
+description: NPMセキュリティベストプラクティス
 languages:
 - javascript
 alwaysApply: false
 ---
 
-## NPM Security Guidelines
+## NPMセキュリティガイドライン
 
-Essential security practices for managing NPM packages and dependencies in JavaScript projects.
+JavaScriptプロジェクトでNPMパッケージと依存関係を管理するための必須セキュリティプラクティス。
 
-### Prevent Secret Leakage
+### シークレット漏洩の防止
 
-Avoid publishing sensitive data to the npm registry:
-- Use the `files` property in package.json as an allowlist to control what gets published
-- Be cautious with `.gitignore` and `.npmignore` - if both exist, `.npmignore` takes precedence
-- Run `npm publish --dry-run` to review the tarball contents before actual publishing
-- NPM automatically revokes tokens detected in published packages, but prevention is better
+npmレジストリへの機密データの公開を避ける：
+- package.jsonの`files`プロパティを許可リストとして使用して公開内容を制御
+- `.gitignore`と`.npmignore`に注意 - 両方が存在する場合、`.npmignore`が優先
+- 実際の公開前に`npm publish --dry-run`を実行してtarballの内容を確認
+- NPMは公開されたパッケージで検出されたトークンを自動的に失効するが、予防が最善
 
-### Enforce Deterministic Builds
+### 決定論的ビルドを強制
 
-Ensure consistent dependency installation across environments:
-- Use `npm ci` instead of `npm install` in CI/CD and production builds
-- Use `yarn install --frozen-lockfile` if using Yarn
-- Never commit changes to package.json without updating the corresponding lockfile
-- Lockfile inconsistencies can pull unintended package versions and compromise security
+環境間で一貫した依存関係インストールを確保：
+- CI/CDと本番ビルドで`npm install`の代わりに`npm ci`を使用
+- Yarnを使用している場合は`yarn install --frozen-lockfile`を使用
+- 対応するlockfileを更新せずにpackage.jsonへの変更をコミットしない
+- Lockfileの不整合は意図しないパッケージバージョンを取得しセキュリティを損なう可能性
 
-### Minimize Script Execution Risks
+### スクリプト実行リスクを最小化
 
-Reduce attack surface from package installation scripts:
-- Add `--ignore-scripts` when installing packages: `npm install --ignore-scripts`
-- Consider adding `ignore-scripts=true` to your `.npmrc` configuration
-- Always vet third-party packages for credibility before installation
-- Avoid immediate upgrades to new versions; allow time for community review
-- Review changelog and release notes before upgrading dependencies
+パッケージインストールスクリプトからの攻撃面を削減：
+- パッケージインストール時に`--ignore-scripts`を追加：`npm install --ignore-scripts`
+- `.npmrc`設定に`ignore-scripts=true`を追加することを検討
+- インストール前に常にサードパーティパッケージの信頼性を確認
+- 新しいバージョンへの即時アップグレードを避け、コミュニティのレビュー時間を確保
+- 依存関係をアップグレードする前にchangelogとリリースノートを確認
 
-### Monitor Package Health
+### パッケージのヘルスをモニタリング
 
-Regularly assess the state of your dependencies:
-- Use `npm outdated` to identify packages that need updates
-- Run `npm doctor` to verify healthy npm installation and environment
-- Monitor for known vulnerabilities in dependencies using `npm audit`
-- Scan for security vulnerabilities in third-party open source projects
-- Set up monitoring for new CVEs that impact your project dependencies
+依存関係の状態を定期的に評価：
+- `npm outdated`を使用して更新が必要なパッケージを識別
+- `npm doctor`を実行してnpmインストールと環境が健全であることを確認
+- `npm audit`を使用して依存関係の既知の脆弱性をモニタリング
+- サードパーティオープンソースプロジェクトのセキュリティ脆弱性をスキャン
+- プロジェクト依存関係に影響を与える新しいCVEのモニタリングを設定
 
-### Use Private Registry Solutions
+### プライベートレジストリソリューションを使用
 
-Consider using local npm proxies for enhanced control:
-- Verdaccio provides a lightweight private registry solution
-- Private registries offer package access control and authenticated users
-- Proxy capabilities reduce duplicate downloads and save bandwidth
-- Enable routing dependencies to different registries for security control
-- Useful for testing environments and mono-repo projects
+強化された制御のためにローカルnpmプロキシを使用することを検討：
+- Verdaccioは軽量なプライベートレジストリソリューションを提供
+- プライベートレジストリはパッケージアクセス制御と認証済みユーザーを提供
+- プロキシ機能により重複ダウンロードを削減し帯域幅を節約
+- セキュリティ制御のために異なるレジストリへの依存関係のルーティングを有効化
+- テスト環境とモノレポプロジェクトに有用
 
-### Enable Account Security
+### アカウントセキュリティを有効化
 
-Protect your npm publishing capabilities:
-- Enable two-factor authentication with `npm profile enable-2fa auth-and-writes`
-- Use auth-and-writes mode for comprehensive protection of profile, login, and package management
-- Auth-only mode provides protection for login and profile changes only
-- Use authentication apps like Google Authenticator for 2FA tokens
+npm公開機能を保護：
+- `npm profile enable-2fa auth-and-writes`で二要素認証を有効化
+- プロフィール、ログイン、パッケージ管理の包括的保護のためにauth-and-writesモードを使用
+- Auth-onlyモードはログインとプロフィール変更の保護のみを提供
+- 2FAトークンにはGoogle Authenticatorなどの認証アプリを使用
 
-### Manage Access Tokens Securely
+### アクセストークンを安全に管理
 
-Control programmatic access to npm registry:
-- Create tokens with minimal required permissions using `npm token create`
-- Use read-only tokens when write access is not needed
-- Restrict tokens to specific IP ranges with `--cidr` option
-- Regularly audit tokens with `npm token list`
-- Revoke unused or compromised tokens immediately with `npm token revoke`
-- Never expose tokens in source code, logs, or environment variables
+npmレジストリへのプログラマティックアクセスを制御：
+- `npm token create`を使用して最小限の必要な権限を持つトークンを作成
+- 書き込みアクセスが不要な場合は読み取り専用トークンを使用
+- `--cidr`オプションを使用してトークンを特定のIP範囲に制限
+- `npm token list`でトークンを定期的に監査
+- `npm token revoke`で未使用または侵害されたトークンを即座に失効
+- ソースコード、ログ、環境変数でトークンを決して公開しない
 
-### Defend Against Typosquatting
+### タイポスクワッティングに対する防御
 
-Protect against malicious package substitution:
-- Verify package names and metadata with `npm info <package>` before installation
-- Be extra careful when copy-pasting installation commands from untrusted sources
-- Check source code repositories and npm registry to confirm package legitimacy
-- Default to being logged out of npm during daily development work
-- Use `--ignore-scripts` when installing packages from unknown sources
+悪意のあるパッケージ置換から保護：
+- インストール前に`npm info <package>`でパッケージ名とメタデータを確認
+- 信頼できないソースからのインストールコマンドをコピーペーストする際は特に注意
+- ソースコードリポジトリとnpmレジストリをチェックしてパッケージの正当性を確認
+- 日常の開発作業中はnpmからデフォルトでログアウト
+- 未知のソースからパッケージをインストールする際は`--ignore-scripts`を使用
 
-### Follow Responsible Disclosure
+### 責任ある開示に従う
 
-Handle security vulnerabilities appropriately:
-- Follow responsible disclosure programs when reporting vulnerabilities
-- Coordinate with package maintainers before public disclosure
-- Allow time for fixes and upgrade paths before publicizing security issues
-- Use proper channels to report security concerns to package authors
+セキュリティ脆弱性を適切に処理：
+- 脆弱性を報告する際は責任ある開示プログラムに従う
+- 公開開示前にパッケージメンテナーと調整
+- セキュリティ問題を公表する前に修正とアップグレードパスの時間を確保
+- パッケージ作成者にセキュリティ懸念を報告するために適切なチャネルを使用
 
-### Package Naming Best Practices
+### パッケージ命名ベストプラクティス
 
-Understand npm naming rules and security implications:
-- Package names limited to 214 characters, lowercase only
-- Cannot start with dot, underscore, or contain special characters like "~\'!()*"
-- Be aware that typosquatting attacks target popular package names
-- NPM uses spam detection mechanisms for new package publications
-- Reserved names include node_modules and favicon.ico
+npm命名ルールとセキュリティへの影響を理解：
+- パッケージ名は214文字に制限、小文字のみ
+- ドット、アンダースコアで始めることはできず、"~\'!()*"などの特殊文字を含めない
+- タイポスクワッティング攻撃が人気のあるパッケージ名を標的にすることを認識
+- NPMは新しいパッケージ公開のためにスパム検出メカニズムを使用
+- 予約名にはnode_modulesとfavicon.icoが含まれる

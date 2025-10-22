@@ -1,59 +1,59 @@
 ---
-description: Docker Security Best Practices
+description: Dockerセキュリティのベストプラクティス
 languages:
 - docker
 - yaml
 alwaysApply: false
 ---
 
-## Docker Security Guidelines
+## Dockerセキュリティガイドライン
 
-This rule advises on critical Docker container security practices to protect against common risks:
+このルールは、一般的なリスクから保護するための重要なDockerコンテナセキュリティプラクティスを推奨します：
 
-- Container User Security
-  - Always specify a non-root user in Dockerfiles using `USER` directive.
-  - Never run containers as root; use `docker run -u <user>` or Kubernetes `securityContext.runAsUser`.
-  - Avoid `USER root` or missing `USER` directives in Dockerfiles.
+- コンテナユーザーセキュリティ
+  - Dockerfileで`USER`ディレクティブを使用して常に非rootユーザーを指定。
+  - コンテナを決してrootとして実行しない。`docker run -u <user>`またはKubernetesの`securityContext.runAsUser`を使用。
+  - Dockerfileで`USER root`または`USER`ディレクティブの欠落を避ける。
 
-- Docker Daemon Socket Protection
-  - DO NOT expose `/var/run/docker.sock` to containers via volume mounts.
-  - DO NOT enable TCP Docker daemon socket (`-H tcp://0.0.0.0:XXX`) without TLS.
-  - Avoid `- "/var/run/docker.sock:/var/run/docker.sock"` in docker-compose files.
+- Dockerデーモンソケット保護
+  - ボリュームマウントを介してコンテナに`/var/run/docker.sock`を決して公開しない。
+  - TLSなしでTCP Dockerデーモンソケット（`-H tcp://0.0.0.0:XXX`）を有効化しない。
+  - docker-composeファイルで`- "/var/run/docker.sock:/var/run/docker.sock"`を避ける。
 
-- Capability and Privilege Management
-  - Drop all capabilities (`--cap-drop all`) and add only required ones (`--cap-add`).
-  - DO NOT use `--privileged` flag in container configurations.
-  - Set `allowPrivilegeEscalation: false` in Kubernetes security contexts.
-  - Use `--security-opt=no-new-privileges` to prevent privilege escalation.
+- ケーパビリティと権限管理
+  - すべてのケーパビリティをドロップ（`--cap-drop all`）し、必要なもののみを追加（`--cap-add`）。
+  - コンテナ設定で`--privileged`フラグを使用しない。
+  - Kubernetesセキュリティコンテキストで`allowPrivilegeEscalation: false`を設定。
+  - 権限昇格を防ぐために`--security-opt=no-new-privileges`を使用。
 
-- Dockerfile Security Practices
-  - Pin base image versions (avoid `latest` tags in production).
-  - Use `COPY` instead of `ADD` when not extracting archives.
-  - DO NOT include secrets, passwords, or API keys in Dockerfiles.
-  - Avoid curl bashing in `RUN` directives; use package managers when possible.
-  - Include `HEALTHCHECK` instructions for container health monitoring.
+- Dockerfileセキュリティプラクティス
+  - ベースイメージのバージョンを固定（本番では`latest`タグを避ける）。
+  - アーカイブを抽出しない場合は`ADD`の代わりに`COPY`を使用。
+  - Dockerfileにシークレット、パスワード、APIキーを含めない。
+  - `RUN`ディレクティブでcurl bashingを避ける。可能な場合はパッケージマネージャーを使用。
+  - コンテナヘルスモニタリングのために`HEALTHCHECK`命令を含める。
 
-- Resource and Filesystem Security
-  - Limit container resources (memory, CPU) in docker-compose or Kubernetes specs.
-  - Use read-only root filesystems (`--read-only` or `readOnlyRootFilesystem: true`).
-  - Mount volumes as read-only (`:ro`) when write access is not needed.
-  - Use `--tmpfs` for temporary writable storage instead of persistent volumes.
+- リソースとファイルシステムセキュリティ
+  - docker-composeまたはKubernetes仕様でコンテナリソース（メモリ、CPU）を制限。
+  - 読み取り専用ルートファイルシステムを使用（`--read-only`または`readOnlyRootFilesystem: true`）。
+  - 書き込みアクセスが不要な場合、ボリュームを読み取り専用（`:ro`）でマウント。
+  - 永続ボリュームの代わりに一時的な書き込み可能ストレージに`--tmpfs`を使用。
 
-- Network and Runtime Security
-  - Avoid default bridge networking; define custom Docker networks.
-  - DO NOT share host network namespace (`--net=host`).
-  - DO NOT expose unnecessary ports in Dockerfiles or container configs.
-  - Enable default security profiles (seccomp, AppArmor, SELinux); do not disable them.
+- ネットワークとランタイムセキュリティ
+  - デフォルトのブリッジネットワークを避ける。カスタムDockerネットワークを定義。
+  - ホストネットワーク名前空間を共有しない（`--net=host`）。
+  - Dockerfileまたはコンテナ設定で不必要なポートを公開しない。
+  - デフォルトのセキュリティプロファイル（seccomp、AppArmor、SELinux）を有効化。無効化しない。
 
-- Secret Management
-  - Use Docker Secrets or Kubernetes encrypted secrets for sensitive data.
-  - DO NOT embed secrets in environment variables or Dockerfile layers.
-  - Avoid hardcoded credentials in container configurations.
+- シークレット管理
+  - 機密データにはDocker SecretsまたはKubernetes暗号化シークレットを使用。
+  - 環境変数またはDockerfileレイヤーにシークレットを埋め込まない。
+  - コンテナ設定にハードコーディングされた認証情報を避ける。
 
-- Container Image Security
-  - Scan images for vulnerabilities before deployment.
-  - Use minimal base images (alpine, distroless) to reduce attack surface.
-  - Remove package managers and unnecessary tools from production images.
+- コンテナイメージセキュリティ
+  - デプロイ前にイメージの脆弱性をスキャン。
+  - 攻撃対象領域を減らすために最小限のベースイメージ（alpine、distroless）を使用。
+  - 本番イメージからパッケージマネージャーと不要なツールを削除。
 
-Summary:  
-Always run containers as non-root users, never expose Docker daemon socket, drop unnecessary capabilities, use secure Dockerfile practices, implement resource limits and read-only filesystems, configure proper networking, manage secrets securely, and scan images for vulnerabilities.
+要約：
+常にコンテナを非rootユーザーとして実行し、Dockerデーモンソケットを決して公開せず、不要なケーパビリティをドロップし、安全なDockerfileプラクティスを使用し、リソース制限と読み取り専用ファイルシステムを実装し、適切なネットワークを設定し、シークレットを安全に管理し、イメージの脆弱性をスキャンします。

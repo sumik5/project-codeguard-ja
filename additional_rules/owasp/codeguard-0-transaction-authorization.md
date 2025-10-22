@@ -1,5 +1,5 @@
 ---
-description: Transaction Authorization Security
+description: トランザクション認可セキュリティ
 languages:
 - c
 - go
@@ -12,184 +12,184 @@ languages:
 alwaysApply: false
 ---
 
-## Transaction Authorization Security
+## トランザクション認可セキュリティ
 
-Secure implementation of transaction authorization to prevent bypassing of sensitive operations like wire transfers through robust user confirmation and server-side enforcement.
+堅牢なユーザー確認とサーバー側強制を通じて、電信送金のような機密操作のバイパスを防ぐための、トランザクション認可の安全な実装。
 
-### Transaction Authorization Concept
+### トランザクション認可の概念
 
-Transaction authorization requires users to submit a second factor to verify authorization for sensitive operations. This applies beyond financial systems to any operation requiring explicit user consent (account unlocks, privilege changes, data modifications).
+トランザクション認可では、機密操作の認可を検証するため、ユーザーに第2要素の提出を要求します。これは金融システムを超えて、明示的なユーザー同意を必要とするあらゆる操作（アカウントロック解除、権限変更、データ変更）に適用されます。
 
-Authorization methods include:
-- Time-based one-time password (OTP) tokens (OATH TOTP)
-- OTP sent by SMS or phone
-- Digital signatures from smart cards or smartphones
-- Challenge-response tokens including unconnected card readers
-- Transaction authorization cards with unique numbers
+認可方法には以下が含まれます：
+- 時間ベースのワンタイムパスワード（OTP）トークン（OATH TOTP）
+- SMSまたは電話で送信されるOTP
+- スマートカードまたはスマートフォンからのデジタル署名
+- 非接続カードリーダーを含むチャレンジレスポンストークン
+- 一意の番号を持つトランザクション認可カード
 
-### Functional Requirements
+### 機能要件
 
-#### User Identification and Acknowledgment (What You See Is What You Sign)
-Transaction authorization must allow users to identify and acknowledge significant transaction data.
+#### ユーザー識別と確認（What You See Is What You Sign）
+トランザクション認可では、ユーザーが重要なトランザクションデータを識別し確認できる必要があります。
 
-Key principles:
-- User must verify all significant transaction data during authorization process
-- Display critical information: target account, amount, transaction type
-- Balance security requirements with user experience and technical constraints
-- For external devices with limited displays, show minimum significant data (partial account number, amount)
-- Ensure meaningful prompts to prevent social engineering and malware abuse
+主要な原則：
+- ユーザーは認可プロセス中にすべての重要なトランザクションデータを検証する必要があります
+- 重要な情報を表示：対象アカウント、金額、トランザクションタイプ
+- セキュリティ要件とユーザーエクスペリエンスおよび技術的制約のバランスを取る
+- ディスプレイが制限された外部デバイスの場合、最小限の重要データを表示（アカウント番号の一部、金額）
+- ソーシャルエンジニアリングとマルウェア悪用を防ぐため、意味のあるプロンプトを確保
 
-#### Authorization Token and Method Changes
-- Changes to authorization tokens require authorization using current authorization credentials
-- Changes to authorization methods require authorization using current authorization method
-- Prevent malware from downgrading to least secure authorization method
-- Inform users about potential dangers of different authorization methods
+#### 認可トークンと方法の変更
+- 認可トークンへの変更には、現在の認可資格情報を使用した認可が必要
+- 認可方法への変更には、現在の認可方法を使用した認可が必要
+- マルウェアが最も安全でない認可方法へのダウングレードを防止
+- 異なる認可方法の潜在的な危険性についてユーザーに通知
 
-#### Authentication vs Authorization Separation
-Distinguish authentication process from transaction authorization process to prevent credential reuse attacks.
+#### 認証と認可の分離
+認証情報再利用攻撃を防ぐため、認証プロセスをトランザクション認可プロセスから区別します。
 
-Prevention strategies:
-- Use different methods for authentication and transaction authorization
-- Employ different actions in external security components
-- Present clear messages about what users are signing
-- Prevent malware from using authentication credentials for transaction authorization
+防止戦略：
+- 認証とトランザクション認可に異なる方法を使用
+- 外部セキュリティコンポーネントで異なるアクションを採用
+- ユーザーが署名しているものについて明確なメッセージを提示
+- マルウェアがトランザクション認可に認証資格情報を使用することを防止
 
-#### Unique Authorization per Transaction
-Each transaction requires unique authorization credentials to prevent replay attacks and credential reuse during sessions.
+#### トランザクションごとの一意の認可
+リプレイ攻撃とセッション中の資格情報再利用を防ぐため、各トランザクションには一意の認可資格情報が必要です。
 
-### Non-Functional Requirements
+### 非機能要件
 
-#### Server-Side Enforcement
-All authorization checks must be performed and enforced server-side.
+#### サーバー側強制
+すべての認可チェックはサーバー側で実行され強制される必要があります。
 
-Implementation requirements:
-- Never allow client-side influence on authorization results
-- Prevent tampering with transaction data parameters
-- Prevent adding/removing parameters that disable authorization checks
-- Apply security programming best practices (default deny, no debug code in production)
-- Encrypt data for confidentiality and integrity, verify server-side
+実装要件：
+- クライアント側が認可結果に影響を与えることを決して許可しない
+- トランザクションデータパラメータの改ざんを防止
+- 認可チェックを無効化するパラメータの追加/削除を防止
+- セキュリティプログラミングのベストプラクティスを適用（デフォルト拒否、本番環境にデバッグコードなし）
+- 機密性と完全性のためデータを暗号化し、サーバー側で検証
 
-#### Authorization Method Enforcement
-Server-side must enforce chosen authorization method or application policies.
+#### 認可方法の強制
+サーバー側は選択された認可方法またはアプリケーションポリシーを強制する必要があります。
 
-Security considerations:
-- Prevent client-side manipulation of authorization method parameters
-- Avoid building new authorization methods on old insecure codebases
-- Ensure attackers cannot downgrade to older, less secure methods
+セキュリティの考慮事項：
+- 認可方法パラメータのクライアント側操作を防止
+- 古い安全でないコードベース上に新しい認可方法を構築することを避ける
+- 攻撃者が古い、安全性の低い方法へダウングレードできないことを確保
 
-#### Server-Side Transaction Verification
-Generate and store all significant transaction data server-side.
+#### サーバー側トランザクション検証
+すべての重要なトランザクションデータをサーバー側で生成し保存します。
 
-Requirements:
-- All transaction data must be verified by user and generated server-side
-- Pass data to authorization component without client tampering possibility
-- Prevent malware manipulation of transaction data display
+要件：
+- すべてのトランザクションデータはユーザーによって検証され、サーバー側で生成される必要があります
+- クライアント改ざんの可能性なしに認可コンポーネントにデータを渡す
+- トランザクションデータ表示のマルウェア操作を防止
 
-#### Brute-Force Protection
-Implement protections against authorization credential brute-force attacks.
+#### ブルートフォース保護
+認可資格情報のブルートフォース攻撃に対する保護を実装します。
 
-Controls:
-- Restart entire transaction authorization process after failed attempts
-- Apply throttling and retry limits
-- Use additional automation prevention techniques
+制御：
+- 試行失敗後にトランザクション認可プロセス全体を再開
+- スロットリングと再試行制限を適用
+- 追加の自動化防止技術を使用
 
-#### Transaction State Control
-Enforce sequential transaction state transitions.
+#### トランザクション状態制御
+順次のトランザクション状態遷移を強制します。
 
-Standard transaction flow:
-1. User enters transaction data
-2. User requests authorization from application
-3. Application initializes authorization mechanism
-4. User verifies/confirms transaction data
-5. User responds with authorization credentials
-6. Application validates authorization and executes transaction
+標準的なトランザクションフロー：
+1. ユーザーがトランザクションデータを入力
+2. ユーザーがアプリケーションに認可を要求
+3. アプリケーションが認可メカニズムを初期化
+4. ユーザーがトランザクションデータを検証/確認
+5. ユーザーが認可資格情報で応答
+6. アプリケーションが認可を検証しトランザクションを実行
 
-Protection measures:
-- Prevent out-of-order step execution
-- Prevent step skipping
-- Protect against transaction data overwriting before authorization
-- Prevent skipping transaction authorization entirely
+保護措置：
+- 順序外のステップ実行を防止
+- ステップのスキップを防止
+- 認可前のトランザクションデータ上書きから保護
+- トランザクション認可の完全なスキップを防止
 
-#### Transaction Data Protection
-Protect transaction data against modification during authorization process.
+#### トランザクションデータ保護
+認可プロセス中のトランザクションデータの変更から保護します。
 
-Implementation strategies:
-- Invalidate authorization data if transaction data is modified
-- Reset authorization process on transaction data modifications
-- Log, monitor, and investigate modification attempts
-- Prevent Time of Check to Time of Use vulnerabilities
+実装戦略：
+- トランザクションデータが変更された場合、認可データを無効化
+- トランザクションデータ変更時に認可プロセスをリセット
+- 変更試行をログに記録、監視、調査
+- Time of Check to Time of Use脆弱性を防止
 
-#### Data Confidentiality
-Protect transaction data privacy during all client-server communications throughout the authorization process.
+#### データ機密性
+認可プロセス全体を通じて、すべてのクライアント-サーバー通信中のトランザクションデータのプライバシーを保護します。
 
-#### Transaction Execution Verification
-Implement final control gate before transaction execution.
+#### トランザクション実行検証
+トランザクション実行前に最終制御ゲートを実装します。
 
-Verification requirements:
-- Verify transaction was properly authorized by user
-- Prevent Time of Check to Time of Use attacks
-- Prevent authorization check bypass in transaction entry process
+検証要件：
+- トランザクションがユーザーによって適切に認可されたことを検証
+- Time of Check to Time of Use攻撃を防止
+- トランザクション入力プロセスでの認可チェックバイパスを防止
 
-#### Time-Limited Authorization
-Limit authorization credential validity to prevent delayed abuse by malware.
+#### 時間制限付き認可
+マルウェアによる遅延悪用を防ぐため、認可資格情報の有効性を制限します。
 
-Controls:
-- Restrict time window between challenge/OTP generation and authorization completion
-- Balance security with normal user behavior
-- Help prevent resource exhaustion attacks
+制御：
+- チャレンジ/OTP生成と認可完了の間の時間枠を制限
+- セキュリティと通常のユーザー行動のバランスを取る
+- リソース枯渇攻撃の防止に貢献
 
-#### Unique Authorization Credentials
-Generate unique authorization credentials for every operation to prevent replay attacks.
+#### 一意の認可資格情報
+リプレイ攻撃を防ぐため、すべての操作に一意の認可資格情報を生成します。
 
-Generation methods:
-- Use timestamps in signed transaction data
-- Include sequence numbers in challenges
-- Use random values in authorization components
+生成方法：
+- 署名されたトランザクションデータでタイムスタンプを使用
+- チャレンジにシーケンス番号を含める
+- 認可コンポーネントでランダム値を使用
 
-### Implementation Considerations
+### 実装の考慮事項
 
-#### Risk-Based Authorization
-Determine which transactions require authorization based on:
-- Risk analysis of specific application
-- Risk exposure assessment
-- Other implemented safeguards
+#### リスクベース認可
+以下に基づいて認可が必要なトランザクションを決定：
+- 特定のアプリケーションのリスク分析
+- リスク露出評価
+- 実装された他の保護措置
 
-#### Cryptographic Protection
-Implement cryptographic operations to ensure:
-- Transaction integrity
-- Data confidentiality
-- Non-repudiation of transactions
+#### 暗号化保護
+以下を確保するため暗号化操作を実装：
+- トランザクション完全性
+- データ機密性
+- トランザクションの否認防止
 
-#### Secure Key Management
-Protect device signing keys during device pairing and signing protocol.
+#### 安全な鍵管理
+デバイスペアリングと署名プロトコル中のデバイス署名鍵を保護します。
 
-Security measures:
-- Prevent malware injection/replacement of signing keys
-- Use second factors for key protection (passwords, biometrics)
-- Leverage secure elements (TEE, TPM, smart cards)
+セキュリティ措置：
+- マルウェア注入/署名鍵の置換を防止
+- 鍵保護に第2要素を使用（パスワード、バイオメトリクス）
+- セキュア要素を活用（TEE、TPM、スマートカード）
 
-#### User Awareness
-Train users on secure practices:
-- Verify transaction data from trusted sources, not computer screens
-- Understand risks of different authorization mechanisms
-- Recognize social engineering attempts
+#### ユーザー意識
+安全なプラクティスについてユーザーをトレーニング：
+- コンピューター画面ではなく、信頼できるソースからトランザクションデータを検証
+- 異なる認可メカニズムのリスクを理解
+- ソーシャルエンジニアリング試行を認識
 
-#### Anti-Malware Integration
-Deploy anti-malware solutions as additional protection layer while recognizing they cannot provide 100% effectiveness.
+#### アンチマルウェア統合
+100%の有効性を提供できないことを認識しつつ、追加の保護レイヤーとしてアンチマルウェアソリューションを展開します。
 
-### Security Controls Summary
+### セキュリティ制御まとめ
 
-1. Implement What You See Is What You Sign principle for transaction data verification
-2. Separate authentication from transaction authorization processes
-3. Use unique, time-limited authorization credentials per transaction
-4. Enforce all authorization logic server-side without client trust
-5. Protect authorization token and method changes through re-authorization
-6. Prevent authorization method downgrade attacks
-7. Implement brute-force protection with transaction resets
-8. Enforce sequential transaction state transitions
-9. Protect transaction data against modification during authorization
-10. Secure all client-server communications with encryption
-11. Verify proper authorization before transaction execution
-12. Use cryptographic signing and secure key storage for integrity
-13. Monitor and log suspicious authorization activities
-14. Provide user education on authorization security practices
+1. トランザクションデータ検証のためWhat You See Is What You Sign原則を実装
+2. 認証をトランザクション認可プロセスから分離
+3. トランザクションごとに一意で時間制限付きの認可資格情報を使用
+4. クライアント信頼なしにすべての認可ロジックをサーバー側で強制
+5. 再認可を通じて認可トークンと方法の変更を保護
+6. 認可方法のダウングレード攻撃を防止
+7. トランザクションリセットを伴うブルートフォース保護を実装
+8. 順次のトランザクション状態遷移を強制
+9. 認可中のトランザクションデータ変更から保護
+10. 暗号化ですべてのクライアント-サーバー通信を保護
+11. トランザクション実行前に適切な認可を検証
+12. 完全性のため暗号化署名と安全な鍵保存を使用
+13. 疑わしい認可アクティビティを監視しログに記録
+14. 認可セキュリティプラクティスについてユーザー教育を提供

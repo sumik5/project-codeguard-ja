@@ -1,5 +1,5 @@
 ---
-description: Laravel Security Best Practices
+description: Laravelセキュリティベストプラクティス
 languages:
 - c
 - javascript
@@ -9,13 +9,13 @@ languages:
 alwaysApply: false
 ---
 
-## Laravel Security Guidelines
+## Laravelセキュリティガイドライン
 
-Essential security practices for building secure Laravel applications.
+セキュアなLaravelアプリケーション構築のための重要なセキュリティプラクティス。
 
-### Basic Configuration
+### 基本設定
 
-Disable debug mode in production and generate application key:
+本番環境でデバッグモードを無効化し、アプリケーションキーを生成します：
 
 ```ini
 APP_DEBUG=false
@@ -25,11 +25,11 @@ APP_DEBUG=false
 php artisan key:generate
 ```
 
-Set secure file permissions: directories `775`, files `664`, executables `775`.
+セキュアなファイル権限を設定：ディレクトリ`775`、ファイル`664`、実行可能ファイル`775`。
 
-### Cookie Security and Session Management
+### Cookieセキュリティとセッション管理
 
-Enable cookie encryption middleware in `App\Http\Kernel`:
+`App\Http\Kernel`でCookie暗号化ミドルウェアを有効化します：
 
 ```php
 protected $middlewareGroups = [
@@ -41,7 +41,7 @@ protected $middlewareGroups = [
 ];
 ```
 
-Configure secure session settings in `config/session.php`:
+`config/session.php`でセキュアなセッション設定を構成します：
 
 ```php
 'http_only' => true,
@@ -51,57 +51,57 @@ Configure secure session settings in `config/session.php`:
 'lifetime' => 15,
 ```
 
-### Mass Assignment Protection
+### Mass Assignment保護
 
-Protect against mass assignment vulnerabilities:
+Mass Assignment脆弱性から保護します：
 
 ```php
-// VULNERABLE: Allows modification of any field
+// 脆弱：任意のフィールドの変更を許可
 Route::any('/profile', function (Request $request) {
     $request->user()->forceFill($request->all())->save();
     return response()->json(compact('user'));
 })->middleware('auth');
 ```
 
-Use `$request->only()` or `$request->validated()` instead of `$request->all()`.
+`$request->all()`の代わりに`$request->only()`または`$request->validated()`を使用します。
 
-### SQL Injection Prevention
+### SQLインジェクション防止
 
-Use Eloquent ORM parameterized queries by default. For raw queries, always use bindings:
+EloquentORMパラメータ化クエリをデフォルトで使用します。生クエリには必ずバインディングを使用します：
 
 ```php
-// VULNERABLE: No SQL bindings
+// 脆弱：SQLバインディングなし
 User::whereRaw('email = "'.$request->input('email').'"')->get();
 
-// SAFE: Using SQL bindings
+// 安全：SQLバインディングを使用
 User::whereRaw('email = ?', [$request->input('email')])->get();
 
-// SAFE: Named bindings
+// 安全：名前付きバインディング
 User::whereRaw('email = :email', ['email' => $request->input('email')])->get();
 ```
 
-Validate column names to prevent column name injection:
+カラム名インジェクションを防ぐためカラム名を検証します：
 
 ```php
 $request->validate(['sortBy' => 'in:price,updated_at']);
 User::query()->orderBy($request->validated()['sortBy'])->get();
 ```
 
-### XSS Prevention
+### XSS防止
 
-Use Blade's automatic escaping for all untrusted data:
+すべての信頼できないデータにBladeの自動エスケープを使用します：
 
 ```blade
-{{-- SAFE: Automatically escaped --}}
+{{-- 安全：自動的にエスケープ --}}
 {{ request()->input('somedata') }}
 
-{{-- VULNERABLE: Unescaped data --}}
+{{-- 脆弱：エスケープされないデータ --}}
 {!! request()->input('somedata') !!}
 ```
 
-### File Upload Security
+### ファイルアップロードセキュリティ
 
-Always validate file type and size:
+常にファイルタイプとサイズを検証します：
 
 ```php
 $request->validate([
@@ -109,7 +109,7 @@ $request->validate([
 ]);
 ```
 
-Sanitize filenames to prevent path traversal:
+パストラバーサルを防ぐためファイル名をサニタイズします：
 
 ```php
 Route::post('/upload', function (Request $request) {
@@ -118,9 +118,9 @@ Route::post('/upload', function (Request $request) {
 });
 ```
 
-### Path Traversal Prevention
+### パストラバーサル防止
 
-Use `basename()` to strip directory information:
+ディレクトリ情報を削除するため`basename()`を使用します：
 
 ```php
 Route::get('/download', function(Request $request) {
@@ -128,9 +128,9 @@ Route::get('/download', function(Request $request) {
 });
 ```
 
-### CSRF Protection
+### CSRF保護
 
-Enable CSRF middleware and use tokens in forms:
+CSRFミドルウェアを有効化し、フォームでトークンを使用します：
 
 ```php
 protected $middlewareGroups = [
@@ -149,9 +149,9 @@ protected $middlewareGroups = [
 </form>
 ```
 
-### Command Injection Prevention
+### コマンドインジェクション防止
 
-Escape shell commands with user input:
+ユーザー入力を伴うシェルコマンドをエスケープします：
 
 ```php
 public function verifyDomain(Request $request)
@@ -160,26 +160,26 @@ public function verifyDomain(Request $request)
 }
 ```
 
-Use `escapeshellcmd` and `escapeshellarg` for proper escaping.
+適切なエスケープのため`escapeshellcmd`と`escapeshellarg`を使用します。
 
-### Rate Limiting
+### レート制限
 
-Apply throttling to protect against abuse:
+悪用から保護するためスロットリングを適用します：
 
 ```php
 Route::get('/profile', function () {
     return 'User profile';
-})->middleware('throttle:10,1'); // 10 requests per minute
+})->middleware('throttle:10,1'); // 1分あたり10リクエスト
 
-// Custom rate limiter
+// カスタムレート制限
 RateLimiter::for('custom-limit', function ($request) {
     return Limit::perMinute(5)->by($request->user()?->id ?: $request->ip());
 });
 ```
 
-### Other Injection Prevention
+### その他のインジェクション防止
 
-Avoid dangerous functions with untrusted input:
+信頼できない入力で危険な関数を避けます：
 
 ```php
 unserialize($request->input('data'));
@@ -187,6 +187,6 @@ eval($request->input('data'));
 extract($request->all());
 ```
 
-### Security Auditing
+### セキュリティ監査
 
-Use Enlightn Security Checker to scan for vulnerabilities and keep dependencies updated.
+脆弱性をスキャンし、依存関係を最新に保つため、Enlightn Security Checkerを使用します。

@@ -1,5 +1,5 @@
 ---
-description: Virtual Patching Security
+description: 仮想パッチングセキュリティ
 languages:
 - c
 - go
@@ -13,79 +13,79 @@ languages:
 alwaysApply: false
 ---
 
-## Virtual Patching Security
+## 仮想パッチングセキュリティ
 
-Implement temporary security controls to protect against known vulnerabilities while developing permanent code fixes through security policy enforcement layers.
+セキュリティポリシー実施レイヤーを通じて、恒久的なコード修正を開発しながら既知の脆弱性から保護するための一時的なセキュリティ制御を実装。
 
-### Virtual Patching Definition
+### 仮想パッチングの定義
 
-A security policy enforcement layer which prevents and reports exploitation attempts of known vulnerabilities. Virtual patches analyze transactions and intercept attacks in transit so malicious traffic never reaches the web application, providing protection while actual source code remains unmodified.
+既知の脆弱性の悪用の試行を防止し報告するセキュリティポリシー実施レイヤー。仮想パッチはトランザクションを分析し転送中の攻撃を傍受するため、悪意のあるトラフィックがWebアプリケーションに決して到達せず、実際のソースコードは変更されないまま保護を提供します。
 
-### When Virtual Patching is Needed
+### 仮想パッチングが必要な場合
 
-Virtual patching addresses real-world scenarios where immediate code fixes are not feasible:
+仮想パッチングは、即時のコード修正が実現可能でない現実のシナリオに対応：
 
-- Lack of resources: Developers allocated to other projects
-- Third-party software: Code cannot be modified by users
-- Outsourced development: Changes require new project authorization
+- リソース不足：開発者が他のプロジェクトに割り当てられている
+- サードパーティソフトウェア：ユーザーがコードを変更できない
+- アウトソース開発：変更に新しいプロジェクト承認が必要
 
-Important: Code level fixes and virtual patching are NOT mutually exclusive. They are executed by different teams (developers vs. security operations) and can run in tandem.
+重要：コードレベルの修正と仮想パッチングは相互に排他的ではありません。異なるチーム（開発者対セキュリティ運用）によって実行され、並行して実行できます。
 
-### Virtual Patching Goals
+### 仮想パッチングの目標
 
-- Minimize Time-to-Fix: Implement mitigation as soon as possible while code fixes are developed
-- Attack Surface Reduction: Focus on minimizing attack vectors, even partial reduction (50% in 10 minutes vs 100% in 48 hours)
+- Time-to-Fixの最小化：コード修正が開発されている間、できるだけ早く軽減策を実装
+- 攻撃面の削減：完全な削減ではなく攻撃ベクトルの最小化に焦点（48時間で100%より10分で50%）
 
-### Virtual Patching Tools
+### 仮想パッチングツール
 
-Available tools for implementing virtual patches:
-- Intermediary devices such as WAF or IPS appliances
-- Web server plugins such as ModSecurity
-- Application layer filters such as ESAPI WAF
+仮想パッチを実装するために利用可能なツール：
+- WAFやIPSアプライアンスなどの中間デバイス
+- ModSecurityなどのWebサーバープラグイン
+- ESAPI WAFなどのアプリケーション層フィルター
 
-### Virtual Patching Methodology
+### 仮想パッチング手法
 
-Follow structured workflow for consistent, repeatable virtual patching:
+一貫性のある再現可能な仮想パッチングのための構造化ワークフロー：
 
-1. Preparation
-2. Identification  
-3. Analysis
-4. Virtual Patch Creation
-5. Implementation/Testing
-6. Recovery/Follow-Up
+1. 準備
+2. 識別
+3. 分析
+4. 仮想パッチ作成
+5. 実装/テスト
+6. 復旧/フォローアップ
 
-### Preparation Phase
+### 準備フェーズ
 
-Critical preparation items before incidents occur:
+インシデント発生前の重要な準備項目：
 
-- Public/Vendor Vulnerability Monitoring: Subscribe to vendor alert mailing lists for commercial software
-- Virtual Patching Pre-Authorization: Expedite governance processes since virtual patches don't modify source code
-- Deploy Virtual Patching Tools in Advance: Install ModSecurity WAF or similar tools ready for activation
-- Increase HTTP Audit Logging: Capture request URI, full headers, request/response bodies for incident analysis
+- 公開/ベンダー脆弱性モニタリング：商用ソフトウェアのベンダーアラートメーリングリストを購読
+- 仮想パッチング事前承認：仮想パッチはソースコードを変更しないためガバナンスプロセスを迅速化
+- 仮想パッチングツールを事前に配置：ModSecurity WAFまたは類似ツールをアクティベーション準備完了でインストール
+- HTTP監査ログの増加：インシデント分析のためにリクエストURI、完全ヘッダー、リクエスト/レスポンスボディをキャプチャ
 
-### Analysis Phase
+### 分析フェーズ
 
-Recommended analysis steps:
+推奨される分析ステップ：
 
-1. Determine virtual patching applicability for vulnerability type
-2. Utilize bug tracking system for vulnerability information management
-3. Verify vulnerability identifier (CVE name/number)
-4. Designate impact level for proper prioritization
-5. Specify affected software versions
-6. List configuration requirements to trigger vulnerability
-7. Collect Proof of Concept (PoC) exploit code for analysis and testing
+1. 脆弱性タイプの仮想パッチング適用可能性を判断
+2. 脆弱性情報管理にバグ追跡システムを利用
+3. 脆弱性識別子（CVE名/番号）を確認
+4. 適切な優先順位付けのために影響レベルを指定
+5. 影響を受けるソフトウェアバージョンを指定
+6. 脆弱性をトリガーする設定要件をリスト
+7. 分析とテストのためにProof of Concept（PoC）エクスプロイトコードを収集
 
-### Virtual Patch Creation Principles
+### 仮想パッチ作成の原則
 
-Two main requirements for accurate virtual patches:
-- No false positives: Never block legitimate traffic
-- No false negatives: Never miss attacks, even with evasion attempts
+正確な仮想パッチの2つの主要要件：
+- 偽陽性なし：正当なトラフィックをブロックしない
+- 偽陰性なし：回避の試行があっても攻撃を見逃さない
 
-### Positive Security (Allow List) Virtual Patches (Recommended)
+### ポジティブセキュリティ（許可リスト）仮想パッチ（推奨）
 
-Positive security model provides comprehensive input validation by specifying valid input characteristics and denying anything non-conformant.
+ポジティブセキュリティモデルは、有効な入力特性を指定し非準拠のものを拒否することで包括的な入力検証を提供。
 
-Example ModSecurity virtual patch for SQL injection protection:
+SQLインジェクション保護のためのModSecurity仮想パッチの例：
 
 ```text
 ##
@@ -101,31 +101,31 @@ SecRule REQUEST_URI "@contains /wp-content/plugins/levelfourstorefront/scripts/a
   SecRule ARGS:/reqID/ "!@rx ^[0-9]+$"
 ```
 
-### Negative Security (Block List) Virtual Patches
+### ネガティブセキュリティ（ブロックリスト）仮想パッチ
 
-Negative security model detects specific known attacks rather than allowing only valid traffic.
+ネガティブセキュリティモデルは有効なトラフィックのみを許可するのではなく、特定の既知の攻撃を検出。
 
-Example PoC attack payload:
+PoC攻撃ペイロードの例：
 ```text
 http://localhost/wordpress/wp-content/plugins/levelfourstorefront/scripts/administration/exportsubscribers.php?reqID=1' or 1='1
 ```
 
-Example ModSecurity block list virtual patch:
+ModSecurityブロックリスト仮想パッチの例：
 ```text
 SecRule REQUEST_URI "@contains /wp-content/plugins/levelfourstorefront/scripts/administration/exportsubscribers.php" "chain,id:1,phase:2,t:none,t:Utf8toUnicode,t:urlDecodeUni,t:normalizePathWin,t:lowercase,block,msg:'Input Validation Error for \'reqID\' parameter.',logdata:'%{args.reqid}'"
   SecRule ARGS:/reqID/ "@pm '"
 ```
 
-### Security Model Comparison
+### セキュリティモデルの比較
 
-Positive vs Negative Security considerations:
-- Negative security: Faster implementation but more evasion possibilities
-- Positive security: Better protection but manual process, less scalable for large/dynamic sites
-- Positive security recommended for specific vulnerability locations identified by alerts
+ポジティブ対ネガティブセキュリティの考慮事項：
+- ネガティブセキュリティ：より迅速な実装だがより多くの回避可能性
+- ポジティブセキュリティ：より良い保護だが手動プロセス、大規模/動的サイトではスケーラビリティが低い
+- アラートで識別された特定の脆弱性の場所にはポジティブセキュリティを推奨
 
-### Avoid Exploit-Specific Patches
+### エクスプロイト固有のパッチを避ける
 
-Resist creating patches that only block exact exploit payloads. Example poor approach for XSS:
+正確なエクスプロイトペイロードのみをブロックするパッチの作成は避けてください。XSSの貧弱なアプローチの例：
 
 ```html
 <script>
@@ -133,43 +133,43 @@ Resist creating patches that only block exact exploit payloads. Example poor app
 </script>
 ```
 
-Blocking only this exact payload provides minimal long-term protection value.
+この正確なペイロードのみをブロックしても、最小限の長期的保護価値しか提供しません。
 
-### Automated Virtual Patch Creation
+### 自動化された仮想パッチ作成
 
-Tools for automated patch creation from vulnerability reports:
-- OWASP ModSecurity Core Rule Set (CRS) Scripts: Auto-convert XML output from tools like ZAP
-- ThreadFix Virtual Patching: Convert vulnerability XML data into ModSecurity patches
-- Direct WAF Importing: Commercial WAF products import DAST tool XML reports
+脆弱性レポートからパッチを自動作成するツール：
+- OWASP ModSecurity Core Rule Set (CRS) Scripts：ZAPなどのツールからXML出力を自動変換
+- ThreadFix Virtual Patching：脆弱性XMLデータをModSecurityパッチに変換
+- ダイレクトWAFインポート：商用WAF製品がDASTツールXMLレポートをインポート
 
-### Implementation and Testing
+### 実装とテスト
 
-Testing tools for virtual patch validation:
-- Web browsers
-- Command-line clients (Curl, Wget)
-- Local proxy servers (ZAP)
-- ModSecurity AuditViewer for log manipulation and re-injection
+仮想パッチ検証のためのテストツール：
+- Webブラウザ
+- コマンドラインクライアント（Curl、Wget）
+- ローカルプロキシサーバー（ZAP）
+- ログ操作と再注入のためのModSecurity AuditViewer
 
-Testing steps:
-- Implement patches initially in "Log Only" mode to prevent false positives
-- Request retest from vulnerability identification team
-- Return to analysis phase if evasions occur during retesting
+テストステップ：
+- 偽陽性を防ぐために最初は「Log Only」モードでパッチを実装
+- 脆弱性識別チームに再テストを要求
+- 再テスト中に回避が発生した場合は分析フェーズに戻る
 
-### Recovery and Follow-Up
+### 復旧とフォローアップ
 
-Post-implementation activities:
-- Update ticket system with virtual patch details and rule IDs
-- Conduct periodic re-assessments to determine when virtual patches can be removed
-- Run virtual patch alert reports to demonstrate protection value
-- Track time-to-fix metrics for different vulnerability types
+実装後のアクティビティ：
+- 仮想パッチの詳細とルールIDでチケットシステムを更新
+- 仮想パッチを削除できる時期を決定するために定期的な再評価を実施
+- 保護価値を実証するために仮想パッチアラートレポートを実行
+- 異なる脆弱性タイプのtime-to-fixメトリクスを追跡
 
-### Developer Integration Guidelines
+### 開発者統合ガイドライン
 
-1. Prioritize permanent code fixes over virtual patches
-2. Collaborate with security teams on virtual patch requirements and testing
-3. Understand virtual patch limitations and temporary nature
-4. Provide input on normal application behavior for positive security rules
-5. Review virtual patch logs for attack patterns that inform secure coding practices
-6. Plan code fixes to address root causes protected by virtual patches
-7. Participate in virtual patch removal process once code fixes are deployed
-8. Document application-specific requirements for virtual patch creation
+1. 仮想パッチより恒久的なコード修正を優先
+2. 仮想パッチ要件とテストについてセキュリティチームと協力
+3. 仮想パッチの制限と一時的性質を理解
+4. ポジティブセキュリティルールのために通常のアプリケーション動作に関する入力を提供
+5. 安全なコーディングプラクティスに情報を提供する攻撃パターンの仮想パッチログをレビュー
+6. 仮想パッチで保護された根本原因に対処するコード修正を計画
+7. コード修正が展開されたら仮想パッチ削除プロセスに参加
+8. 仮想パッチ作成のためのアプリケーション固有の要件を文書化

@@ -1,5 +1,5 @@
 ---
-description: Cookie Theft Mitigation Best Practices
+description: Cookie盗難緩和のベストプラクティス
 languages:
 - java
 - javascript
@@ -10,39 +10,39 @@ languages:
 alwaysApply: false
 ---
 
-## Cookie Theft Mitigation Guidelines
+## Cookie盗難緩和ガイドライン
 
-This rule advises on detecting and mitigating session cookie theft through server-side monitoring:
+このルールは、サーバー側監視を通じてセッションCookie盗難の検出と緩和についてアドバイスします：
 
-- Session Fingerprinting
-  - Store session environment information when sessions are established: IP address, User-Agent, Accept-Language, Date.
-  - Save additional headers for enhanced detection: Accept, Accept-Encoding, sec-ch-ua headers (when available).
-  - Associate fingerprint data with session ID for comparison on subsequent requests.
+- セッションフィンガープリント
+  - セッション確立時にセッション環境情報を保存：IPアドレス、User-Agent、Accept-Language、Date。
+  - 検出強化のため追加ヘッダーを保存：Accept、Accept-Encoding、sec-ch-uaヘッダー（利用可能な場合）。
+  - 後続のリクエストで比較するため、フィンガープリントデータをセッションIDに関連付けます。
 
-- Cookie Theft Detection
-  - Monitor for significant changes in session environment information across requests.
-  - Compare current request headers against stored session fingerprint data.
-  - Account for legitimate variations (IP subnet changes, browser updates) vs. suspicious changes.
-  - Use multiple detection vectors rather than relying on single header changes.
+- Cookie盗難検出
+  - リクエスト間でセッション環境情報の重大な変更を監視します。
+  - 保存されたセッションフィンガープリントデータに対して現在のリクエストヘッダーを比較します。
+  - 正当な変動（IPサブネット変更、ブラウザ更新）と疑わしい変更を区別します。
+  - 単一のヘッダー変更に依存するのではなく、複数の検出ベクトルを使用します。
 
-- Risk-Based Response to Anomalies
-  - For high-risk operations: require re-authentication when suspicious changes detected.
-  - For medium-risk operations: implement CAPTCHA challenges or additional verification.
-  - For low-risk operations: log suspicious activity and continue monitoring.
-  - Always regenerate session ID when potential hijacking is detected.
+- 異常に対するリスクベースの対応
+  - 高リスク操作の場合：疑わしい変更が検出された場合、再認証を要求します。
+  - 中リスク操作の場合：CAPTCHAチャレンジまたは追加検証を実装します。
+  - 低リスク操作の場合：疑わしいアクティビティをログに記録し監視を継続します。
+  - 潜在的なハイジャックが検出された場合、常にセッションIDを再生成します。
 
-- Session Validation Implementation
-  - Implement detection as middleware that runs before sensitive operations.
-  - Apply validation selectively to high-value endpoints to manage performance impact.
-  - Log all suspicious session activities with sufficient context for investigation.
-  - Handle false positives gracefully to maintain user experience.
+- セッション検証実装
+  - 機密操作の前に実行されるミドルウェアとして検出を実装します。
+  - パフォーマンスへの影響を管理するため、高価値エンドポイントに選択的に検証を適用します。
+  - 調査のため十分なコンテキストですべての疑わしいセッションアクティビティをログに記録します。
+  - ユーザーエクスペリエンスを維持するため、誤検知を適切に処理します。
 
-- Secure Session Storage
-  - Store session fingerprint data securely on server-side (never client-side).
-  - Use secure session storage mechanisms provided by your framework.
-  - Ensure session data is properly encrypted and protected.
+- 安全なセッションストレージ
+  - セッションフィンガープリントデータをサーバー側に安全に保存（クライアント側には決して保存しない）。
+  - フレームワークが提供する安全なセッションストレージメカニズムを使用します。
+  - セッションデータが適切に暗号化され保護されていることを確認します。
 
-Code Example (from OWASP):
+コード例（OWASPより）：
 ```js
 const session = SessionStorage.create()
 session.save({
@@ -68,5 +68,5 @@ function cookieTheftDetectionMiddleware(req, res) {
 }
 ```
 
-Summary:  
-Implement server-side session fingerprinting to detect cookie theft, monitor environment changes across requests, apply risk-based responses to suspicious activity, and maintain secure session storage. Consider future standards like Device Bound Session Credentials for enhanced protection.
+まとめ：
+Cookie盗難を検出するためサーバー側セッションフィンガープリントを実装し、リクエスト間の環境変更を監視し、疑わしいアクティビティにリスクベースの対応を適用し、安全なセッションストレージを維持します。強化された保護のため、Device Bound Session Credentialsのような将来の標準を検討してください。

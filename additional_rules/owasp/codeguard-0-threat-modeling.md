@@ -1,5 +1,5 @@
 ---
-description: Threat Modeling Security
+description: 脅威モデリングセキュリティ
 languages:
 - c
 - go
@@ -15,135 +15,135 @@ languages:
 alwaysApply: false
 ---
 
-## Threat Modeling Security
+## 脅威モデリングセキュリティ
 
-Structured process to identify, analyze, and mitigate security threats early in the development lifecycle through systematic security analysis.
+開発ライフサイクルの早期に、体系的なセキュリティ分析を通じてセキュリティ脅威を識別、分析、軽減する構造化プロセス。
 
-### Threat Modeling Process
+### 脅威モデリングプロセス
 
-The threat modeling process answers four key questions:
-1. What are we working on?
-2. What can go wrong?
-3. What are we going to do about it?
-4. Did we do a good enough job?
+脅威モデリングプロセスは4つの重要な質問に答えます：
+1. 何に取り組んでいるか？
+2. 何が問題になる可能性があるか？
+3. それに対して何をするか？
+4. 十分な仕事をしたか？
 
-### System Modeling (What are we working on?)
+### システムモデリング（何に取り組んでいるか？）
 
-Create visual representations of your system to understand attack surfaces and security boundaries.
+攻撃面とセキュリティ境界を理解するためにシステムの視覚的表現を作成。
 
-Data Flow Diagrams (DFDs):
-- Model system interactions with data and external entities
-- Identify trust boundaries, data flows, data stores, and processes
-- Use tools like OWASP Threat Dragon, Microsoft Threat Modeling Tool, or draw.io
-- Create multiple DFDs for complex systems (high-level overview plus detailed sub-systems)
-- Store DFDs in accessible format for updates and reference
+データフロー図（DFD）：
+- データおよび外部エンティティとのシステム相互作用をモデル化
+- 信頼境界、データフロー、データストア、プロセスを識別
+- OWASP Threat Dragon、Microsoft Threat Modeling Tool、draw.ioなどのツールを使用
+- 複雑なシステムのために複数のDFDを作成（高レベル概要＋詳細サブシステム）
+- 更新と参照のためにアクセス可能な形式でDFDを保存
 
-Key elements to capture:
-- External entities interacting with the system
-- Data flows between components
-- Data storage locations
-- Process boundaries and trust zones
-- Authentication and authorization points
+キャプチャすべき主要要素：
+- システムと相互作用する外部エンティティ
+- コンポーネント間のデータフロー
+- データストレージの場所
+- プロセス境界と信頼ゾーン
+- 認証と認可のポイント
 
-Alternative approaches:
-- Brainstorming sessions for domain discovery
-- Collaborative definition of key terms and concepts
-- Quick identification of business processes and dependencies
+代替アプローチ：
+- ドメイン発見のためのブレインストーミングセッション
+- 主要な用語と概念の協調的定義
+- ビジネスプロセスと依存関係の迅速な識別
 
-### Threat Identification (What can go wrong?)
+### 脅威の識別（何が問題になる可能性があるか？）
 
-Use STRIDE methodology to systematically identify threats within your system context.
+STRIDE手法を使用してシステムコンテキスト内の脅威を体系的に識別。
 
-STRIDE Categories:
+STRIDEカテゴリ：
 
-| Threat Category | Violates | Examples |
+| 脅威カテゴリ | 侵害するもの | 例 |
 |-----------------|----------|----------|
-| Spoofing | Authenticity | Attacker steals authentication token to impersonate user |
-| Tampering | Integrity | Attacker abuses application to perform unintended database updates |
-| Repudiation | Non-repudiability | Attacker manipulates logs to cover their actions |
-| Information Disclosure | Confidentiality | Attacker extracts data from database containing user account info |
-| Denial of Service | Availability | Attacker locks legitimate user out by failed authentication attempts |
-| Elevation of Privileges | Authorization | Attacker tampers with JWT to change their role |
+| なりすまし（Spoofing） | 真正性 | 攻撃者が認証トークンを盗んでユーザーになりすます |
+| 改ざん（Tampering） | 完全性 | 攻撃者がアプリケーションを悪用して意図しないデータベース更新を実行 |
+| 否認（Repudiation） | 否認防止 | 攻撃者がログを操作して行動を隠蔽 |
+| 情報漏洩（Information Disclosure） | 機密性 | 攻撃者がユーザーアカウント情報を含むデータベースからデータを抽出 |
+| サービス拒否（Denial of Service） | 可用性 | 攻撃者が認証失敗の試行により正規ユーザーをロックアウト |
+| 権限昇格（Elevation of Privileges） | 認可 | 攻撃者がJWTを改ざんして役割を変更 |
 
-Threat identification techniques:
-- Systematic review of each STRIDE category for system components
-- Brainstorming sessions with development and security teams
-- Integration with tactical approaches like kill chains or MITRE ATT&CK
-- Use of threat modeling tools for structured analysis
+脅威識別技術：
+- システムコンポーネントの各STRIDEカテゴリの体系的レビュー
+- 開発チームとセキュリティチームとのブレインストーミングセッション
+- キルチェーンやMITRE ATT&CKなどの戦術的アプローチとの統合
+- 構造化分析のための脅威モデリングツールの使用
 
-Threat prioritization:
-- Assess likelihood and impact of identified threats
-- Consider cost and effort required for mitigation
-- Focus on threats with highest risk-to-effort ratio
+脅威の優先順位付け：
+- 識別された脅威の可能性と影響を評価
+- 軽減に必要なコストと労力を検討
+- リスク対労力比が最も高い脅威に焦点を当てる
 
-### Response and Mitigations (What are we going to do about it?)
+### 対応と軽減策（それに対して何をするか？）
 
-Define responses for each identified threat using these strategies:
+これらの戦略を使用して識別された各脅威に対する対応を定義：
 
-Response Options:
-- Mitigate: Reduce likelihood that threat will materialize
-- Eliminate: Remove feature or component causing the threat
-- Transfer: Shift responsibility to another entity
-- Accept: Acknowledge risk but take no action due to business constraints
+対応オプション：
+- 軽減：脅威が具現化する可能性を減らす
+- 排除：脅威を引き起こす機能またはコンポーネントを削除
+- 移転：別のエンティティに責任を移す
+- 受容：ビジネス制約のためにリスクを認識するが行動を取らない
 
-Mitigation requirements:
-- Develop actionable mitigation strategies that can be implemented
-- Document mitigations as testable requirements
-- Reference standards like OWASP ASVS and MITRE CWE for guidance
-- Apply mitigations at category or individual threat level
-- Ensure mitigations are built into the system, not theoretical
+軽減要件：
+- 実装可能な実行可能な軽減戦略を開発
+- 軽減策をテスト可能な要件として文書化
+- ガイダンスのためにOWASP ASVSやMITRE CWEなどの標準を参照
+- カテゴリまたは個別脅威レベルで軽減策を適用
+- 軽減策がシステムに組み込まれ、理論的でないことを確保
 
-### Review and Validation (Did we do a good enough job?)
+### レビューと検証（十分な仕事をしたか？）
 
-Validate threat model completeness and effectiveness through stakeholder review.
+ステークホルダーレビューを通じて脅威モデルの完全性と効果を検証。
 
-Review criteria:
-- Does the model accurately reflect the actual system?
-- Have all applicable threats been identified?
-- Has a response strategy been defined for each threat?
-- Do mitigation strategies reduce risk to acceptable levels?
-- Is the threat model formally documented and accessible?
-- Can mitigations be tested and measured for effectiveness?
+レビュー基準：
+- モデルは実際のシステムを正確に反映しているか？
+- すべての適用可能な脅威が識別されたか？
+- 各脅威に対して対応戦略が定義されたか？
+- 軽減戦略はリスクを許容レベルに削減するか？
+- 脅威モデルは正式に文書化されアクセス可能か？
+- 軽減策はテストされ効果を測定できるか？
 
-Review participants:
-- Development teams
-- Security teams
-- Architecture teams
-- Product stakeholders
-- Operations teams
+レビュー参加者：
+- 開発チーム
+- セキュリティチーム
+- アーキテクチャチーム
+- プロダクトステークホルダー
+- 運用チーム
 
-### Integration with Development Process
+### 開発プロセスとの統合
 
-Integrate threat modeling seamlessly into SDLC:
-- Perform initial threat modeling during design phase
-- Update threat models when system architecture changes
-- Include threat modeling in feature development workflows
-- Treat as standard development step, not optional add-on
-- Maintain and refine models alongside system evolution
+SDLCに脅威モデリングをシームレスに統合：
+- 設計フェーズ中に初期脅威モデリングを実施
+- システムアーキテクチャが変更されたときに脅威モデルを更新
+- 機能開発ワークフローに脅威モデリングを含める
+- オプションの追加ではなく標準的な開発ステップとして扱う
+- システムの進化とともにモデルを維持・改良
 
-Development team considerations:
-- Provide security training for developers
-- Include security experts in threat modeling sessions
-- Use tools that simplify and automate threat identification
-- Promote security culture within development organization
-- Establish cross-team collaboration and communication
+開発チームの考慮事項：
+- 開発者にセキュリティトレーニングを提供
+- 脅威モデリングセッションにセキュリティ専門家を含める
+- 脅威識別を簡素化・自動化するツールを使用
+- 開発組織内でセキュリティ文化を促進
+- チーム間の協力とコミュニケーションを確立
 
-Tools and techniques:
-- OWASP Threat Dragon for collaborative threat modeling
-- Microsoft Threat Modeling Tool for structured analysis
-- OWASP pytm for threat-modeling-as-code approach
-- draw.io with threat modeling libraries for diagramming
-- STRIDE, PASTA, LINDDUN, OCTAVE, and VAST methodologies
+ツールと技術：
+- 協調的脅威モデリングのためのOWASP Threat Dragon
+- 構造化分析のためのMicrosoft Threat Modeling Tool
+- threat-modeling-as-codeアプローチのためのOWASP pytm
+- 図作成のための脅威モデリングライブラリを備えたdraw.io
+- STRIDE、PASTA、LINDDUN、OCTAVE、VAST手法
 
-### Implementation Guidelines
+### 実装ガイドライン
 
-1. Start threat modeling early in design phase and integrate into SDLC
-2. Create comprehensive Data Flow Diagrams showing trust boundaries and data flows
-3. Apply STRIDE methodology systematically to identify threats
-4. Prioritize threats based on likelihood, impact, and mitigation cost
-5. Develop actionable, testable mitigation requirements
-6. Involve security experts and cross-functional stakeholders in reviews
-7. Document threat models and store artifacts accessibly
-8. Update threat models when system architecture or features change
-9. Use appropriate tools to support and streamline the process
-10. Foster security awareness and collaboration across development teams
+1. 設計フェーズの早期に脅威モデリングを開始しSDLCに統合
+2. 信頼境界とデータフローを示す包括的なデータフロー図を作成
+3. STRIDE手法を体系的に適用して脅威を識別
+4. 可能性、影響、軽減コストに基づいて脅威を優先順位付け
+5. 実行可能でテスト可能な軽減要件を開発
+6. レビューにセキュリティ専門家と機能横断的ステークホルダーを関与
+7. 脅威モデルを文書化しアーティファクトをアクセス可能に保存
+8. システムアーキテクチャまたは機能が変更されたときに脅威モデルを更新
+9. プロセスをサポートし合理化するために適切なツールを使用
+10. 開発チーム全体でセキュリティ意識と協力を促進

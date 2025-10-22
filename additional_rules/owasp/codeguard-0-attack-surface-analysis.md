@@ -1,5 +1,5 @@
 ---
-description: Attack Surface Analysis Best Practices
+description: 攻撃面分析ベストプラクティス
 languages:
 - c
 - go
@@ -14,49 +14,49 @@ languages:
 alwaysApply: false
 ---
 
-Understanding and managing your application's attack surface is a fundamental part of building secure software. Your application's attack surface is the sum of all points where an unauthorized user (an attacker) can try to enter data, extract data, or invoke execution. Here’s how to approach it:
+アプリケーションの攻撃面を理解し管理することは、安全なソフトウェアを構築する基本的な部分です。アプリケーションの攻撃面は、権限のないユーザー（攻撃者）がデータを入力、データを抽出、または実行を呼び出そうとするすべてのポイントの合計です。以下にアプローチ方法を示します：
 
-### 1. Identify and Document Your Attack Surface
+### 1. 攻撃面を識別し文書化
 
-You can't protect what you don't know about. The first step is to map out all the entry and exit points of your application.
+知らないものは保護できません。最初のステップは、アプリケーションのすべての入力ポイントと出力ポイントをマッピングすることです。
 
-**Best Practices:**
+**ベストプラクティス:**
 
-*   **Catalog Entry Points:** Identify all user interfaces (UIs), APIs (REST, GraphQL, etc.), file uploads, database connections, message queue consumers, and webhooks. Examples include `/api/users`, file upload endpoints, database connection strings, and Redis/RabbitMQ consumers.
-*   **Map Data Flows:** Document how data enters, is processed, and exits your system. This includes data formats being used (e.g., JSON, XML, serialized objects).
-*   **Integrate with CI/CD:** Add automated checks in your CI/CD pipeline to detect new endpoints or changes to existing ones. Use tools like OpenAPI spec validation or endpoint discovery to flag changes for security review.
-*   **Keep Documentation Current:** Maintain a living document, such as a `ATTACK_SURFACE.md` file in your repository, that details these components. Assign responsibility for updates to the development team lead and review quarterly.
+*   **エントリーポイントをカタログ化:** すべてのユーザーインターフェース（UI）、API（REST、GraphQL等）、ファイルアップロード、データベース接続、メッセージキューコンシューマー、webhookを識別。例：`/api/users`、ファイルアップロードエンドポイント、データベース接続文字列、Redis/RabbitMQコンシューマー。
+*   **データフローをマップ化:** データがシステムに入り、処理され、出る方法を文書化。使用されるデータフォーマット（JSON、XML、シリアライズされたオブジェクト等）を含める。
+*   **CI/CDと統合:** CI/CDパイプラインに自動チェックを追加して、新しいエンドポイントまたは既存エンドポイントへの変更を検出。OpenAPI仕様検証またはエンドポイント検出などのツールを使用して、セキュリティレビューのために変更をフラグ立て。
+*   **ドキュメントを最新に保つ:** リポジトリに`ATTACK_SURFACE.md`ファイルなどの生きたドキュメントを維持して、これらのコンポーネントを詳述。開発チームリーダーに更新の責任を割り当て、四半期ごとにレビュー。
 
-### 2. Analyze and Prioritize
+### 2. 分析と優先順位付け
 
-Once you have a map, you need to assess the risk associated with each part of the attack surface.
+マップができたら、攻撃面の各部分に関連するリスクを評価する必要があります。
 
-**Best Practices:**
+**ベストプラクティス:**
 
-*   **Categorize Components:** Classify each entry point based on its exposure (e.g., public-facing vs. internal) and the sensitivity of the data it handles.
-*   **Secure APIs and Integrations:** For each API endpoint, ensure proper input validation, rate limiting (e.g., 100 requests/minute per user), authentication (OAuth2, JWT), and authorization checks. Regularly review third-party integration credentials and permissions.
-*   **Handle Authentication and Authorization:** Implement proper access controls for all endpoints. Document which user roles can access which resources. Regularly audit deprecated endpoints and remove or secure them properly.
-*   **Prioritize Reviews:** Focus your security efforts, such as code reviews and penetration testing, on the most exposed and highest-risk components. An unauthenticated public API handling user data is a higher priority than an internal admin dashboard.
-*   **Threat Model:** Use threat modeling to think like an attacker and identify potential vulnerabilities in your design.
+*   **コンポーネントを分類:** 各エントリーポイントをその露出（公開向け対内部）と処理するデータの機密性に基づいて分類。
+*   **APIと統合を保護:** 各APIエンドポイントについて、適切な入力検証、レート制限（ユーザーあたり100リクエスト/分等）、認証（OAuth2、JWT）、認可チェックを確保。サードパーティ統合の認証情報と権限を定期的にレビュー。
+*   **認証と認可を処理:** すべてのエンドポイントに適切なアクセス制御を実装。どのユーザーロールがどのリソースにアクセスできるかを文書化。非推奨のエンドポイントを定期的に監査し、削除または適切に保護。
+*   **レビューを優先順位付け:** コードレビューや侵入テストなどのセキュリティ努力を、最も露出が高くリスクの高いコンポーネントに焦点を当てる。ユーザーデータを処理する未認証の公開APIは、内部管理ダッシュボードより優先度が高い。
+*   **脅威モデル:** 攻撃者のように考え、設計の潜在的な脆弱性を識別するために脅威モデリングを使用。
 
-### 3. Reduce and Monitor
+### 3. 削減とモニタリング
 
-A smaller attack surface is easier to defend.
+攻撃面が小さいほど防御が容易です。
 
-**Best Practices:**
+**ベストプラクティス:**
 
-*   **Principle of Least Privilege:** If a feature, endpoint, or dependency is not needed, remove it. Disable unused features and interfaces.
-*   **Minimize Dependencies:** Every third-party library you add can potentially increase your attack surface. Regularly audit and remove unused dependencies.
-*   **Continuously Reassess:** Your application is always evolving. Make attack surface analysis a regular part of your development lifecycle, not a one-time activity.
+*   **最小権限の原則:** 機能、エンドポイント、依存関係が不要な場合は削除。未使用の機能とインターフェースを無効化。
+*   **依存関係を最小化:** 追加するすべてのサードパーティライブラリは、潜在的に攻撃面を増やす可能性がある。未使用の依存関係を定期的に監査し削除。
+*   **継続的に再評価:** アプリケーションは常に進化している。攻撃面分析を開発ライフサイクルの定期的な部分にし、一度きりのアクティビティにしない。
 
-### 4. Implement Runtime Defenses
+### 4. ランタイム防御を実装
 
-Secure coding is essential, but it should be part of a defense-in-depth strategy with operational controls.
+安全なコーディングは必須ですが、運用制御を備えた多層防御戦略の一部であるべきです。
 
-**Best Practices:**
+**ベストプラクティス:**
 
-*   **Deploy Web Application Firewalls (WAFs):** Configure WAF rules to block common attack patterns (SQL injection, XSS) and implement custom rules for your application's specific attack vectors.
-*   **Implement Rate Limiting:** Set up application-level rate limiting for critical endpoints (e.g., login, API calls) and infrastructure-level DDoS protection.
-*   **Enable Anomaly Detection:** Monitor for unusual traffic patterns, failed authentication attempts, and unexpected data access patterns. Set up alerts for suspicious activity.
-*   **Network Segmentation:** Use firewalls and network controls to limit communication between components. These are often defined in Infrastructure-as-Code (IaC) files (e.g., Terraform, CloudFormation), which should be reviewed for security.
-*   **Regular Security Monitoring:** Implement logging and monitoring for all entry points, with weekly reviews of security logs and monthly assessments of attack surface changes.
+*   **Webアプリケーションファイアウォール（WAF）を配置:** 一般的な攻撃パターン（SQLインジェクション、XSS）をブロックするようにWAFルールを設定し、アプリケーションの特定の攻撃ベクトルのカスタムルールを実装。
+*   **レート制限を実装:** 重要なエンドポイント（ログイン、API呼び出し等）にアプリケーションレベルのレート制限と、インフラレベルのDDoS保護を設定。
+*   **異常検出を有効化:** 異常なトラフィックパターン、認証失敗の試行、予期しないデータアクセスパターンをモニタリング。疑わしいアクティビティのアラートを設定。
+*   **ネットワークセグメンテーション:** ファイアウォールとネットワーク制御を使用してコンポーネント間の通信を制限。これらは多くの場合、Infrastructure-as-Code（IaC）ファイル（Terraform、CloudFormation等）で定義され、セキュリティのためにレビューされるべきです。
+*   **定期的なセキュリティモニタリング:** すべてのエントリーポイントのロギングとモニタリングを実装し、セキュリティログの週次レビューと攻撃面変更の月次評価を実施。

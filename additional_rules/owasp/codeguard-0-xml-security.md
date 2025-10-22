@@ -1,37 +1,37 @@
 ---
-description: XML Security Rule
+description: XMLセキュリティルール
 languages:
 - xml
 alwaysApply: false
 ---
 
-Enforce robust XML security practices to prevent XXE, SSRF, DoS, schema poisoning, and data integrity issues in XML parsing and validation.
+XML解析と検証において、XML外部エンティティ（XXE）、サーバーサイドリクエストフォージェリ（SSRF）、サービス拒否（DoS）、スキーマポイズニング、データ整合性の問題を防ぐために、堅牢なXMLセキュリティプラクティスを適用します。
 
-- Always reject unexpected elements, attributes, or data outside the schema definitions.
-- Perform business logic validation on XML data after schema validation (e.g., numeric ranges on payment amounts).
-- Keep XML processing libraries up to date and use secure configurations by default.
+- スキーマ定義外の予期しない要素、属性、またはデータを常に拒否してください。
+- スキーマ検証後にXMLデータに対してビジネスロジック検証を実行してください（例：支払金額の数値範囲）。
+- XML処理ライブラリを最新に保ち、デフォルトで安全な設定を使用してください。
 
-Use a standards-compliant XML parser configured to disable DTD processing and external entity resolution to prevent XXE and entity expansion attacks.
-- Ensure your XML parser rejects malformed XML documents and halts processing on fatal errors.
-- Configure parser features such as `disallow-doctype-decl`, `external-general-entities`, and `external-parameter-entities` set to false or disabled.
+XML外部エンティティ（XXE）およびエンティティ展開攻撃を防ぐために、DTD処理と外部エンティティ解決を無効にするように設定された標準準拠のXMLパーサーを使用してください。
+- XMLパーサーが不正なXML文書を拒否し、致命的なエラー時に処理を停止することを確認してください。
+- `disallow-doctype-decl`、`external-general-entities`、`external-parameter-entities`などのパーサー機能をfalseまたは無効に設定してください。
 
-Validate all XML documents strictly against local, trusted XML Schemas (XSDs) with narrow data type restrictions and clearly defined element occurrence limits.
-- Avoid or limit the use of DTDs; prefer comprehensive XSD validation.
-- Use schemas with explicit types, length limits, regex patterns, enumerations, and xs:assertion where appropriate.
-- Set maxOccurs explicitly to control element multiplicity.
-- Store schemas locally with strict filesystem permissions and never load schemas over unencrypted HTTP.
+すべてのXML文書を、厳密なデータ型制限と明確に定義された要素出現制限を持つローカルの信頼されたXMLスキーマ（XSD）に対して厳密に検証してください。
+- DTDの使用を避けるか制限してください。包括的なXSD検証を優先してください。
+- 明示的な型、長さ制限、正規表現パターン、列挙型、および適切な場合はxs:assertionを持つスキーマを使用してください。
+- 要素の多重度を制御するためにmaxOccursを明示的に設定してください。
+- スキーマをローカルに保存し、厳密なファイルシステム権限を設定し、暗号化されていないHTTP経由でスキーマを読み込まないでください。
 
-Prevent resource exhaustion by rejecting XML documents with excessive depth, nested unclosed tags, or large size to avoid DoS.
-- Enforce limits on XML element nesting depth and document size.
-- Test parser CPU usage differences between valid and malformed XML inputs.
-- Reject or timeout processing on unexpectedly complex documents.
+サービス拒否（DoS）を避けるために、過度の深さ、ネストされた未閉鎖タグ、または大きなサイズを持つXML文書を拒否してリソース枯渇を防止してください。
+- XML要素のネスト深度と文書サイズに制限を適用してください。
+- 有効なXML入力と不正なXML入力間のパーサーCPU使用率の違いをテストしてください。
+- 予期せず複雑な文書の処理を拒否またはタイムアウトしてください。
 
-Block or sandbox XML processing from making remote network calls to mitigate SSRF and information disclosure risks.
-- Disable external entity resolution or restrict it to local, whitelisted resources only.
-      - Validate and sanitize all external URI references in XML entities.
-- Monitor for unexpected DNS lookups or network activity during XML parsing.
+サーバーサイドリクエストフォージェリ（SSRF）と情報漏洩リスクを軽減するために、XML処理がリモートネットワーク呼び出しを行うことをブロックまたはサンドボックス化してください。
+- 外部エンティティ解決を無効にするか、ローカルのホワイトリスト化されたリソースのみに制限してください。
+      - XMLエンティティ内のすべての外部URI参照を検証およびサニタイズしてください。
+- XML解析中の予期しないDNSルックアップやネットワークアクティビティを監視してください。
 
-Log and monitor XML parsing errors and rejections to detect injection attempts, malformed XML attacks, or schema poisoning.
-- Capture detailed error information without exposing sensitive data.
- - Alert on repeated or suspicious XML parse failures.
-- Audit local schema files regularly for unauthorized changes.
+インジェクション攻撃の試み、不正なXML攻撃、またはスキーマポイズニングを検出するために、XML解析エラーと拒否をログに記録し監視してください。
+- 機密データを公開することなく詳細なエラー情報を取得してください。
+ - 繰り返されるまたは疑わしいXML解析失敗に対してアラートを発してください。
+- ローカルスキーマファイルを定期的に監査して、不正な変更がないか確認してください。

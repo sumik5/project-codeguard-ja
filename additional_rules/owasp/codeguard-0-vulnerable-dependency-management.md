@@ -1,5 +1,5 @@
 ---
-description: Vulnerable Dependency Management
+description: 脆弱な依存関係管理
 languages:
 - c
 - go
@@ -9,36 +9,36 @@ languages:
 alwaysApply: false
 ---
 
-## Vulnerable Dependency Management
+## 脆弱な依存関係管理
 
-Detect and mitigate security vulnerabilities in third-party dependencies through automated scanning, proper testing, and systematic remediation approaches.
+自動スキャン、適切なテスト、体系的な修復アプローチを通じて、サードパーティ依存関係のセキュリティ脆弱性を検出・軽減。
 
-### Automated Detection
+### 自動検出
 
-Integrate vulnerability scanning from project inception using tools that cover multiple vulnerability sources:
-- CVE databases (NIST National Vulnerability Database)
-- Full disclosure sources (mailing lists, Exploit-DB)
-- Provider-specific vulnerability feeds
+複数の脆弱性ソースをカバーするツールを使用して、プロジェクト開始時から脆弱性スキャンを統合：
+- CVEデータベース（NIST National Vulnerability Database）
+- 完全開示ソース（メーリングリスト、Exploit-DB）
+- プロバイダー固有の脆弱性フィード
 
-Recommended tools:
-- OWASP Dependency Check (Java, .NET, experimental support for Python, Ruby, PHP, Node.js, C/C++)
-- NPM Audit (Node.js, JavaScript)
-- OWASP Dependency Track (organization-wide management)
+推奨ツール：
+- OWASP Dependency Check（Java、.NET、Python、Ruby、PHP、Node.js、C/C++の実験的サポート）
+- NPM Audit（Node.js、JavaScript）
+- OWASP Dependency Track（組織全体の管理）
 
-### Remediation Cases
+### 修復ケース
 
-Case 1 - Patched version available:
-1. Update dependency version in testing environment
-2. Run automated tests to verify functionality
-3. If tests pass: deploy to production
-4. If tests fail: update application code for API changes or report incompatibility to provider
+ケース1 - パッチ適用済みバージョンが利用可能：
+1. テスト環境で依存関係バージョンを更新
+2. 自動テストを実行して機能を検証
+3. テストが成功した場合：本番にデプロイ
+4. テストが失敗した場合：API変更のためにアプリケーションコードを更新またはプロバイダーに非互換性を報告
 
-Case 2 - Patch delayed, provider provides workaround:
-1. Apply provider workaround if available
-2. If provider lists impacted functions, add protective wrappers
-3. Validate workaround in testing environment
+ケース2 - パッチが遅延、プロバイダーが回避策を提供：
+1. 利用可能な場合はプロバイダーの回避策を適用
+2. プロバイダーが影響を受ける関数をリストしている場合、保護ラッパーを追加
+3. テスト環境で回避策を検証
 
-Example protective wrapper for RCE vulnerability:
+RCE脆弱性のための保護ラッパーの例：
 ```java
 public void callFunctionWithRCEIssue(String externalInput){
     //Apply input validation on the external input using regex
@@ -53,63 +53,63 @@ public void callFunctionWithRCEIssue(String externalInput){
 }
 ```
 
-Case 3 - No patch available:
-1. Analyze CVE description to understand vulnerability type (SQL injection, XSS, XXE, etc.)
-2. Identify all application code calling the vulnerable dependency
-3. Implement compensating controls based on vulnerability type
-4. Create unit tests to verify protection effectiveness
-5. For open source dependencies: consider creating and contributing patches
+ケース3 - パッチが利用できない：
+1. CVE説明を分析して脆弱性タイプを理解（SQLインジェクション、XSS、XXE等）
+2. 脆弱な依存関係を呼び出すすべてのアプリケーションコードを識別
+3. 脆弱性タイプに基づいて代償的制御を実装
+4. 保護の効果を検証するユニットテストを作成
+5. オープンソース依存関係の場合：パッチの作成と貢献を検討
 
-Case 4 - Previously unknown vulnerability discovered:
-1. Notify provider with vulnerability details
-2. If provider cooperates: follow Case 2 approach
-3. If provider unresponsive: follow Case 3 approach
+ケース4 - 以前は未知の脆弱性を発見：
+1. 脆弱性の詳細をプロバイダーに通知
+2. プロバイダーが協力する場合：ケース2のアプローチに従う
+3. プロバイダーが無反応の場合：ケース3のアプローチに従う
 
-### Dependencies Analysis
+### 依存関係分析
 
-Transitive dependencies: Act on direct dependencies when possible, as modifying transitive dependencies requires understanding complex dependency chains and can impact application stability.
+推移的依存関係：可能な場合は直接依存関係に作用します。推移的依存関係の変更には複雑な依存関係チェーンの理解が必要で、アプリケーションの安定性に影響を与える可能性があります。
 
-Use dependency management tools to identify:
-- Direct vs transitive dependency relationships
-- All code paths using vulnerable components
-- Impact scope of potential vulnerabilities
+依存関係管理ツールを使用して以下を識別：
+- 直接依存関係対推移的依存関係の関係
+- 脆弱なコンポーネントを使用するすべてのコードパス
+- 潜在的な脆弱性の影響範囲
 
-### Testing and Validation
+### テストと検証
 
-Maintain comprehensive automated tests covering:
-- Features using impacted dependencies
-- Security controls added as mitigations
-- Regression detection during updates
+以下をカバーする包括的な自動テストを維持：
+- 影響を受ける依存関係を使用する機能
+- 軽減策として追加されたセキュリティ制御
+- 更新時の回帰検出
 
-Run tests before and after dependency updates to ensure:
-- Application functionality remains intact
-- Security mitigations are effective
-- No new vulnerabilities are introduced
+依存関係更新の前後でテストを実行して以下を確保：
+- アプリケーション機能が intact のまま
+- セキュリティ軽減策が効果的
+- 新しい脆弱性が導入されていない
 
-### Risk Management
+### リスク管理
 
-Document all vulnerability decisions including:
-- Technical analysis and CVSS scoring
-- Chosen mitigation approach and rationale
-- Testing results and validation steps
-- Risk acceptance decisions with business justification
+以下を含むすべての脆弱性決定を文書化：
+- 技術分析とCVSSスコアリング
+- 選択された軽減アプローチと根拠
+- テスト結果と検証ステップ
+- ビジネス正当化によるリスク受容決定
 
-Escalate risk acceptance decisions to Chief Risk Officer after thorough technical analysis.
+徹底的な技術分析後、Chief Risk Officerにリスク受容決定をエスカレート。
 
-### Continuous Monitoring
+### 継続的モニタリング
 
-Implement continuous dependency scanning in CI/CD pipelines:
-- Scan on every build
-- Fail builds for high-severity vulnerabilities
-- Generate reports for security team review
-- Track remediation progress and compliance
+CI/CDパイプラインに継続的な依存関係スキャンを実装：
+- すべてのビルドでスキャン
+- 高深刻度の脆弱性に対してビルドを失敗
+- セキュリティチームレビューのためのレポート生成
+- 修復の進捗とコンプライアンスを追跡
 
-Choose tools supporting false-positive flagging and multiple reliable input sources to handle different vulnerability disclosure methods.
+異なる脆弱性開示方法を処理するために、偽陽性フラグ設定と複数の信頼できる入力ソースをサポートするツールを選択。
 
-### Prevention Guidelines
+### 予防ガイドライン
 
-- Start dependency scanning from project inception
-- Prefer fixing vulnerabilities at source (application or dependency) over external controls
-- Keep dependencies updated regularly
-- Monitor dependencies for maintenance status and community activity
-- Consider dependency complexity and transitive dependency count when selecting libraries
+- プロジェクト開始時から依存関係スキャンを開始
+- 外部制御よりソース（アプリケーションまたは依存関係）で脆弱性を修正することを優先
+- 依存関係を定期的に更新
+- メンテナンスステータスとコミュニティアクティビティの依存関係をモニタリング
+- ライブラリ選択時に依存関係の複雑性と推移的依存関係の数を検討

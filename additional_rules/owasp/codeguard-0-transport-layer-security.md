@@ -1,5 +1,5 @@
 ---
-description: Transport Layer Security
+description: トランスポート層セキュリティ
 languages:
 - c
 - go
@@ -13,47 +13,47 @@ languages:
 alwaysApply: false
 ---
 
-## Transport Layer Security
+## トランスポート層セキュリティ
 
-Secure implementation of TLS to protect client-server communications with confidentiality, integrity, and authentication through proper protocol, cipher, and certificate configuration.
+適切なプロトコル、暗号、証明書の設定を通じて、機密性、完全性、認証を提供するクライアント-サーバー通信を保護するためのTLSの安全な実装。
 
 
-### TLS Security Benefits
+### TLSセキュリティの利点
 
-When correctly implemented, TLS provides:
-- Confidentiality: Protection against attackers reading traffic contents
-- Integrity: Protection against traffic modification and replay attacks
-- Authentication: Client confirmation of legitimate server connection
+正しく実装された場合、TLSは以下を提供します：
+- 機密性：攻撃者がトラフィックの内容を読み取ることからの保護
+- 完全性：トラフィックの変更とリプレイ攻撃からの保護
+- 認証：クライアントによる正規サーバー接続の確認
 
-### Protocol Security
+### プロトコルセキュリティ
 
-#### Use Strong TLS Protocols Only
-General purpose web applications should default to TLS 1.3 with TLS 1.2 support if necessary.
+#### 強力なTLSプロトコルのみを使用
+汎用Webアプリケーションは、必要に応じてTLS 1.2サポートを伴い、デフォルトでTLS 1.3にすべきです。
 
-Protocol requirements:
-- Enable TLS 1.3 by default
-- Support TLS 1.2 only if legacy client compatibility required
-- Disable TLS 1.0, TLS 1.1, SSL v2, and SSL v3 completely
-- Enable TLS_FALLBACK_SCSV extension to prevent downgrade attacks when fallback necessary
-- Note: PCI DSS forbids legacy protocols such as TLS 1.0
+プロトコル要件：
+- デフォルトでTLS 1.3を有効化
+- レガシークライアント互換性が必要な場合のみTLS 1.2をサポート
+- TLS 1.0、TLS 1.1、SSL v2、SSL v3を完全に無効化
+- フォールバックが必要な場合、ダウングレード攻撃を防ぐためTLS_FALLBACK_SCSV拡張を有効化
+- 注：PCI DSSはTLS 1.0などのレガシープロトコルを禁止
 
-#### Configure Strong Cipher Suites
-Use only strong ciphers that provide adequate security levels.
+#### 強力な暗号スイートの設定
+適切なセキュリティレベルを提供する強力な暗号のみを使用します。
 
-Cipher requirements:
-- Prefer GCM ciphers where possible
-- Always disable null ciphers, anonymous ciphers, and EXPORT ciphers
-- Use Mozilla Foundation secure configuration generator for balanced security and compatibility
+暗号要件：
+- 可能な場合GCM暗号を優先
+- null暗号、匿名暗号、EXPORT暗号を常に無効化
+- セキュリティと互換性のバランスのためMozilla Foundation安全設定ジェネレーターを使用
 
-#### Set Appropriate Diffie-Hellman Groups
-Configure secure Diffie-Hellman parameters for key exchange.
+#### 適切なDiffie-Hellmanグループの設定
+鍵交換のため安全なDiffie-Hellmanパラメータを設定します。
 
-TLS 1.3 groups: ffdhe2048, ffdhe3072, ffdhe4096, ffdhe6144, ffdhe8192
+TLS 1.3グループ：ffdhe2048、ffdhe3072、ffdhe4096、ffdhe6144、ffdhe8192
 
-Configuration examples:
+設定例：
 
 ```text
-# OpenSSL configuration
+# OpenSSL設定
 openssl_conf = openssl_init
 [openssl_init]
 ssl_conf = ssl_module
@@ -64,51 +64,51 @@ Groups = x25519:prime256v1:x448:ffdhe2048:ffdhe3072
 ```
 
 ```text
-# Apache configuration
+# Apache設定
 SSLOpenSSLConfCmd Groups x25519:secp256r1:ffdhe3072
 ```
 
 ```text
-# NGINX configuration
+# NGINX設定
 ssl_ecdh_curve x25519:secp256r1:ffdhe3072;
 ```
 
-#### Disable TLS Compression
-Disable TLS compression to protect against CRIME attacks that could recover sensitive information like session cookies.
+#### TLS圧縮の無効化
+セッションCookieのような機密情報を回復できるCRIME攻撃から保護するため、TLS圧縮を無効化します。
 
-#### Keep Cryptographic Libraries Updated
-Maintain current versions of SSL/TLS libraries to protect against vulnerabilities like Heartbleed.
+#### 暗号化ライブラリを最新に保つ
+Heartbleedのような脆弱性から保護するため、SSL/TLSライブラリの現在のバージョンを維持します。
 
-### Certificate Management
+### 証明書管理
 
-#### Use Strong Keys and Protection
-Generate certificates with minimum 2048-bit key size and protect private keys from unauthorized access using filesystem permissions and access controls.
+#### 強力な鍵と保護を使用
+最小2048ビットの鍵サイズで証明書を生成し、ファイルシステム権限とアクセス制御を使用して不正アクセスから秘密鍵を保護します。
 
-#### Use Strong Cryptographic Hashing
-Certificates should use SHA-256 for hashing algorithm rather than deprecated MD5 and SHA-1 algorithms.
+#### 強力な暗号化ハッシュを使用
+証明書は、非推奨のMD5とSHA-1アルゴリズムではなく、ハッシュアルゴリズムにSHA-256を使用する必要があります。
 
-#### Use Correct Domain Names
-Certificate domain names must match server's FQDN in both commonName (CN) and subjectAlternativeName (SAN) attributes.
+#### 正しいドメイン名を使用
+証明書のドメイン名は、commonName（CN）とsubjectAlternativeName（SAN）属性の両方でサーバーのFQDNと一致する必要があります。
 
-#### Consider Wildcard Certificate Risks
-Wildcard certificates violate principle of least privilege. Use only when genuine need exists and never for systems at different trust levels.
+#### ワイルドカード証明書のリスクを考慮
+ワイルドカード証明書は最小権限の原則に違反します。真の必要性が存在する場合のみ使用し、異なる信頼レベルのシステムには決して使用しないでください。
 
-#### Use Appropriate Certificate Authority
-Choose trusted CAs for Internet-facing applications. Consider LetsEncrypt for free domain validated certificates.
+#### 適切な認証局を使用
+インターネット向けアプリケーションには信頼されたCAを選択します。無料のドメイン検証証明書にはLetsEncryptを検討してください。
 
-### Application Implementation
+### アプリケーション実装
 
-#### Use TLS for All Pages
-Implement TLS for entire application with HTTP 301 redirects and HSTS header support.
+#### すべてのページにTLSを使用
+HTTP 301リダイレクトとHSTSヘッダーサポートでアプリケーション全体にTLSを実装します。
 
-#### Prevent Mixed Content
-Load all JavaScript, CSS, and resources over HTTPS to prevent session cookie sniffing and malicious code injection.
+#### 混在コンテンツを防止
+セッションCookieのスニッフィングと悪意のあるコード注入を防ぐため、すべてのJavaScript、CSS、リソースをHTTPS経由でロードします。
 
-#### Use Secure Cookie Flag
-Mark all cookies with "Secure" attribute to restrict transmission to encrypted HTTPS connections only.
+#### セキュアCookieフラグを使用
+暗号化されたHTTPS接続のみに送信を制限するため、すべてのCookieに「Secure」属性でマークします。
 
-#### Prevent Sensitive Data Caching
-Use cache prevention headers:
+#### 機密データのキャッシングを防止
+キャッシュ防止ヘッダーを使用：
 
 ```text
 Cache-Control: no-cache, no-store, must-revalidate
@@ -116,33 +116,33 @@ Pragma: no-cache
 Expires: 0
 ```
 
-#### Implement HTTP Strict Transport Security
-HSTS instructs browsers to always request site over HTTPS and prevents bypassing certificate warnings.
+#### HTTP Strict Transport Securityの実装
+HSTSはブラウザに常にHTTPS経由でサイトを要求するよう指示し、証明書警告のバイパスを防ぎます。
 
-#### Consider Client Certificates and Mutual TLS
-mTLS provides mutual authentication but involves significant administrative overhead. Recommended for high-value applications with technically sophisticated users.
+#### クライアント証明書と相互TLSを検討
+mTLSは相互認証を提供しますが、重大な管理オーバーヘッドを伴います。技術的に洗練されたユーザーを持つ高価値アプリケーションに推奨されます。
 
-#### Avoid Public Key Pinning in Browsers
-HPKP deprecated and no longer supported by modern browsers. Consider pinning only in controlled environments.
+#### ブラウザでの公開鍵ピンニングを避ける
+HPKPは非推奨であり、最新のブラウザではサポートされていません。制御された環境でのみピンニングを検討してください。
 
-### Testing and Validation
+### テストと検証
 
-Test TLS configuration using tools like SSL Labs Server Test, testssl.sh, SSLyze, and other recommended online and offline testing tools.
+SSL Labs Server Test、testssl.sh、SSLyze、その他の推奨されるオンラインおよびオフラインテストツールを使用してTLS設定をテストします。
 
-### Implementation Guidelines
+### 実装ガイドライン
 
-1. Default to TLS 1.3 with TLS 1.2 fallback only if necessary
-2. Disable all legacy protocols (TLS 1.0/1.1, SSL v2/v3)
-3. Configure strong cipher suites with GCM preference
-4. Set appropriate Diffie-Hellman groups for key exchange
-5. Disable TLS compression to prevent CRIME attacks
-6. Use minimum 2048-bit certificate keys with SHA-256 hashing
-7. Ensure correct domain names in certificate CN and SAN fields
-8. Implement HTTPS for all pages with 301 redirects from HTTP
-9. Prevent mixed content by loading all resources over HTTPS
-10. Set Secure flag on all cookies
-11. Prevent sensitive data caching with appropriate HTTP headers
-12. Implement HSTS for browser enforcement
-13. Consider mTLS for high-value applications
-14. Avoid public key pinning in browsers
-15. Regular testing of TLS configuration with recommended tools
+1. 必要な場合のみTLS 1.2フォールバックでデフォルトはTLS 1.3
+2. すべてのレガシープロトコル（TLS 1.0/1.1、SSL v2/v3）を無効化
+3. GCM優先で強力な暗号スイートを設定
+4. 鍵交換のため適切なDiffie-Hellmanグループを設定
+5. CRIME攻撃を防ぐためTLS圧縮を無効化
+6. SHA-256ハッシュで最小2048ビットの証明書鍵を使用
+7. 証明書のCNとSANフィールドに正しいドメイン名を確保
+8. HTTPからの301リダイレクトですべてのページにHTTPSを実装
+9. HTTPS経由ですべてのリソースをロードして混在コンテンツを防止
+10. すべてのCookieにSecureフラグを設定
+11. 適切なHTTPヘッダーで機密データのキャッシングを防止
+12. ブラウザ強制のためHSTSを実装
+13. 高価値アプリケーションにmTLSを検討
+14. ブラウザでの公開鍵ピンニングを避ける
+15. 推奨ツールでTLS設定の定期的テスト

@@ -1,5 +1,5 @@
 ---
-description: JSON Web Token Security for Java
+description: Java向けJSON Web Tokenセキュリティ
 languages:
 - c
 - java
@@ -10,52 +10,51 @@ languages:
 alwaysApply: false
 ---
 
-## JSON Web Token Security for Java
+## Java向けJSON Web Tokenセキュリティ
 
-Key security practices for implementing JWT in Java applications.
+JavaアプリケーションでJWTを実装するための主要なセキュリティプラクティス。
 
-### Algorithm Security
+### アルゴリズムセキュリティ
 
-Always specify the expected algorithm explicitly:
+期待されるアルゴリズムを常に明示的に指定します：
 
 ```java
-// Prevent 'none' algorithm attack
+// 'none'アルゴリズム攻撃を防ぐ
 JWTVerifier verifier = JWT.require(Algorithm.HMAC256(keyHMAC)).build();
 DecodedJWT decodedToken = verifier.verify(token);
 ```
 
-### Token Sidejacking Prevention
+### トークンサイドジャッキング防止
 
-Code to create the token after successful authentication.
+認証成功後にトークンを作成するコード。
 
 ``` java
-// HMAC key - Block serialization and storage as String in JVM memory
+// HMAC鍵 - JVMメモリでの文字列としてのシリアル化と保存をブロック
 private transient byte[] keyHMAC = ...;
-// Random data generator
+// ランダムデータ生成器
 private SecureRandom secureRandom = new SecureRandom();
 
 ...
 
-//Generate a random string that will constitute the fingerprint for this user
+//このユーザーのフィンガープリントを構成するランダム文字列を生成
 byte[] randomFgp = new byte[50];
 secureRandom.nextBytes(randomFgp);
 String userFingerprint = DatatypeConverter.printHexBinary(randomFgp);
 
-//Add the fingerprint in a hardened cookie - Add cookie manually because
-//SameSite attribute is not supported by javax.servlet.http.Cookie class
+//強化されたCookieにフィンガープリントを追加 - 手動でCookieを追加。なぜなら
+//SameSite属性はjavax.servlet.http.Cookieクラスでサポートされていないため
 String fingerprintCookie = "__Secure-Fgp=" + userFingerprint
                            + "; SameSite=Strict; HttpOnly; Secure";
 response.addHeader("Set-Cookie", fingerprintCookie);
 
-//Compute a SHA256 hash of the fingerprint in order to store the
-//fingerprint hash (instead of the raw value) in the token
-//to prevent an XSS to be able to read the fingerprint and
-//set the expected cookie itself
+//XSSがフィンガープリントを読み取り、期待されるCookieを自ら設定することを
+//防ぐため、トークンに（生の値の代わりに）フィンガープリントハッシュを
+//保存するため、フィンガープリントのSHA256ハッシュを計算
 MessageDigest digest = MessageDigest.getInstance("SHA-256");
 byte[] userFingerprintDigest = digest.digest(userFingerprint.getBytes("utf-8"));
 String userFingerprintHash = DatatypeConverter.printHexBinary(userFingerprintDigest);
 
-//Create the token with a validity of 15 minutes and client context (fingerprint) information
+//15分間の有効期限とクライアントコンテキスト（フィンガープリント）情報を持つトークンを作成
 Calendar c = Calendar.getInstance();
 Date now = c.getTime();
 c.add(Calendar.MINUTE, 15);
@@ -72,15 +71,15 @@ String token = JWT.create().withSubject(login)
    .sign(Algorithm.HMAC256(this.keyHMAC));
 ```
 
-Code to validate the token.
+トークンを検証するコード。
 
 ``` java
-// HMAC key - Block serialization and storage as String in JVM memory
+// HMAC鍵 - JVMメモリでの文字列としてのシリアル化と保存をブロック
 private transient byte[] keyHMAC = ...;
 
 ...
 
-//Retrieve the user fingerprint from the dedicated cookie
+//専用Cookieからユーザーフィンガープリントを取得
 String userFingerprint = null;
 if (request.getCookies() != null && request.getCookies().length > 0) {
  List<Cookie> cookies = Arrays.stream(request.getCookies()).collect(Collectors.toList());
@@ -91,62 +90,62 @@ if (request.getCookies() != null && request.getCookies().length > 0) {
  }
 }
 
-//Compute a SHA256 hash of the received fingerprint in cookie in order to compare
-//it to the fingerprint hash stored in the token
+//トークンに保存されたフィンガープリントハッシュと比較するため、
+//Cookie内で受信したフィンガープリントのSHA256ハッシュを計算
 MessageDigest digest = MessageDigest.getInstance("SHA-256");
 byte[] userFingerprintDigest = digest.digest(userFingerprint.getBytes("utf-8"));
 String userFingerprintHash = DatatypeConverter.printHexBinary(userFingerprintDigest);
 
-//Create a verification context for the token
+//トークンの検証コンテキストを作成
 JWTVerifier verifier = JWT.require(Algorithm.HMAC256(keyHMAC))
                               .withIssuer(issuerID)
                               .withClaim("userFingerprint", userFingerprintHash)
                               .build();
 
-//Verify the token, if the verification fail then an exception is thrown
+//トークンを検証、検証が失敗すると例外がスローされます
 DecodedJWT decodedToken = verifier.verify(token);
 ```
 
 
-### Token Revocation
+### トークン取り消し
 
-Implement token blacklist for logout functionality:
+ログアウト機能のためトークンブラックリストを実装：
 
 
-Code in charge of adding a token to the denylist and checking if a token is revoked.
+トークンを拒否リストに追加し、トークンが取り消されたかチェックする担当コード。
 
 ``` java
 /**
-* Handle the revocation of the token (logout).
-* Use a DB in order to allow multiple instances to check for revoked token
-* and allow cleanup at centralized DB level.
+* トークンの取り消し（ログアウト）を処理します。
+* 複数のインスタンスが取り消されたトークンをチェックできるようにし、
+* 集中化されたDBレベルでのクリーンアップを可能にするためDBを使用します。
 */
 public class TokenRevoker {
 
- /** DB Connection */
+ /** DB接続 */
  @Resource("jdbc/storeDS")
  private DataSource storeDS;
 
  /**
-  * Verify if a digest encoded in HEX of the ciphered token is present
-  * in the revocation table
+  * 暗号化されたトークンのHEXエンコードされたダイジェストが
+  * 取り消しテーブルに存在するか検証
   *
-  * @param jwtInHex Token encoded in HEX
-  * @return Presence flag
-  * @throws Exception If any issue occur during communication with DB
+  * @param jwtInHex HEXエンコードされたトークン
+  * @return 存在フラグ
+  * @throws Exception DBとの通信中に問題が発生した場合
   */
  public boolean isTokenRevoked(String jwtInHex) throws Exception {
      boolean tokenIsPresent = false;
      if (jwtInHex != null && !jwtInHex.trim().isEmpty()) {
-         //Decode the ciphered token
+         //暗号化されたトークンをデコード
          byte[] cipheredToken = DatatypeConverter.parseHexBinary(jwtInHex);
 
-         //Compute a SHA256 of the ciphered token
+         //暗号化されたトークンのSHA256を計算
          MessageDigest digest = MessageDigest.getInstance("SHA-256");
          byte[] cipheredTokenDigest = digest.digest(cipheredToken);
          String jwtTokenDigestInHex = DatatypeConverter.printHexBinary(cipheredTokenDigest);
 
-         //Search token digest in HEX in DB
+         //DB内でHEXのトークンダイジェストを検索
          try (Connection con = this.storeDS.getConnection()) {
              String query = "select jwt_token_digest from revoked_token where jwt_token_digest = ?";
              try (PreparedStatement pStatement = con.prepareStatement(query)) {
@@ -162,21 +161,21 @@ public class TokenRevoker {
  }
 
 
-### Secure Client Storage
+### 安全なクライアントストレージ
 
-Store tokens in sessionStorage with fingerprint binding:
+フィンガープリントバインディングを伴うsessionStorageにトークンを保存：
 
 ```javascript
-// Store in sessionStorage, not localStorage
+// localStorageではなくsessionStorageに保存
 sessionStorage.setItem("token", data.token);
 
-// Send as Bearer token
+// Bearerトークンとして送信
 xhr.setRequestHeader("Authorization", "bearer " + token);
 ```
 
-### Strong Secrets
+### 強力なシークレット
 
-Use strong HMAC secrets or RSA keys:
-- HMAC secrets: minimum 64 characters, cryptographically random
-- Prefer RSA or ECDSA over HMAC for better security
-- Never hardcode secrets in source code
+強力なHMACシークレットまたはRSA鍵を使用：
+- HMACシークレット：最小64文字、暗号学的にランダム
+- より良いセキュリティのため、HMACよりRSAまたはECDSAを優先
+- ソースコードにシークレットを決してハードコードしない

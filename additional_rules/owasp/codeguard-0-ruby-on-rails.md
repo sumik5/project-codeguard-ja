@@ -1,5 +1,5 @@
 ---
-description: Ruby on Rails Security Guidelines
+description: Ruby on Railsセキュリティガイドライン
 languages:
 - c
 - javascript
@@ -9,18 +9,18 @@ languages:
 alwaysApply: false
 ---
 
-## Ruby on Rails Security Guidelines
+## Ruby on Railsセキュリティガイドライン
 
-Essential security practices for developing secure Ruby on Rails applications.
+セキュアなRuby on Railsアプリケーション開発のための重要なセキュリティプラクティス。
 
-### Command Injection Prevention
+### コマンドインジェクション防止
 
-Avoid these dangerous methods with user input:
+ユーザー入力と共にこれらの危険なメソッドを避けます：
 
 ```ruby
 eval("ruby code here")
 system("os command here")
-`ls -al /` # (backticks contain os command)
+`ls -al /` # (バッククォートにOSコマンド)
 exec("os command here")
 spawn("os command here")
 open("| os command here")
@@ -35,77 +35,77 @@ IO.readlines("| os command here")
 IO.write("| os command here", "foo")
 ```
 
-Use allowlists and validation when system interaction is necessary.
+システムとのやり取りが必要な場合、許可リストと検証を使用します。
 
-### SQL Injection Prevention
+### SQLインジェクション防止
 
 ```ruby
-# DANGEROUS - Injectable
+# 危険 - インジェクション可能
 name = params[:name]
 @projects = Project.where("name like '" + name + "'");
 
-# SAFE - Use parameterized queries
+# 安全 - パラメータ化クエリを使用
 @projects = Project.where("name like ?", "%#{ActiveRecord::Base.sanitize_sql_like(params[:name])}%")
 ```
 
-### XSS Prevention
+### XSS防止
 
-Rails auto-escapes by default. Avoid bypassing protection:
+Railsはデフォルトで自動エスケープします。保護のバイパスを避けます：
 
 ```ruby
-# DANGEROUS - Do not do this
+# 危険 - これを行わない
 <%= raw @product.name %>
 <%== @product.name %>
 <%= @product.name.html_safe %>
 ```
 
-Use `sanitize` helper for limited HTML with allowed tags only.
+許可されたタグのみの限定的なHTMLには`sanitize`ヘルパーを使用します。
 
-### Session Management
+### セッション管理
 
-Use database-backed sessions for better security:
+より良いセキュリティのためデータベースバックアップされたセッションを使用します：
 
 ```ruby
 Project::Application.config.session_store :active_record_store
 ```
 
-### Transport Security
+### トランスポートセキュリティ
 
-Force HTTPS in production:
+本番環境でHTTPSを強制します：
 
 ```ruby
 # config/environments/production.rb
 config.force_ssl = true
 ```
 
-### Authentication with Devise
+### Deviseによる認証
 
 ```bash
 gem 'devise'
 rails generate devise:install
 ```
 
-Configure routes:
+ルートを設定します：
 
 ```ruby
 Rails.application.routes.draw do
   authenticate :user do
-    resources :something do  # these resource require authentication
+    resources :something do  # これらのリソースは認証が必要
       ...
     end
   end
 
-  devise_for :users # sign-up/-in/out routes
-  root to: 'static#home' # no authentication required
+  devise_for :users # サインアップ/イン/アウトルート
+  root to: 'static#home' # 認証不要
 end
 ```
 
-Password complexity with zxcvbn:
+zxcvbnによるパスワード複雑性：
 
 ```ruby
 class User < ApplicationRecord
   devise :database_authenticatable,
-    # other devise features, then
+    # 他のdevise機能、その後
     :zxcvbnable
 end
 ```
@@ -113,11 +113,11 @@ end
 ```ruby
 # in config/initializers/devise.rb
 Devise.setup do |config|
-  config.min_password_score = 4 # complexity score here.
+  config.min_password_score = 4 # ここで複雑性スコア
   ...
 ```
 
-### Token Authentication
+### トークン認証
 
 ```bash
 gem 'devise_token_auth'
@@ -128,22 +128,22 @@ gem 'omniauth'
 mount_devise_token_auth_for 'User', at: 'auth'
 ```
 
-### CSRF Protection
+### CSRF保護
 
 ```ruby
 class ApplicationController < ActionController::Base
   protect_from_forgery
 ```
 
-Token authentication doesn't require CSRF protection.
+トークン認証はCSRF保護を必要としません。
 
-### Secure Redirects
+### セキュアなリダイレクト
 
 ```ruby
-# DANGEROUS
+# 危険
 redirect_to params[:url]
 
-# SAFE
+# 安全
 begin
   if path = URI.parse(params[:url]).path
     redirect_to path
@@ -153,7 +153,7 @@ rescue URI::InvalidURIError
 end
 ```
 
-Use allowlists for multiple redirect targets:
+複数のリダイレクト先には許可リストを使用します：
 
 ```ruby
 ACCEPTABLE_URLS = {
@@ -167,7 +167,7 @@ def redirect
 end
 ```
 
-### CORS Configuration
+### CORS設定
 
 ```ruby
 # Gemfile
@@ -188,7 +188,7 @@ module Sample
 end
 ```
 
-### Security Headers
+### セキュリティヘッダー
 
 ```ruby
 ActionDispatch::Response.default_headers = {
@@ -198,43 +198,43 @@ ActionDispatch::Response.default_headers = {
 }
 ```
 
-### Sensitive Files Protection
+### 機密ファイルの保護
 
-Protect from source control:
+ソース管理から保護します：
 
 ```text
-/config/database.yml                 -  May contain production credentials.
-/config/initializers/secret_token.rb -  Contains a secret used to hash session cookie.
-/db/seeds.rb                         -  May contain seed data including bootstrap admin user.
-/db/development.sqlite3              -  May contain real data.
+/config/database.yml                 -  本番環境の認証情報を含む可能性があります。
+/config/initializers/secret_token.rb -  セッションCookieのハッシュ化に使用されるシークレットを含みます。
+/db/seeds.rb                         -  ブートストラップ管理者ユーザーを含むシードデータを含む可能性があります。
+/db/development.sqlite3              -  実データを含む可能性があります。
 ```
 
-### Password Hashing
+### パスワードハッシュ化
 
-Configure bcrypt stretches:
+bcryptストレッチを設定します：
 
 ```ruby
 config.stretches = Rails.env.test? ? 1 : 10
 ```
 
-### Security Testing
+### セキュリティテスト
 
-Use Brakeman for static analysis:
+静的分析にBrakemanを使用します：
 
 ```bash
 gem install brakeman
 brakeman -o security_report.html
 ```
 
-### Key Security Principles
+### 主要なセキュリティ原則
 
-- Never use dangerous command execution methods with user input
-- Always use parameterized queries and ActiveRecord methods
-- Rely on Rails' automatic HTML escaping
-- Use database-backed sessions for sensitive applications
-- Enable CSRF protection and validate redirects
-- Set security headers and configure CORS carefully
-- Maintain secure routing and dependency management
-- Regular security testing with Brakeman
+- ユーザー入力と共に危険なコマンド実行メソッドを決して使用しません
+- 常にパラメータ化クエリとActiveRecordメソッドを使用します
+- Railsの自動HTMLエスケープに依存します
+- 機密性の高いアプリケーションにはデータベースバックアップされたセッションを使用します
+- CSRF保護を有効化し、リダイレクトを検証します
+- セキュリティヘッダーを設定し、CORSを慎重に構成します
+- セキュアなルーティングと依存関係管理を維持します
+- Brakemanによる定期的なセキュリティテスト
 
-Rails provides many security features by default, but developers must use them correctly.
+Railsはデフォルトで多くのセキュリティ機能を提供しますが、開発者はそれらを正しく使用する必要があります。

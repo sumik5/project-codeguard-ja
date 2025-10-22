@@ -1,5 +1,5 @@
 ---
-description: RESTful Web Service Security Assessment Guidelines
+description: RESTful Webサービスセキュリティ評価ガイドライン
 languages:
 - c
 - go
@@ -13,114 +13,114 @@ languages:
 alwaysApply: false
 ---
 
-## RESTful Web Service Security Assessment Guidelines
+## RESTful Webサービスセキュリティ評価ガイドライン
 
-Essential practices for security testing and assessment of RESTful web services, focusing on identifying attack surfaces and testing methodologies.
+RESTful Webサービスのセキュリティテストと評価のための必須プラクティス。攻撃対象領域の特定とテスト方法論に焦点を当てます。
 
-### Understanding REST Security Challenges
+### RESTセキュリティの課題の理解
 
-RESTful web services present unique security testing challenges:
+RESTful Webサービスには独特のセキュリティテストの課題があります:
 
-- Attack surface is not visible through application inspection since client applications often don't utilize all available service functions
-- Parameters may be embedded in URL paths, custom headers, or structured data rather than standard query strings
-- Large parameter sets in JSON/XML structures significantly increase testing complexity
-- Custom authentication mechanisms require reverse engineering and may not work with standard testing tools
-- Lack of formal documentation makes comprehensive testing difficult
+- クライアントアプリケーションが利用可能なすべてのサービス機能を利用するとは限らないため、攻撃対象領域がアプリケーションの検査では見えない
+- パラメータが標準のクエリ文字列ではなく、URLパス、カスタムヘッダー、または構造化データに埋め込まれている可能性がある
+- JSON/XML構造の大きなパラメータセットがテストの複雑さを大幅に増加させる
+- カスタム認証メカニズムはリバースエンジニアリングが必要で、標準テストツールでは動作しない可能性がある
+- 正式なドキュメントの欠如が包括的なテストを困難にする
 
-### REST Service Characteristics
+### RESTサービスの特性
 
-Key properties that impact security assessment:
+セキュリティ評価に影響を与える主要なプロパティ:
 
-- Primary operations use HTTP methods (GET, POST, PUT, DELETE)
-- Non-standard parameter locations including URL segments and custom headers
-- Structured parameters and responses using JSON or XML formats
-- Custom authentication and session management with security tokens
-- Machine-to-machine communication without traditional login sequences
+- 主要な操作はHTTPメソッド（GET、POST、PUT、DELETE）を使用
+- URLセグメントやカスタムヘッダーを含む非標準のパラメータ位置
+- JSONまたはXML形式を使用した構造化パラメータとレスポンス
+- セキュリティトークンを使用したカスタム認証とセッション管理
+- 従来のログインシーケンスを持たないマシン間通信
 
-### Attack Surface Discovery
+### 攻撃対象領域の発見
 
-#### Documentation-Based Discovery
+#### ドキュメントベースの発見
 
-Obtain service information for comprehensive coverage:
+包括的なカバレッジのためにサービス情報を取得:
 
-- Formal service descriptions (WSDL 2.0, WADL) when available
-- Developer guides and API documentation
-- Application source code or configuration files
-- Framework configuration files (especially .NET) that may reveal REST service definitions
+- 利用可能な場合は正式なサービス記述（WSDL 2.0、WADL）
+- 開発者ガイドとAPIドキュメント
+- アプリケーションのソースコードまたは設定ファイル
+- フレームワーク設定ファイル（特に.NET）がRESTサービス定義を明らかにする可能性がある
 
-#### Proxy-Based Request Collection
+#### プロキシベースのリクエスト収集
 
-Use capable proxy tools to collect complete HTTP interactions:
+完全なHTTPインタラクションを収集するために有能なプロキシツールを使用:
 
-- Capture full requests including headers and body content, not just URLs
-- REST services utilize more than GET parameters requiring complete request analysis
-- Dynamic client-side activation may not provide visible links for inspection
+- URLだけでなく、ヘッダーとボディコンテンツを含む完全なリクエストをキャプチャ
+- RESTサービスはGETパラメータ以上のものを利用するため、完全なリクエスト分析が必要
+- 動的なクライアント側のアクティベーションは検査のための可視リンクを提供しない可能性がある
 
-#### Parameter Identification Techniques
+#### パラメータ識別テクニック
 
-Analyze collected requests to identify non-standard parameters:
+収集されたリクエストを分析して非標準パラメータを識別:
 
-- Abnormal HTTP headers often indicate header-based parameters
-- URL segments with repeating patterns (dates, numbers, ID-like strings) suggest URL-embedded parameters
-- URLs without extensions in the final segment, especially when other segments have extensions
-- Highly varying URL segments with many different values indicate parameters rather than physical directories
-- Structured parameter values in JSON, XML, or custom formats
+- 異常なHTTPヘッダーはヘッダーベースのパラメータを示すことが多い
+- 繰り返しパターン（日付、数値、IDのような文字列）を持つURLセグメントはURL埋め込みパラメータを示唆
+- 最終セグメントに拡張子がないURL（特に他のセグメントに拡張子がある場合）
+- 物理ディレクトリではなくパラメータを示す、多くの異なる値を持つ高度に変化するURLセグメント
+- JSON、XML、またはカスタム形式の構造化パラメータ値
 
-### Parameter Verification Methods
+### パラメータ検証方法
 
-Distinguish between path elements and parameters:
+パス要素とパラメータを区別:
 
-- Set suspected parameter values to invalid inputs
-- Web server returns 404 for invalid path elements
-- Application returns application-level error messages for invalid parameter values
-- This technique helps confirm parameter identification but doesn't work in all cases
+- 疑わしいパラメータ値を無効な入力に設定
+- Webサーバーは無効なパス要素に対して404を返す
+- アプリケーションは無効なパラメータ値に対してアプリケーションレベルのエラーメッセージを返す
+- このテクニックはパラメータ識別の確認に役立つが、すべてのケースで機能するわけではない
 
-### Fuzzing Optimization Strategies
+### ファジング最適化戦略
 
-Analyze collected parameter values to optimize testing:
+収集されたパラメータ値を分析してテストを最適化:
 
-- Identify valid versus invalid value patterns
-- Focus fuzzing on marginal invalid values (e.g., zero for positive integers)
-- Identify sequences to test beyond current user's allocated range
-- Understand parameter relationships and dependencies
+- 有効な値パターンと無効な値パターンを識別
+- 限界的な無効値（例: 正の整数に対するゼロ）にファジングを集中
+- 現在のユーザーの割り当て範囲を超えてテストするシーケンスを識別
+- パラメータの関係と依存関係を理解
 
-### Authentication Mechanism Handling
+### 認証メカニズムの処理
 
-Address custom authentication challenges:
+カスタム認証の課題に対処:
 
-- Reverse engineer custom token-based authentication
-- Ensure fuzzing tools properly emulate authentication mechanisms
-- Account for session management differences in machine-to-machine communication
-- Test authentication bypass and privilege escalation scenarios
+- カスタムトークンベース認証をリバースエンジニアリング
+- ファジングツールが認証メカニズムを適切にエミュレートすることを保証
+- マシン間通信におけるセッション管理の違いを考慮
+- 認証バイパスと権限昇格シナリオをテスト
 
-### Testing Methodology Best Practices
+### テスト方法論のベストプラクティス
 
-Systematic approach to REST service assessment:
+RESTサービス評価への体系的なアプローチ:
 
-- Combine documentation review with dynamic analysis
-- Use proxy tools capable of handling complete HTTP transactions
-- Systematically identify and verify parameter locations
-- Optimize fuzzing based on observed parameter patterns
-- Maintain authentication context throughout testing
-- Document discovered endpoints and parameter structures
+- ドキュメントレビューと動的分析を組み合わせる
+- 完全なHTTPトランザクションを処理できるプロキシツールを使用
+- パラメータの位置を体系的に識別して検証
+- 観察されたパラメータパターンに基づいてファジングを最適化
+- テスト全体で認証コンテキストを維持
+- 発見されたエンドポイントとパラメータ構造を文書化
 
-### Documentation and Formal Descriptions
+### ドキュメントと正式な記述
 
-Improve assessment efficiency through proper documentation:
+適切なドキュメントによる評価効率の向上:
 
-- Encourage use of formal service descriptions (WADL, WSDL 2.0)
-- Provide comprehensive developer guides for security assessors
-- Document all endpoints, parameters, and expected data formats
-- Include authentication and authorization requirements
+- 正式なサービス記述（WADL、WSDL 2.0）の使用を推奨
+- セキュリティ評価者のための包括的な開発者ガイドを提供
+- すべてのエンドポイント、パラメータ、期待されるデータ形式を文書化
+- 認証と認可の要件を含める
 
-### Security Testing Coverage
+### セキュリティテストカバレッジ
 
-Ensure comprehensive security assessment:
+包括的なセキュリティ評価を確保:
 
-- Test all HTTP methods supported by each endpoint
-- Validate input handling for all parameter locations (URL, headers, body)
-- Test authentication and authorization mechanisms
-- Assess rate limiting and denial-of-service protections
-- Verify proper error handling and information disclosure prevention
+- 各エンドポイントでサポートされるすべてのHTTPメソッドをテスト
+- すべてのパラメータ位置（URL、ヘッダー、ボディ）の入力処理を検証
+- 認証と認可メカニズムをテスト
+- レート制限とサービス拒否保護を評価
+- 適切なエラー処理と情報漏洩防止を検証
 
-This assessment methodology helps identify security vulnerabilities in RESTful web services by addressing the unique challenges they present compared to traditional web applications.
+この評価方法論は、従来のWebアプリケーションと比較したRESTful Webサービス特有の課題に対処することで、セキュリティ脆弱性の特定に役立ちます。

@@ -1,5 +1,5 @@
 ---
-description: DotNet Security Best Practices
+description: .NETセキュリティベストプラクティス
 languages:
 - c
 - javascript
@@ -7,70 +7,70 @@ languages:
 alwaysApply: false
 ---
 
-## .NET Security Guidelines
+## .NETセキュリティガイドライン
 
-This rule advises on critical .NET security practices to prevent common web vulnerabilities:
+このルールは、一般的なWeb脆弱性を防ぐための重要な.NETセキュリティプラクティスを示します。
 
-- General Security Configuration
-  - Keep .NET Framework, .NET Core, and all NuGet packages up-to-date.
-  - Use Software Composition Analysis (SCA) tools in CI/CD pipelines.
-  - Subscribe to .NET Core and ASP.NET Core security announcements on GitHub.
+- 一般的なセキュリティ設定
+  - .NET Framework、.NET Core、すべてのNuGetパッケージを最新に保ちます。
+  - CI/CDパイプラインでSoftware Composition Analysis（SCA）ツールを使用します。
+  - GitHub上の.NET CoreとASP.NET Coreセキュリティアナウンスを購読します。
 
-- Access Control and Authorization
-  - Use `[Authorize]` attributes at controller or method level for all externally facing endpoints.
-  - Always validate user permissions server-side before resource access.
-  - Check roles using `User.Identity.IsInRole` in code when needed.
-  - Implement proper direct object reference validation to prevent IDOR attacks.
+- アクセス制御と認可
+  - すべての外部向けエンドポイントにコントローラーまたはメソッドレベルで`[Authorize]`属性を使用します。
+  - リソースアクセス前に常にサーバー側でユーザー権限を検証します。
+  - 必要に応じてコードで`User.Identity.IsInRole`を使用してロールをチェックします。
+  - IDOR攻撃を防ぐため、適切な直接オブジェクト参照検証を実装します。
 
-- Authentication and Session Management
-  - Use ASP.NET Core Identity with secure password policies and account lockout.
-  - Set cookies with `HttpOnly = true` and `requireSSL = true` in production.
-  - Reduce session timeout and disable sliding expiration for better security.
-  - Throttle login, registration, and password reset methods against brute force attacks.
+- 認証とセッション管理
+  - セキュアなパスワードポリシーとアカウントロックアウトを伴うASP.NET Core Identityを使用します。
+  - 本番環境では`HttpOnly = true`と`requireSSL = true`でCookieを設定します。
+  - セッションタイムアウトを短縮し、スライディング有効期限を無効にしてセキュリティを向上させます。
+  - ブルートフォース攻撃に対してログイン、登録、パスワードリセットメソッドをスロットリングします。
 
-- Cryptographic Security
-  - Never write custom cryptographic functions; use .NET's proven implementations.
-  - Use strong hashing algorithms: SHA512 for general hashing, PBKDF2 for passwords.
-  - Use AES-GCM for encryption with proper key management.
-  - Use Windows Data Protection API (DPAPI) for secure local storage.
-  - Enforce TLS 1.2+ for all network communications.
+- 暗号化セキュリティ
+  - カスタム暗号化関数を記述せず、.NETの実証された実装を使用します。
+  - 強力なハッシュアルゴリズムを使用：一般的なハッシュにはSHA512、パスワードにはPBKDF2。
+  - 適切なキー管理を伴う暗号化にはAES-GCMを使用します。
+  - セキュアなローカルストレージにはWindows Data Protection API（DPAPI）を使用します。
+  - すべてのネットワーク通信にTLS 1.2+を強制します。
 
-- Injection Prevention
-  - Use parameterized SQL queries or Entity Framework exclusively.
-  - Never concatenate user input into SQL commands or OS commands.
-  - Use allowlist validation on all user input with methods like `IPAddress.TryParse`.
-  - Escape LDAP special characters with backslash when needed.
+- インジェクション防止
+  - パラメータ化SQLクエリまたはEntity Frameworkを排他的に使用します。
+  - ユーザー入力をSQLコマンドまたはOSコマンドに連結しません。
+  - `IPAddress.TryParse`などのメソッドを使用してすべてのユーザー入力に許可リスト検証を使用します。
+  - 必要に応じてバックスラッシュでLDAP特殊文字をエスケープします。
 
-- Security Misconfiguration
-  - Disable debug and tracing in production using web.config transforms.
-  - Force HTTPS redirects using `app.UseHttpsRedirection()` or Global.asax.
-  - Remove server version headers and implement secure HTTP headers.
-  - Never use default passwords or credentials.
+- セキュリティ設定ミス
+  - web.config変換を使用して本番環境でデバッグとトレースを無効化します。
+  - `app.UseHttpsRedirection()`またはGlobal.asaxを使用してHTTPSリダイレクトを強制します。
+  - サーバーバージョンヘッダーを削除し、セキュアなHTTPヘッダーを実装します。
+  - デフォルトのパスワードまたは資格情報を使用しません。
 
-- CSRF Protection
-  - Use anti-forgery tokens with `@Html.AntiForgeryToken()` in forms.
-  - Validate tokens with `[ValidateAntiForgeryToken]` on POST/PUT actions.
-  - Set `ViewStateUserKey = Session.SessionID` for Web Forms CSRF protection.
-  - Remove anti-forgery cookies on logout.
+- CSRF保護
+  - フォームで`@Html.AntiForgeryToken()`を使用してアンチフォージェリトークンを使用します。
+  - POST/PUTアクションで`[ValidateAntiForgeryToken]`を使用してトークンを検証します。
+  - Web FormsのCSRF保護のため`ViewStateUserKey = Session.SessionID`を設定します。
+  - ログアウト時にアンチフォージェリCookieを削除します。
 
-- Secure Headers Configuration
-  - Set `X-Frame-Options`, `X-Content-Type-Options`, `Content-Security-Policy` headers.
-  - Configure HSTS with `Strict-Transport-Security` header.
-  - Remove `X-Powered-By` and version disclosure headers.
+- セキュアヘッダー設定
+  - `X-Frame-Options`、`X-Content-Type-Options`、`Content-Security-Policy`ヘッダーを設定します。
+  - `Strict-Transport-Security`ヘッダーでHSTSを設定します。
+  - `X-Powered-By`とバージョン開示ヘッダーを削除します。
 
-- Logging and Monitoring
-  - Log authentication failures, access control violations with user context.
-  - Use ILogger framework for centralized logging.
-  - Never log sensitive data like passwords or tokens.
-  - Include stack traces and error context in security logs.
+- ロギングと監視
+  - ユーザーコンテキストを伴う認証失敗、アクセス制御違反をログに記録します。
+  - 集中ロギングのためILoggerフレームワークを使用します。
+  - パスワードやトークンなどの機密データをログに記録しません。
+  - セキュリティログにスタックトレースとエラーコンテキストを含めます。
 
-- Serialization Security
-  - Avoid `BinaryFormatter` which is dangerous for untrusted data.
-  - Use `System.Text.Json`, `XmlSerializer`, or `DataContractSerializer` safely.
-  - Never deserialize untrusted data without validation.
-  - Implement digital signature validation for serialized objects.
+- シリアライゼーションセキュリティ
+  - 信頼できないデータには危険な`BinaryFormatter`を避けます。
+  - `System.Text.Json`、`XmlSerializer`、または`DataContractSerializer`を安全に使用します。
+  - 検証なしに信頼できないデータをデシリアライズしません。
+  - シリアライズされたオブジェクトのデジタル署名検証を実装します。
 
-CSRF Protection Example (from OWASP):
+CSRF保護の例（OWASPから）：
 
 ```csharp
 protected override OnInit(EventArgs e) {
@@ -79,7 +79,7 @@ protected override OnInit(EventArgs e) {
 }
 ```
 
-Secure Headers Configuration (from OWASP):
+セキュアヘッダー設定（OWASPから）：
 
 ```xml
 <system.webServer>
@@ -97,5 +97,5 @@ Secure Headers Configuration (from OWASP):
 </system.webServer>
 ```
 
-Summary:  
-Secure .NET applications by implementing proper authorization controls, using secure authentication and session management, applying strong cryptography, preventing injection attacks, configuring security headers, implementing CSRF protection, maintaining secure configurations, logging security events properly, and handling serialization safely.
+まとめ：
+適切な認可制御を実装し、セキュアな認証とセッション管理を使用し、強力な暗号化を適用し、インジェクション攻撃を防止し、セキュリティヘッダーを設定し、CSRF保護を実装し、セキュアな設定を維持し、セキュリティイベントを適切にログに記録し、シリアライゼーションを安全に処理することで.NETアプリケーションを保護します。

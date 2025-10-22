@@ -1,6 +1,5 @@
 ---
-description: Authentication and MFA best practices (passwords, MFA, OAuth/OIDC, SAML,
-  recovery, tokens)
+description: 認証とMFAのベストプラクティス（パスワード、MFA、OAuth/OIDC、SAML、復旧、トークン）
 languages:
 - c
 - go
@@ -16,88 +15,88 @@ languages:
 alwaysApply: false
 ---
 
-## Authentication & MFA
+## 認証とMFA
 
-Build a resilient, user-friendly authentication system that resists credential attacks, protects secrets, and supports strong, phishing-resistant MFA and secure recovery.
+認証情報攻撃に耐性があり、機密情報を保護し、フィッシング耐性の強いMFAと安全な復旧をサポートする、回復力がありユーザーフレンドリーな認証システムを構築します。
 
-### Account Identifiers and UX
-- Use non-public, random, and unique internal user identifiers. Allow login via verified email or username.
-- Always return generic error messages (e.g., "Invalid username or password"). Keep timing consistent to prevent account enumeration.
-- Support password managers: `<input type="password">`, allow paste, no JS blocks.
+### アカウント識別子とUX
+- 非公開でランダム、一意な内部ユーザー識別子を使用します。確認済みメールアドレスまたはユーザー名でのログインを許可します。
+- 常に汎用的なエラーメッセージを返します（例：「ユーザー名またはパスワードが無効です」）。タイミングを一定に保ち、アカウント列挙を防ぎます。
+- パスワードマネージャーをサポート：`<input type="password">`、貼り付けを許可、JavaScriptによるブロックなし。
 
-### Password Policy
-- Accept passphrases and full Unicode; minimum 8 characters; avoid composition rules. Set only a reasonable maximum length (64+).
-- Check new passwords against breach corpora (e.g., k‑anonymity APIs); reject breached/common passwords.
+### パスワードポリシー
+- パスフレーズと完全なUnicodeを受け入れます；最小8文字；複雑さの規則を避けます。合理的な最大長のみ設定（64文字以上）。
+- 新しいパスワードを侵害データベース（例：k-anonymity API）と照合；侵害された/一般的なパスワードを拒否します。
 
-### Password Storage (Hashing)
-- Hash, do not encrypt. Use slow, memory‑hard algorithms with unique per‑user salts and constant‑time comparison.
-- Preferred order and parameters (tune to your hardware; target <1s on server):
-  - Argon2id: m=19–46 MiB, t=2–1, p=1 (or equivalent security trade‑offs)
-  - scrypt: N=2^17, r=8, p=1 (or equivalent)
-  - bcrypt (legacy only): cost ≥10, be aware of 72‑byte input limit
-  - PBKDF2 (FIPS): PBKDF2‑HMAC‑SHA‑256 ≥600k, or SHA‑1 ≥1.3M
-- Optional pepper: store outside DB (KMS/HSM); if used, apply via HMAC or pre‑hashing. Plan for user resets if pepper rotates.
-- Unicode and null bytes must be supported end‑to‑end by the library.
+### パスワード保存（ハッシュ化）
+- ハッシュ化し、暗号化しません。一意なユーザーごとのソルトと定数時間比較を用いた、低速でメモリハードなアルゴリズムを使用します。
+- 推奨順序とパラメータ（ハードウェアに合わせて調整；サーバーで<1秒を目標）：
+  - Argon2id: m=19–46 MiB, t=2–1, p=1（または同等のセキュリティトレードオフ）
+  - scrypt: N=2^17, r=8, p=1（または同等）
+  - bcrypt（レガシーのみ）: cost ≥10、72バイト入力制限に注意
+  - PBKDF2（FIPS）: PBKDF2-HMAC-SHA-256 ≥600k、またはSHA-1 ≥1.3M
+- オプションのペッパー：DBの外に保存（KMS/HSM）；使用する場合、HMACまたは事前ハッシュ化で適用。ペッパーローテーション時のユーザーリセット計画。
+- UnicodeとNullバイトは、ライブラリでエンドツーエンドでサポートされている必要があります。
 
-### Authentication Flow Hardening
-- Enforce TLS for all auth endpoints and token transport; enable HSTS.
-- Implement rate limits per IP, account, and globally; add proof‑of‑work or CAPTCHA only as last resort.
-- Lockouts/throttling: progressive backoff; avoid permanent lockout via resets/alerts.
-- Uniform responses and code paths to reduce oracle/timing signals.
+### 認証フロー強化
+- すべての認証エンドポイントとトークン転送にTLSを強制；HSTSを有効化。
+- IP、アカウント、グローバル単位でレート制限を実装；Proof-of-WorkまたはCAPTCHAは最後の手段としてのみ追加。
+- ロックアウト/スロットリング：段階的バックオフ；リセット/アラートによる永久ロックアウトを避ける。
+- オラクル/タイミングシグナルを減らすため、統一されたレスポンスとコードパスを使用。
 
-### Multi‑Factor Authentication (MFA)
-- Adopt phishing‑resistant factors by default for sensitive accounts: passkeys/WebAuthn (FIDO2) or hardware U2F.
-- Acceptable: TOTP (app‑based), smart cards with PIN. Avoid for sensitive use: SMS/voice, email codes; never rely on security questions.
-- Require MFA for: login, password/email changes, disabling MFA, privilege elevation, high‑value transactions, new devices/locations.
-- Risk‑based MFA signals: new device, geo‑velocity, IP reputation, unusual time, breached credentials.
-- MFA recovery: provide single‑use backup codes, encourage multiple factors, and require strong identity verification for resets.
-- Handle failed MFA: offer alternative enrolled methods, notify users of failures, and log context (no secrets).
+### 多要素認証（MFA）
+- 機密性の高いアカウントではデフォルトでフィッシング耐性要素を採用：passkeys/WebAuthn（FIDO2）またはハードウェアU2F。
+- 許容可能：TOTP（アプリベース）、PINを伴うスマートカード。機密性の高い用途では避ける：SMS/音声、メールコード；セキュリティ質問に決して依存しない。
+- MFAを要求する対象：ログイン、パスワード/メール変更、MFA無効化、権限昇格、高価値トランザクション、新しいデバイス/場所。
+- リスクベースMFAシグナル：新しいデバイス、地理的速度、IP評判、通常と異なる時間、侵害された認証情報。
+- MFA復旧：単一使用のバックアップコードを提供、複数の要素を推奨、リセットに強力な本人確認を要求。
+- MFA失敗の処理：登録済みの代替方法を提供、失敗をユーザーに通知、コンテキストをログ（機密情報は記録しない）。
 
-### Federation and Protocols (OAuth 2.0 / OIDC / SAML)
-- Use standard protocols only; do not build your own.
+### フェデレーションとプロトコル（OAuth 2.0 / OIDC / SAML）
+- 標準プロトコルのみを使用；独自に構築しない。
 - OAuth 2.0/OIDC:
-  - Prefer Authorization Code with PKCE for public/native apps; avoid Implicit and ROPC.
-  - Validate state and nonce; use exact redirect URI matching; prevent open redirects.
-  - Constrain tokens to audience/scope; use DPoP or mTLS for sender‑constraining when possible.
-  - Rotate refresh tokens; revoke on logout or risk signals.
+  - パブリック/ネイティブアプリにはPKCE付き認可コードを優先；ImplicitとROPCを避ける。
+  - stateとnonceを検証；正確なリダイレクトURIマッチング；オープンリダイレクトを防ぐ。
+  - トークンをaudience/scopeに制約；可能な場合DPoPまたはmTLSで送信者制約。
+  - リフレッシュトークンをローテーション；ログアウトまたはリスクシグナル時に取り消し。
 - SAML:
-  - TLS 1.2+; sign responses/assertions; encrypt sensitive assertions.
-  - Validate issuers, InResponseTo, timestamps (NotBefore/NotOnOrAfter), Recipient; verify against trusted keys.
-  - Prevent XML signature wrapping with strict schema validation and hardened XPath selection.
-  - Keep response lifetimes short; prefer SP‑initiated flows; validate RelayState; implement replay detection.
+  - TLS 1.2+；レスポンス/アサーションに署名；機密アサーションを暗号化。
+  - 発行者、InResponseTo、タイムスタンプ（NotBefore/NotOnOrAfter）、Recipientを検証；信頼できるキーに対して検証。
+  - 厳格なスキーマ検証と強化されたXPath選択でXML署名ラッピングを防ぐ。
+  - レスポンスの有効期間を短く保つ；SP開始フローを優先；RelayStateを検証；リプレイ検出を実装。
 
-### Tokens (JWT and Opaque)
-- Prefer opaque server‑managed tokens for simplicity and revocation. If using JWTs:
-  - Explicitly pin algorithms; reject "none"; validate iss/aud/exp/iat/nbf; use short lifetimes and rotation.
-  - Store secrets/keys securely (KMS/HSM). Use strong HMAC secrets or asymmetric keys; never hardcode.
-  - Consider binding tokens to a client context (e.g., fingerprint hash in cookie) to reduce replay.
-  - Implement denylist/allowlist for revocation on logout and critical events.
+### トークン（JWTとOpaque）
+- シンプルさと取り消しのため、Opaqueサーバー管理トークンを優先。JWTを使用する場合：
+  - アルゴリズムを明示的に固定；"none"を拒否；iss/aud/exp/iat/nbfを検証；短い有効期間とローテーションを使用。
+  - 機密情報/キーを安全に保存（KMS/HSM）。強力なHMACシークレットまたは非対称キーを使用；決してハードコードしない。
+  - リプレイを減らすため、トークンをクライアントコンテキストにバインドすることを検討（例：Cookieのフィンガープリントハッシュ）。
+  - ログアウトと重要イベント時の取り消しのため、拒否リスト/許可リストを実装。
 
-### Recovery and Reset
-- Return the same response for existing and non‑existing accounts (no enumeration). Normalize timing.
-- Generate 32+ byte, CSPRNG tokens; single‑use; store as hashes; short expiry.
-- Use HTTPS reset links to pinned, trusted domains; add referrer policy (no‑referrer) on UI.
-- After reset: require re‑authentication, rotate sessions, and do not auto‑login.
-- Never lock accounts due to reset attempts; rate‑limit and monitor instead.
+### 復旧とリセット
+- 既存および存在しないアカウントに対して同じレスポンスを返す（列挙なし）。タイミングを正規化。
+- 32バイト以上のCSPRNGトークンを生成；単一使用；ハッシュとして保存；短い有効期限。
+- 固定された信頼できるドメインへのHTTPSリセットリンクを使用；UIにreferrer policy（no-referrer）を追加。
+- リセット後：再認証を要求、セッションをローテーション、自動ログインしない。
+- リセット試行によるアカウントロックを決して行わない；代わりにレート制限と監視。
 
-### Administrative and Internal Accounts
-- Separate admin login from public forms; enforce stronger MFA, device posture checks, IP allowlists, and step‑up auth.
-- Use distinct session contexts and stricter timeouts for admin operations.
+### 管理および内部アカウント
+- 管理者ログインをパブリックフォームから分離；より強力なMFA、デバイス状態チェック、IP許可リスト、ステップアップ認証を強制。
+- 管理操作には異なるセッションコンテキストとより厳格なタイムアウトを使用。
 
-### Monitoring and Signals
-- Log auth events (failures/successes, MFA enroll/verify, resets, lockouts) with stable fields and correlation IDs; never log secrets or raw tokens.
-- Detect credential stuffing: high failure rates, many IPs/agents, impossible travel. Notify users of new device logins.
+### 監視とシグナル
+- 認証イベント（失敗/成功、MFA登録/検証、リセット、ロックアウト）を安定したフィールドと相関IDでログ；機密情報や生のトークンを決してログしない。
+- 認証情報スタッフィングを検出：高い失敗率、多数のIP/エージェント、不可能な移動。新しいデバイスログインをユーザーに通知。
 
-### Implementation Checklist
-- Passwords: Argon2id (preferred) with per‑user salt, constant‑time verify; breached password checks on change/set.
-- MFA: WebAuthn/passkeys or hardware tokens for high‑risk; TOTP as fallback; secure recovery with backup codes.
-- Federation: Authorization Code + PKCE; strict redirect URI validation; audience/scope enforced; token rotation.
-- Tokens: short‑lived, sender‑constrained where possible; revocation implemented; secrets in KMS/HSM.
-- Recovery: single‑use, hashed, time‑boxed tokens; consistent responses; re‑auth required after reset; sessions rotated.
-- Abuse: rate limits, throttling, and anomaly detection on auth endpoints; uniform error handling.
-- Admin: isolated flows with stricter policies and device checks.
+### 実装チェックリスト
+- パスワード：Argon2id（推奨）をユーザーごとのソルトで使用、定数時間検証；変更/設定時に侵害パスワードチェック。
+- MFA：高リスクにはWebAuthn/passkeysまたはハードウェアトークン；フォールバックとしてTOTP；バックアップコードで安全な復旧。
+- フェデレーション：PKCEを伴う認可コード；厳格なリダイレクトURI検証；audience/scopeを強制；トークンローテーション。
+- トークン：短命、可能な場合送信者制約；取り消しを実装；機密情報をKMS/HSMに。
+- 復旧：単一使用、ハッシュ化、時間制限トークン；一貫したレスポンス；リセット後に再認証を要求；セッションローテーション。
+- 悪用対策：認証エンドポイントでレート制限、スロットリング、異常検出；統一されたエラー処理。
+- 管理者：より厳格なポリシーとデバイスチェックで隔離されたフロー。
 
-### Test Plan
-- Unit/integration tests for login, MFA enroll/verify, resets, and lockouts with uniform errors.
-- Protocol tests: PKCE, state/nonce, redirect URI validation, token audience/scope.
-- Dynamic tests for credential stuffing resistance and token replay; validate revocation after logout and role change.
+### テスト計画
+- ログイン、MFA登録/検証、リセット、ロックアウトの統一されたエラーを伴う単体/統合テスト。
+- プロトコルテスト：PKCE、state/nonce、リダイレクトURI検証、トークンaudience/scope。
+- 認証情報スタッフィング耐性とトークンリプレイの動的テスト；ログアウトとロール変更後の取り消しを検証。

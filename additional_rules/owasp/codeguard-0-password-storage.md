@@ -1,5 +1,5 @@
 ---
-description: Password Storage Security
+description: パスワード保存セキュリティ
 languages:
 - c
 - go
@@ -12,134 +12,134 @@ languages:
 alwaysApply: false
 ---
 
-## Password Storage Security Guidelines
+## パスワード保存セキュリティガイドライン
 
-Essential practices for securely storing passwords using modern hashing algorithms to protect against offline attacks.
+オフライン攻撃から保護するため、最新のハッシュアルゴリズムを使用してパスワードを安全に保存するための重要なプラクティス。
 
-### Core Principles
+### 基本原則
 
-Passwords must be hashed, NOT encrypted. Hashing is a one-way function that prevents retrieval of the original password even if the database is compromised. Encryption is reversible and should only be used in rare edge cases where the original password must be recovered.
+パスワードはハッシュ化する必要があり、暗号化してはいけません。ハッシュ化は一方向関数であり、データベースが侵害された場合でも元のパスワードの取得を防ぎます。暗号化は可逆的であり、元のパスワードを回復する必要がある稀なエッジケースでのみ使用すべきです。
 
-Strong passwords stored with modern hashing algorithms and proper configuration should be effectively impossible for attackers to crack.
+最新のハッシュアルゴリズムと適切な設定で保存された強力なパスワードは、攻撃者にとって事実上解読不可能であるべきです。
 
-To sum up our recommendations:
+推奨事項の要約：
 
-- **Use [Argon2id](#argon2id) with a minimum configuration of 19 MiB of memory, an iteration count of 2, and 1 degree of parallelism.**
-- **If [Argon2id](#argon2id) is not available, use [scrypt](#scrypt) with a minimum CPU/memory cost parameter of (2^17), a minimum block size of 8 (1024 bytes), and a parallelization parameter of 1.**
-- **For legacy systems using [bcrypt](#bcrypt), use a work factor of 10 or more and with a password limit of 72 bytes.**
-- **If FIPS-140 compliance is required, use [PBKDF2](#pbkdf2) with a work factor of 600,000 or more and set with an internal hash function of HMAC-SHA-256.**
-- **Consider using a [pepper](#peppering) to provide additional defense in depth (though alone, it provides no additional secure characteristics).**
+- **最小構成として19 MiBのメモリ、反復回数2、並列度1で[Argon2id](#argon2id)を使用します。**
+- **[Argon2id](#argon2id)が利用できない場合、最小CPU/メモリコストパラメータ(2^17)、最小ブロックサイズ8（1024バイト）、並列化パラメータ1で[scrypt](#scrypt)を使用します。**
+- **[bcrypt](#bcrypt)を使用するレガシーシステムの場合、ワークファクター10以上、パスワード制限72バイトで使用します。**
+- **FIPS-140準拠が必要な場合、ワークファクター600,000以上で[PBKDF2](#pbkdf2)を使用し、内部ハッシュ関数をHMAC-SHA-256に設定します。**
+- **追加の多層防御を提供するため[pepper](#peppering)の使用を検討します（ただし単独では追加のセキュリティ特性を提供しません）。**
 
-### Recommended Algorithms and Parameters
+### 推奨アルゴリズムとパラメータ
 
-Use these algorithms in order of preference:
+以下の優先順位でこれらのアルゴリズムを使用します：
 
-#### Argon2id (Preferred)
-Argon2id was the winner of the 2015 Password Hashing Competition and provides balanced resistance to side-channel and GPU-based attacks.
+#### Argon2id（推奨）
+Argon2idは2015年のPassword Hashing Competitionの優勝者であり、サイドチャネル攻撃とGPUベースの攻撃に対するバランスの取れた耐性を提供します。
 
-Configuration options (choose one):
-- m=47104 (46 MiB), t=1, p=1
-- m=19456 (19 MiB), t=2, p=1  
-- m=12288 (12 MiB), t=3, p=1
-- m=9216 (9 MiB), t=4, p=1
-- m=7168 (7 MiB), t=5, p=1
+設定オプション（1つ選択）：
+- m=47104（46 MiB）、t=1、p=1
+- m=19456（19 MiB）、t=2、p=1
+- m=12288（12 MiB）、t=3、p=1
+- m=9216（9 MiB）、t=4、p=1
+- m=7168（7 MiB）、t=5、p=1
 
-All configurations provide equal security with different CPU/RAM trade-offs.
+すべての設定は、CPU/RAMのトレードオフが異なるだけで、同等のセキュリティを提供します。
 
-#### scrypt (If Argon2id unavailable)
-Configuration options (choose one):
-- N=2^17 (128 MiB), r=8 (1024 bytes), p=1
-- N=2^16 (64 MiB), r=8 (1024 bytes), p=2
-- N=2^15 (32 MiB), r=8 (1024 bytes), p=3
-- N=2^14 (16 MiB), r=8 (1024 bytes), p=5
-- N=2^13 (8 MiB), r=8 (1024 bytes), p=10
+#### scrypt（Argon2idが利用できない場合）
+設定オプション（1つ選択）：
+- N=2^17（128 MiB）、r=8（1024バイト）、p=1
+- N=2^16（64 MiB）、r=8（1024バイト）、p=2
+- N=2^15（32 MiB）、r=8（1024バイト）、p=3
+- N=2^14（16 MiB）、r=8（1024バイト）、p=5
+- N=2^13（8 MiB）、r=8（1024バイト）、p=10
 
-#### bcrypt (Legacy systems only)
-Use work factor of 10 or more. Maximum password length is 72 bytes for most implementations.
+#### bcrypt（レガシーシステムのみ）
+ワークファクター10以上を使用します。ほとんどの実装で最大パスワード長は72バイトです。
 
-#### PBKDF2 (FIPS-140 compliance required)
-- PBKDF2-HMAC-SHA1: 1,300,000 iterations
-- PBKDF2-HMAC-SHA256: 600,000 iterations
-- PBKDF2-HMAC-SHA512: 210,000 iterations
+#### PBKDF2（FIPS-140準拠が必要）
+- PBKDF2-HMAC-SHA1: 1,300,000反復
+- PBKDF2-HMAC-SHA256: 600,000反復
+- PBKDF2-HMAC-SHA512: 210,000反復
 
-### Salting
+### ソルト
 
-Modern hashing algorithms (Argon2id, bcrypt, scrypt, PBKDF2) automatically handle salting. Salts must be:
-- Unique for every password
-- Generated using a cryptographically secure random number generator
-- Stored alongside the hash
+最新のハッシュアルゴリズム（Argon2id、bcrypt、scrypt、PBKDF2）は自動的にソルトを処理します。ソルトは以下である必要があります：
+- すべてのパスワードで一意
+- 暗号学的に安全な乱数生成器を使用して生成
+- ハッシュと一緒に保存
 
-Never manually implement salting when using modern algorithms.
+最新のアルゴリズムを使用する場合、手動でソルトを実装しないでください。
 
-### Peppering (Optional Defense in Depth)
+### ペッパー（オプションの多層防御）
 
-A pepper is a secret value shared between stored passwords, unlike salts which are unique per password. Peppers provide additional protection if the database is compromised but the application server remains secure.
+ペッパーは、パスワードごとに一意なソルトとは異なり、保存されたパスワード間で共有される秘密値です。ペッパーは、データベースが侵害されたがアプリケーションサーバーが安全なままである場合に追加の保護を提供します。
 
-Requirements for peppering:
-- Store pepper separately from the password database
-- Use secure storage (secrets vaults, HSMs)
-- Generate securely using cryptographically strong methods
-- Changing pepper requires all users to reset passwords
+ペッパーの要件：
+- パスワードデータベースとは別にペッパーを保存
+- セキュアなストレージを使用（シークレットボルト、HSM）
+- 暗号学的に強力な方法を使用してセキュアに生成
+- ペッパーの変更にはすべてのユーザーがパスワードをリセットする必要があります
 
-Implementation strategies:
-- Pre-hashing: Add pepper to password before hashing
-- Post-hashing: HMAC the password hash with pepper as key
+実装戦略：
+- プレハッシュ：ハッシュ化前にパスワードにペッパーを追加
+- ポストハッシュ：ペッパーをキーとしてパスワードハッシュをHMAC化
 
-### Work Factor Tuning
+### ワークファクター調整
 
-Balance security and performance by adjusting work factors:
-- Target less than one second for hash calculation
-- Increase work factors over time as hardware improves
-- Test on your specific server hardware
-- Higher work factors slow down both legitimate authentication and attacker cracking
+ワークファクターを調整してセキュリティとパフォーマンスのバランスを取ります：
+- ハッシュ計算に1秒未満を目標とする
+- ハードウェアが向上するにつれてワークファクターを増やす
+- 特定のサーバーハードウェアでテストする
+- より高いワークファクターは、正規の認証と攻撃者の解読の両方を遅くします
 
-### Upgrading Legacy Hashes
+### レガシーハッシュのアップグレード
 
-For applications using weak algorithms (MD5, SHA-1):
+弱いアルゴリズム（MD5、SHA-1）を使用しているアプリケーションの場合：
 
-Method 1: Force password reset
-- Expire old hashes for inactive users
-- Require password reset on next login
-- More secure but less user-friendly
+方法1：パスワードリセットを強制
+- 非アクティブユーザーの古いハッシュを期限切れにする
+- 次回ログイン時にパスワードリセットを要求
+- より安全だがユーザーフレンドリーではない
 
-Method 2: Layer hashing
-- Use existing hash as input to secure algorithm
-- Example: `bcrypt(md5($password))`
-- Upgrade to direct hashing when user next authenticates
-- Store algorithm and parameters using PHC string format
+方法2：レイヤーハッシング
+- 既存のハッシュをセキュアなアルゴリズムへの入力として使用
+- 例：`bcrypt(md5($password))`
+- ユーザーが次回認証する際に直接ハッシング化にアップグレード
+- PHC文字列形式を使用してアルゴリズムとパラメータを保存
 
-### bcrypt Pre-Hashing Considerations
+### bcryptプレハッシュの考慮事項
 
-If pre-hashing with bcrypt is necessary:
-- Use `bcrypt(base64(hmac-sha384(data:$password, key:$pepper)), $salt, $cost)`
-- Store pepper outside database
-- Avoid simple pre-hashing like `bcrypt(sha512($password))` due to password shucking vulnerability
+bcryptでプレハッシュが必要な場合：
+- `bcrypt(base64(hmac-sha384(data:$password, key:$pepper)), $salt, $cost)`を使用
+- ペッパーをデータベース外に保存
+- パスワードシャッキング脆弱性のため、`bcrypt(sha512($password))`のような単純なプレハッシュを避ける
 
-### International Character Support
+### 国際文字のサポート
 
-Password hashing libraries must:
-- Accept full Unicode character range
-- Support null bytes in passwords
-- Preserve entropy without reduction
-- Handle characters from various languages and pictograms
+パスワードハッシュライブラリは以下を満たす必要があります：
+- 完全なUnicode文字範囲を受け入れる
+- パスワード内のヌルバイトをサポート
+- 削減なしでエントロピーを保持
+- 様々な言語と絵文字の文字を処理
 
-### Performance Guidelines
+### パフォーマンスガイドライン
 
-- Hash calculation should take less than one second
-- Benchmark on production hardware
-- Monitor authentication performance
-- Adjust parameters based on server capacity and user load
-- Consider denial of service risks from overly high work factors
+- ハッシュ計算は1秒未満であるべき
+- 本番ハードウェアでベンチマークする
+- 認証パフォーマンスを監視する
+- サーバー容量とユーザー負荷に基づいてパラメータを調整する
+- 過度に高いワークファクターによるサービス拒否リスクを考慮する
 
-### Implementation Summary
+### 実装まとめ
 
-Secure password storage requires:
-- Modern slow hashing algorithms (Argon2id preferred)
-- Proper algorithm configuration with adequate work factors
-- Automatic salt handling by the hashing library
-- Optional pepper for defense in depth
-- Upgrade path for legacy hashes
-- Performance tuning for your environment
-- Support for international characters
+セキュアなパスワード保存には以下が必要です：
+- 最新の遅いハッシュアルゴリズム（Argon2id推奨）
+- 適切なワークファクターを伴う適切なアルゴリズム設定
+- ハッシュライブラリによる自動ソルト処理
+- 多層防御のためのオプションのペッパー
+- レガシーハッシュのアップグレードパス
+- 環境に応じたパフォーマンスチューニング
+- 国際文字のサポート
 
-Following these practices protects user passwords against offline attacks even if the database is compromised.
+これらのプラクティスに従うことで、データベースが侵害された場合でもオフライン攻撃からユーザーパスワードを保護します。

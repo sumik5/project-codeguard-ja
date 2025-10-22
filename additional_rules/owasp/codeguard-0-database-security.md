@@ -1,5 +1,5 @@
 ---
-description: Database Security Best Practices
+description: データベースセキュリティベストプラクティス
 languages:
 - c
 - java
@@ -10,67 +10,67 @@ languages:
 alwaysApply: false
 ---
 
-## Database Security Guidelines
+## データベースセキュリティガイドライン
 
-This rule advises on securely configuring SQL and NoSQL databases to protect against data breaches and unauthorized access:
+このルールは、データ侵害と不正アクセスから保護するためのSQLおよびNoSQLデータベースの安全な設定についてアドバイスします：
 
-- Backend Database Protection
-  - Isolate database servers from other systems and limit host connections.
-  - Disable network (TCP) access when possible; use local socket files or named pipes.
-  - Configure database to bind only on localhost when appropriate.
-  - Restrict network port access to specific hosts with firewall rules.
-  - Place database server in separate DMZ isolated from application server.
-  - Never allow direct connections from thick clients to backend database.
+- バックエンドデータベース保護
+  - データベースサーバーを他のシステムから隔離し、ホスト接続を制限します。
+  - 可能な場合、ネットワーク（TCP）アクセスを無効化し、ローカルソケットファイルまたは名前付きパイプを使用します。
+  - 適切な場合、データベースをlocalhostのみにバインドするよう設定します。
+  - ファイアウォールルールで特定のホストへのネットワークポートアクセスを制限します。
+  - データベースサーバーをアプリケーションサーバーから隔離された別のDMZに配置します。
+  - シッククライアントからバックエンドデータベースへの直接接続を決して許可しません。
 
-- Transport Layer Security
-  - Configure database to only allow encrypted connections.
-  - Install trusted digital certificates on database servers.
-  - Use TLSv1.2+ with modern ciphers (AES-GCM, ChaCha20) for client connections.
-  - Verify digital certificate validity in client applications.
-  - Ensure all database traffic is encrypted, not just initial authentication.
+- トランスポート層セキュリティ
+  - データベースが暗号化された接続のみを許可するよう設定します。
+  - データベースサーバーに信頼されたデジタル証明書をインストールします。
+  - クライアント接続には、最新の暗号（AES-GCM、ChaCha20）を伴うTLSv1.2+を使用します。
+  - クライアントアプリケーションでデジタル証明書の有効性を検証します。
+  - 初期認証だけでなく、すべてのデータベーストラフィックが暗号化されていることを確保します。
 
-- Secure Authentication Configuration
-  - Always require authentication, including from local server connections.
-  - Protect accounts with strong, unique passwords.
-  - Use dedicated accounts per application or service.
-  - Configure minimum required permissions only.
-  - Regularly review accounts and permissions.
-  - Remove accounts when applications are decommissioned.
-  - Change passwords when staff leave or compromise is suspected.
+- セキュアな認証設定
+  - ローカルサーバー接続を含め、常に認証を要求します。
+  - 強力でユニークなパスワードでアカウントを保護します。
+  - アプリケーションまたはサービスごとに専用アカウントを使用します。
+  - 必要最小限の権限のみを設定します。
+  - アカウントと権限を定期的にレビューします。
+  - アプリケーションが廃止されたときにアカウントを削除します。
+  - スタッフが退職したとき、または侵害が疑われるときにパスワードを変更します。
 
-- Database Credential Storage
-  - Never store credentials in application source code.
-  - Store credentials in configuration files outside web root.
-  - Set appropriate file permissions for credential access.
-  - Never check credential files into source code repositories.
-  - Encrypt credential storage using built-in functionality when available.
-  - Use environment variables or secrets management solutions.
+- データベース認証情報の保存
+  - アプリケーションのソースコードに認証情報を決して保存しません。
+  - Webルート外の設定ファイルに認証情報を保存します。
+  - 認証情報アクセスに適切なファイル権限を設定します。
+  - ソースコードリポジトリに認証情報ファイルを決してチェックインしません。
+  - 利用可能な場合、組み込み機能を使用して認証情報の保存を暗号化します。
+  - 環境変数またはシークレット管理ソリューションを使用します。
 
-- Secure Permission Management
-  - Apply principle of least privilege to all database accounts.
-  - Do not use built-in root, sa, or SYS accounts.
-  - Do not grant administrative rights to application accounts.
-  - Restrict account connections to allowed hosts only.
-  - Use separate databases and accounts for Development, UAT, and Production.
-  - Grant only required permissions (SELECT, UPDATE, DELETE as needed).
-  - Avoid making accounts database owners to prevent privilege escalation.
-  - Implement table-level, column-level, and row-level permissions when needed.
+- セキュアな権限管理
+  - すべてのデータベースアカウントに最小権限の原則を適用します。
+  - 組み込みのroot、sa、またはSYSアカウントを使用しません。
+  - アプリケーションアカウントに管理者権限を付与しません。
+  - アカウント接続を許可されたホストのみに制限します。
+  - 開発、UAT、本番環境で別々のデータベースとアカウントを使用します。
+  - 必要な権限のみを付与します（必要に応じてSELECT、UPDATE、DELETE）。
+  - 権限昇格を防ぐため、アカウントをデータベース所有者にしません。
+  - 必要に応じて、テーブルレベル、カラムレベル、行レベルの権限を実装します。
 
-- Database Configuration and Hardening
-  - Install required security updates and patches regularly.
-  - Run database services under low-privileged user accounts.
-  - Remove default accounts and sample databases.
-  - Store transaction logs on separate disk from main database files.
-  - Configure regular encrypted database backups with proper permissions.
-  - Disable unnecessary stored procedures and dangerous features.
-  - Implement database activity monitoring and alerting.
+- データベース設定とハードニング
+  - 必要なセキュリティアップデートとパッチを定期的にインストールします。
+  - 低特権ユーザーアカウントでデータベースサービスを実行します。
+  - デフォルトアカウントとサンプルデータベースを削除します。
+  - トランザクションログをメインデータベースファイルとは別のディスクに保存します。
+  - 適切な権限で定期的な暗号化データベースバックアップを設定します。
+  - 不要なストアドプロシージャと危険な機能を無効化します。
+  - データベース活動の監視とアラートを実装します。
 
-- Platform-Specific Hardening
-  - SQL Server: Disable xp_cmdshell, CLR execution, SQL Browser service, Mixed Mode Authentication (unless required).
-  - MySQL/MariaDB: Run mysql_secure_installation, disable FILE privilege for users.
-  - PostgreSQL: Follow PostgreSQL security documentation guidelines.
-  - MongoDB: Implement MongoDB security checklist requirements.
-  - Redis: Follow Redis security guide recommendations.
+- プラットフォーム固有のハードニング
+  - SQL Server: xp_cmdshell、CLR実行、SQL Browserサービス、混合モード認証（必要な場合を除く）を無効化します。
+  - MySQL/MariaDB: mysql_secure_installationを実行し、ユーザーのFILE特権を無効化します。
+  - PostgreSQL: PostgreSQLセキュリティドキュメントのガイドラインに従います。
+  - MongoDB: MongoDBセキュリティチェックリストの要件を実装します。
+  - Redis: Redisセキュリティガイドの推奨事項に従います。
 
-Summary:  
-Isolate database systems, enforce encrypted connections, implement strong authentication, store credentials securely using secrets management, apply least privilege permissions, harden database configurations, and maintain regular security updates and monitoring.
+まとめ：
+データベースシステムを隔離し、暗号化接続を強制し、強力な認証を実装し、シークレット管理を使用して認証情報を安全に保存し、最小権限の原則を適用し、データベース設定を堅牢化し、定期的なセキュリティアップデートと監視を維持します。

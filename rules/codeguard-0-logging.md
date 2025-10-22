@@ -1,6 +1,5 @@
 ---
-description: Logging & monitoring (structured telemetry, redaction, integrity, detection
-  & alerting)
+description: ロギング・監視（構造化テレメトリ、秘匿化、整合性、検出・アラート）
 languages:
 - c
 - javascript
@@ -8,37 +7,37 @@ languages:
 alwaysApply: false
 ---
 
-## Logging & Monitoring
+## ロギング・監視
 
-Produce structured, privacy‑aware telemetry that supports detection, response, and forensics without exposing secrets.
+秘密情報を露出せず、検出、対応、フォレンジックをサポートする、構造化されたプライバシーを考慮したテレメトリを生成します。
 
-### What to Log
-- Authn/authz events; admin actions; config changes; sensitive data access; input validation failures; security errors.
-- Include correlation/request IDs, user/session IDs (non‑PII), source IP, user agent, timestamps (UTC, RFC3339).
+### 何をログに記録するか
+- 認証/認可イベント、管理者アクション、設定変更、機密データアクセス、入力検証失敗、セキュリティエラー。
+- 相関/リクエストID、ユーザー/セッションID（非PII）、送信元IP、ユーザーエージェント、タイムスタンプ（UTC、RFC3339）を含めます。
 
-### How to Log
-- Structured logs (JSON) with stable field names; avoid free‑form text for critical signals.
-- Sanitize all log inputs to prevent log injection (strip CR/LF/delimiters); validate data from other trust zones.
-- Redact/tokenize secrets and sensitive fields; never log credentials, tokens, recovery codes, or raw session IDs.
-- Ensure integrity: append‑only or WORM storage; tamper detection; centralized aggregation; access controls and retention policies.
+### ログの記録方法
+- 安定したフィールド名を持つ構造化ログ（JSON）、重要なシグナルには自由形式テキストを避けます。
+- ログインジェクションを防ぐためすべてのログ入力をサニタイズ（CR/LF/区切り文字を除去）、他の信頼ゾーンからのデータを検証します。
+- 秘密情報と機密フィールドを秘匿化/トークン化、資格情報、トークン、回復コード、生のセッションIDをログに記録しません。
+- 整合性の確保：追記のみまたはWORMストレージ、改ざん検出、集中集約、アクセス制御と保持ポリシー。
 
-### Detection & Alerting
-- Build alerts for auth anomalies (credential stuffing patterns, impossible travel), privilege changes, excessive failures, SSRF indicators, and data exfil patterns.
-- Tune thresholds; provide runbooks; ensure on‑call coverage; test alert flows.
+### 検出・アラート
+- 認証異常（資格情報スタッフィングパターン、不可能な移動）、権限変更、過度の失敗、SSRF指標、データ流出パターンのアラートを構築します。
+- しきい値を調整、ランブックを提供、オンコール体制を確保、アラートフローをテストします。
 
-### Storage & Protection
-- Isolate log storage (separate partition/database); strict file/directory permissions; store outside web‑accessible locations.
-- Synchronize time across systems; use secure protocols for transmission; implement tamper detection and monitoring.
+### ストレージ・保護
+- ログストレージを分離（別パーティション/データベース）、厳格なファイル/ディレクトリ権限、Webアクセス可能な場所以外に保存します。
+- システム間で時刻を同期、送信にはセキュアなプロトコルを使用、改ざん検出と監視を実装します。
 
-### Privacy & Compliance
-- Maintain data inventory and classification; minimize personal data in logs; honor retention and deletion policies.
-- Provide mechanisms to trace and delete user‑linked log data where required by policy.
+### プライバシー・コンプライアンス
+- データインベントリと分類を維持、ログ内の個人データを最小化、保持と削除ポリシーを遵守します。
+- ポリシーで要求される場合、ユーザーにリンクされたログデータを追跡・削除するメカニズムを提供します。
 
-### Implementation Checklist
-- JSON logging enabled; log injection sanitization active; redaction filters active; correlation IDs on all requests.
-- Isolated log storage with tamper detection; centralized log pipeline with integrity protections; retention configured.
-- Security alerts defined and tested; dashboards and reports in place.
+### 実装チェックリスト
+- JSONロギングを有効化、ログインジェクションサニタイゼーションをアクティブ化、秘匿化フィルターをアクティブ化、すべてのリクエストに相関IDを付与。
+- 改ざん検出機能を持つ分離されたログストレージ、整合性保護を持つ集中ログパイプライン、保持期間を設定。
+- セキュリティアラートを定義・テスト、ダッシュボードとレポートを配置。
 
-### Validation
-- Unit/integration tests assert presence/absence of key fields; redaction unit tests.
-- Periodic audits for secret/PII leakage; tabletop exercises for incident workflows.
+### 検証
+- ユニット/統合テストでキーフィールドの存在/不在をアサート、秘匿化ユニットテスト。
+- 秘密情報/PII漏洩の定期監査、インシデントワークフローのテーブルトップエクササイズ。

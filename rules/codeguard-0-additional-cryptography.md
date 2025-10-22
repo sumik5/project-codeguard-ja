@@ -1,5 +1,5 @@
 ---
-description: Additional Cryptography guidance
+description: 追加の暗号化ガイダンス
 languages:
 - c
 - go
@@ -17,53 +17,53 @@ languages:
 alwaysApply: false
 ---
 
-## Additional Cryptography & TLS
+## 追加の暗号化とTLS
 
-Apply modern, vetted cryptography for data at rest and in transit. Manage keys safely, configure TLS correctly, deploy HSTS, and consider pinning only when appropriate.
+保存データと転送中のデータに対して、最新の検証済み暗号化を適用します。キーを安全に管理し、TLSを正しく設定し、HSTSを展開し、必要に応じてピンニングを検討します。
 
-### Algorithms and Modes
-- Symmetric: AES‑GCM or ChaCha20‑Poly1305 preferred. Avoid ECB. CBC/CTR only with encrypt‑then‑MAC.
-- Asymmetric: RSA ≥2048 or modern ECC (Curve25519/Ed25519). Use OAEP for RSA encryption.
-- Hashing: SHA‑256+ for integrity; avoid MD5/SHA‑1.
-- RNG: Use CSPRNG appropriate to platform (e.g., SecureRandom, crypto.randomBytes, secrets module). Never use non‑crypto RNGs.
+### アルゴリズムとモード
+- 対称：AES-GCMまたはChaCha20-Poly1305を優先。ECBを避ける。CBCまたはCTRはencrypt-then-MACとのみ使用。
+- 非対称：RSA ≥2048または最新のECC（Curve25519/Ed25519）。RSA暗号化にはOAEPを使用。
+- ハッシュ化：整合性にはSHA-256以上；MD5/SHA-1を避ける。
+- RNG：プラットフォームに適したCSPRNGを使用（例：SecureRandom、crypto.randomBytes、secretsモジュール）。非暗号RNGを決して使用しない。
 
-### Key Management
-- Generate keys within validated modules (HSM/KMS) and never from passwords or predictable inputs.
-- Separate keys by purpose (encryption, signing, wrapping). Rotate on compromise, cryptoperiod, or policy.
-- Store keys in KMS/HSM or vault; never hardcode; avoid plain env vars. Use KEK to wrap DEKs; store separately.
-- Control access to trust stores; validate updates; audit all key access and operations.
+### キー管理
+- 検証済みモジュール（HSM/KMS）内でキーを生成し、パスワードや予測可能な入力から決して生成しない。
+- 目的別にキーを分離（暗号化、署名、ラッピング）。侵害時、暗号期間、またはポリシーに基づいてローテーション。
+- キーをKMS/HSMまたはボルトに保存；決してハードコードしない；平文の環境変数を避ける。KEKを使用してDEKをラップ；別々に保存。
+- トラストストアへのアクセスを制御；更新を検証；すべてのキーアクセスと操作を監査。
 
-### Data at Rest
-- Encrypt sensitive data; minimize stored secrets; tokenize where possible.
-- Use authenticated encryption; manage nonces/IVs properly; keep salts unique per item.
-- Protect backups: encrypt, restrict access, test restores, manage retention.
+### 保存データ
+- 機密データを暗号化；保存する機密情報を最小化；可能な場合トークン化。
+- 認証済み暗号化を使用；nonce/IVを適切に管理；ソルトをアイテムごとに一意に保つ。
+- バックアップを保護：暗号化、アクセス制限、復元テスト、保持管理。
 
-### TLS Configuration
-- Protocols: TLS 1.3 preferred; allow TLS 1.2 only for legacy compatibility; disable TLS 1.0/1.1 and SSL. Enable TLS_FALLBACK_SCSV.
-- Ciphers: prefer AEAD suites; disable NULL/EXPORT/anon. Keep libraries updated; disable compression.
-- Key exchange groups: prefer x25519/secp256r1; configure secure FFDHE groups if needed.
-- Certificates: 2048‑bit+ keys, SHA‑256, correct CN/SAN. Manage lifecycle and revocation (OCSP stapling).
-- Application: HTTPS site‑wide; redirect HTTP→HTTPS; prevent mixed content; set cookies `Secure`.
+### TLS設定
+- プロトコル：TLS 1.3を優先；レガシー互換性のためTLS 1.2のみ許可；TLS 1.0/1.1とSSLを無効化。TLS_FALLBACK_SCSVを有効化。
+- 暗号：AEADスイートを優先；NULL/EXPORT/anonを無効化。ライブラリを最新に保つ；圧縮を無効化。
+- 鍵交換グループ：x25519/secp256r1を優先；必要に応じて安全なFFDHEグループを設定。
+- 証明書：2048ビット以上のキー、SHA-256、正しいCN/SAN。ライフサイクルと失効管理（OCSPステープリング）。
+- アプリケーション：サイト全体でHTTPS；HTTP→HTTPSリダイレクト；混合コンテンツを防止；Cookieに`Secure`を設定。
 
 ### HSTS
-- Send Strict‑Transport‑Security only over HTTPS. Phase rollout:
-  - Test: short max‑age (e.g., 86400) with includeSubDomains
-  - Prod: ≥1 year max‑age; includeSubDomains when safe
-  - Optional preload once mature; understand permanence and subdomain impact
+- HTTPS経由でのみStrict-Transport-Securityを送信。段階的ロールアウト：
+  - テスト：短いmax-age（例：86400）をincludeSubDomainsと共に
+  - 本番：≥1年のmax-age；安全な場合includeSubDomains
+  - 成熟後にオプションでpreload；永続性とサブドメインへの影響を理解
 
-### Pinning
-- Avoid browser HPKP. Consider pinning only for controlled clients (e.g., mobile) and when you own both ends.
-- Prefer SPKI pinning with backup pins; plan secure update channels; never allow user bypass.
-- Thoroughly test rotation and failure handling; understand operational risk.
+### ピンニング
+- ブラウザのHPKPを避ける。制御されたクライアント（例：モバイル）で両端を所有している場合のみピンニングを検討。
+- バックアップピンを含むSPKIピンニングを優先；安全な更新チャネルを計画；ユーザーバイパスを決して許可しない。
+- ローテーションと障害処理を徹底的にテスト；運用リスクを理解。
 
-### Implementation Checklist
-- AEAD everywhere; vetted libraries only; no custom crypto.
-- Keys generated and stored in KMS/HSM; purpose‑scoped; rotation documented.
-- TLS 1.3/1.2 with strong ciphers; compression off; OCSP stapling on.
-- HSTS deployed per phased plan; mixed content eliminated.
-- Pinning used only where justified, with backups and update path.
+### 実装チェックリスト
+- すべての場所でAEAD；検証済みライブラリのみ；カスタム暗号なし。
+- KMS/HSMで生成・保存されたキー；目的別スコープ；ローテーションを文書化。
+- 強力な暗号を使用したTLS 1.3/1.2；圧縮オフ；OCSPステープリングオン。
+- 段階的計画に従ったHSTSの展開；混合コンテンツを排除。
+- 正当化される場合のみピンニングを使用、バックアップと更新パスを含む。
 
-### Test Plan
-- Automated config scans (e.g., SSL Labs, testssl.sh) for protocol/cipher/HSTS.
-- Code review for crypto API misuse; tests for key rotation, backup/restore.
-- Pinning simulations for rotation/failures if deployed.
+### テスト計画
+- プロトコル/暗号/HSTSの自動設定スキャン（例：SSL Labs、testssl.sh）。
+- 暗号API誤用のコードレビュー；キーローテーション、バックアップ/復元のテスト。
+- 展開された場合、ローテーション/障害のピンニングシミュレーション。

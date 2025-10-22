@@ -1,5 +1,5 @@
 ---
-description: Forgot Password Security Best Practices
+description: パスワード忘れセキュリティのベストプラクティス
 languages:
 - c
 - go
@@ -12,60 +12,60 @@ languages:
 alwaysApply: false
 ---
 
-## Forgot Password Security Guidelines
+## パスワード忘れセキュリティガイドライン
 
-This rule advises on secure password reset implementation to prevent user enumeration, token abuse, and unauthorized access:
+このルールは、ユーザー列挙、トークン悪用、不正アクセスを防ぐための安全なパスワードリセット実装についてアドバイスします：
 
-- Password Reset Request Security
-  - Return consistent messages for both existent and non-existent accounts to prevent user enumeration.
-  - Ensure consistent response times by using asynchronous processing or identical code paths.
-  - Implement rate limiting per account and IP address to prevent flooding attacks.
-  - Apply input validation and SQL injection prevention to reset request forms.
-  - Use CSRF tokens to protect password reset forms and endpoints.
+- パスワードリセットリクエストセキュリティ
+  - ユーザー列挙を防ぐため、存在するアカウントと存在しないアカウントの両方に対して一貫したメッセージを返します。
+  - 非同期処理または同一のコードパスを使用して、一貫したレスポンス時間を確保します。
+  - フラッディング攻撃を防ぐため、アカウントとIPアドレスごとにレート制限を実装します。
+  - リセットリクエストフォームに入力検証とSQLインジェクション防止を適用します。
+  - パスワードリセットフォームとエンドポイントを保護するためCSRFトークンを使用します。
 
-- Token Generation and Storage
-  - Generate tokens using cryptographically secure random number generators.
-  - Make tokens sufficiently long to protect against brute-force attacks (minimum 32 bytes).
-  - Store password reset tokens securely using hashing (same practices as password storage).
-  - Link tokens to individual users in the database with expiration times.
-  - Make tokens single-use and invalidate immediately after successful use.
+- トークン生成と保存
+  - 暗号学的に安全な乱数生成器を使用してトークンを生成します。
+  - ブルートフォース攻撃を防ぐため、トークンを十分に長くします（最小32バイト）。
+  - パスワードリセットトークンをハッシュ化を使用して安全に保存します（パスワード保存と同じ手法）。
+  - トークンを有効期限とともにデータベース内の個々のユーザーにリンクします。
+  - トークンを単一使用とし、使用成功後に直ちに無効化します。
 
-- Password Reset Process Security
-  - Require users to confirm new passwords by entering twice.
-  - Enforce consistent password policy throughout the application.
-  - Store new passwords following secure password storage practices.
-  - Send confirmation emails without including the actual password.
-  - Never automatically log users in after password reset.
-  - Invalidate all existing user sessions after successful password reset.
+- パスワードリセットプロセスセキュリティ
+  - ユーザーに新しいパスワードを2回入力して確認することを要求します。
+  - アプリケーション全体で一貫したパスワードポリシーを強制します。
+  - 安全なパスワード保存手法に従って新しいパスワードを保存します。
+  - 実際のパスワードを含めずに確認メールを送信します。
+  - パスワードリセット後にユーザーを自動的にログインさせないでください。
+  - パスワードリセット成功後、すべての既存ユーザーセッションを無効化します。
 
-- URL Token Implementation
-  - Generate secure tokens and attach to URL query strings for email delivery.
-  - Use hardcoded or validated trusted domains for reset URLs (avoid Host header injection).
-  - Enforce HTTPS for all password reset URLs.
-  - Add referrer policy with 'noreferrer' value to prevent referrer leakage.
-  - Implement rate limiting to prevent token brute-forcing attempts.
+- URLトークン実装
+  - 安全なトークンを生成し、メール配信のためURLクエリ文字列に添付します。
+  - リセットURLにはハードコードまたは検証済みの信頼できるドメインを使用します（Hostヘッダーインジェクションを避ける）。
+  - すべてのパスワードリセットURLにHTTPSを強制します。
+  - リファラー漏洩を防ぐため、'noreferrer'値を持つリファラーポリシーを追加します。
+  - トークンブルートフォース試行を防ぐためレート制限を実装します。
 
-- PIN Implementation
-  - Generate PINs between 6-12 digits using cryptographically secure methods.
-  - Create limited sessions from PINs that only permit password reset operations.
-  - Format PINs with spaces for better user readability.
-  - Apply same security practices as tokens (single-use, expiration, secure storage).
+- PIN実装
+  - 暗号学的に安全な方法を使用して6-12桁のPINを生成します。
+  - PINからパスワードリセット操作のみを許可する制限付きセッションを作成します。
+  - ユーザーの読みやすさを向上させるため、PINにスペースを含めてフォーマットします。
+  - トークンと同じセキュリティ手法を適用します（単一使用、有効期限、安全な保存）。
 
-- Security Questions Integration
-  - Use security questions only as additional layer, never as sole mechanism.
-  - Follow secure question selection practices from OWASP guidance.
-  - Validate security question answers using secure comparison methods.
+- セキュリティ質問の統合
+  - セキュリティ質問は唯一のメカニズムとしてではなく、追加の層としてのみ使用します。
+  - OWASPガイダンスからの安全な質問選択手法に従います。
+  - 安全な比較メソッドを使用してセキュリティ質問の回答を検証します。
 
-- Logging and Monitoring (Code-Level)
-  - Log password reset attempts with user context but never log tokens or passwords.
-  - Implement structured logging for security monitoring integration.
-  - Include sufficient context for security analysis (IP, user agent, timestamp).
-  - Never log sensitive information in application logs.
+- ログと監視（コードレベル）
+  - ユーザーコンテキストでパスワードリセット試行をログに記録しますが、トークンやパスワードはログに記録しません。
+  - セキュリティ監視統合のため構造化ログを実装します。
+  - セキュリティ分析のために十分なコンテキスト（IP、ユーザーエージェント、タイムスタンプ）を含めます。
+  - アプリケーションログに機密情報を決してログに記録しません。
 
-- Account Lockout Prevention
-  - Never lock accounts in response to password reset requests.
-  - Implement alternative abuse prevention through rate limiting and monitoring.
-  - Separate password reset abuse protection from authentication lockout mechanisms.
+- アカウントロックアウト防止
+  - パスワードリセットリクエストに応答してアカウントをロックしないでください。
+  - レート制限と監視を通じて代替の悪用防止を実装します。
+  - パスワードリセット悪用保護を認証ロックアウトメカニズムから分離します。
 
-Summary:  
-Implement secure password reset functionality through consistent response handling, cryptographically secure token generation and storage, CSRF protection, proper session management, and comprehensive logging while preventing user enumeration and account lockout attacks.
+要約：
+一貫したレスポンス処理、暗号学的に安全なトークン生成と保存、CSRF保護、適切なセッション管理、包括的なログを通じて安全なパスワードリセット機能を実装し、ユーザー列挙とアカウントロックアウト攻撃を防ぎます。

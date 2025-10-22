@@ -1,6 +1,5 @@
 ---
-description: 'Mobile app security (iOS/Android): storage, transport, code integrity,
-  biometrics, permissions'
+description: 'モバイルアプリセキュリティ（iOS/Android）：ストレージ、トランスポート、コード整合性、生体認証、権限'
 languages:
 - java
 - javascript
@@ -12,103 +11,103 @@ languages:
 alwaysApply: false
 ---
 
-## Mobile Application Security Guidelines
+## モバイルアプリケーションセキュリティガイドライン
 
-Essential security practices for developing secure mobile applications across iOS and Android platforms.
+iOSとAndroidプラットフォーム全体で安全なモバイルアプリケーションを開発するための必須セキュリティプラクティス。
 
-### Architecture and Design
+### アーキテクチャと設計
 
-Implement secure design principles from the start:
-- Follow least privilege and defense in depth principles
-- Use standard secure authentication protocols (OAuth2, JWT)
-- Perform all authentication and authorization checks server-side
-- Request only necessary permissions for app and backend services
-- Establish security controls for app updates, patches, and releases
-- Use only trusted and validated third-party libraries and components
+最初から安全な設計原則を実装：
+- 最小権限と多層防御の原則に従う
+- 標準的な安全な認証プロトコルを使用（OAuth2、JWT）
+- すべての認証と認可チェックをサーバー側で実行
+- アプリとバックエンドサービスに必要な権限のみをリクエスト
+- アプリの更新、パッチ、リリースのセキュリティ制御を確立
+- 信頼できる検証済みのサードパーティライブラリとコンポーネントのみを使用
 
-### Authentication and Authorization
+### 認証と認可
 
-Never trust the client for security decisions:
-- Perform authentication/authorization server-side only
-- Do not store user passwords on device; use revocable access tokens
-- Avoid hardcoding credentials in the mobile app
-- Encrypt credentials in transmission
-- Use platform-specific secure storage (iOS Keychain, Android Keystore)
-- Require password complexity and avoid short PINs (4 digits)
-- Implement session timeouts and remote logout functionality
-- Require re-authentication for sensitive operations
-- Use platform-supported biometric authentication with secure fallbacks
+セキュリティ判断でクライアントを信頼しない：
+- 認証/認可はサーバー側のみで実行
+- ユーザーパスワードをデバイスに保存しない。取り消し可能なアクセストークンを使用
+- モバイルアプリに認証情報をハードコーディングしない
+- 送信中の認証情報を暗号化
+- プラットフォーム固有のセキュアストレージを使用（iOS Keychain、Android Keystore）
+- パスワードの複雑性を要求し、短いPIN（4桁）を避ける
+- セッションタイムアウトとリモートログアウト機能を実装
+- 機密操作には再認証を要求
+- 安全なフォールバックを備えたプラットフォーム対応の生体認証を使用
 
-### Data Storage and Privacy
+### データストレージとプライバシー
 
-Protect sensitive data at rest and in transit:
-- Encrypt sensitive data using platform APIs; avoid custom encryption
-- Leverage hardware-based security features (Secure Enclave, Strongbox)
-- Store private data on device's internal storage only
-- Minimize PII collection to necessity and implement automatic expiration
-- Avoid caching, logging, or background snapshots of sensitive data
-- Always use HTTPS for network communications
+保存時と転送中の機密データを保護：
+- プラットフォームAPIを使用して機密データを暗号化。カスタム暗号化を避ける
+- ハードウェアベースのセキュリティ機能を活用（Secure Enclave、Strongbox）
+- プライベートデータはデバイスの内部ストレージのみに保存
+- PII収集を必要最小限に抑え、自動有効期限を実装
+- 機密データのキャッシュ、ログ記録、バックグラウンドスナップショットを避ける
+- ネットワーク通信には常にHTTPSを使用
 
-### Network Communication
+### ネットワーク通信
 
-Assume all network communication is insecure:
-- Use HTTPS for all network communication
-- Do not override SSL certificate validation for self-signed certificates
-- Use strong, industry standard cipher suites with appropriate key lengths
-- Use certificates signed by trusted CA providers
-- Consider certificate pinning for additional security
-- Encrypt data even if sent over SSL
-- Avoid sending sensitive data via SMS
+すべてのネットワーク通信は安全でないと仮定：
+- すべてのネットワーク通信にHTTPSを使用
+- 自己署名証明書のSSL証明書検証をオーバーライドしない
+- 適切な鍵長を持つ強力な業界標準の暗号スイートを使用
+- 信頼できるCAプロバイダーによって署名された証明書を使用
+- 追加のセキュリティのために証明書ピンニングを検討
+- SSL経由で送信する場合でもデータを暗号化
+- SMSで機密データを送信しない
 
-### Code Quality and Integrity
+### コード品質と整合性
 
-Maintain application security throughout development:
-- Use static analysis tools to identify vulnerabilities
-- Make security a focal point during code reviews
-- Keep all libraries up to date to patch known vulnerabilities
-- Disable debugging in production builds
-- Include code to validate integrity of application code
-- Obfuscate the app binary
-- Implement runtime anti-tampering controls:
-  - Check for debugging, hooking, or code injection
-  - Detect emulator or rooted/jailbroken devices
-  - Verify app signatures at runtime
+開発全体でアプリケーションセキュリティを維持：
+- 静的分析ツールを使用して脆弱性を特定
+- コードレビュー中にセキュリティを焦点にする
+- 既知の脆弱性にパッチを当てるため、すべてのライブラリを最新に保つ
+- 本番ビルドでデバッグを無効化
+- アプリケーションコードの整合性を検証するコードを含める
+- アプリバイナリを難読化
+- ランタイムアンチタンパリング制御を実装：
+  - デバッグ、フック、コードインジェクションをチェック
+  - エミュレーターまたはroot化/Jailbreak済みデバイスを検出
+  - ランタイムでアプリ署名を検証
 
-### Platform-Specific Security
+### プラットフォーム固有のセキュリティ
 
-#### Android Security
-- Use Android's ProGuard for code obfuscation
-- Avoid storing sensitive data in SharedPreferences
-- Disable backup mode to prevent sensitive data in backups
-- Use Android Keystore with hardware backing (TEE or StrongBox)
-- Implement Google's Play Integrity API for device and app integrity checks
+#### Androidセキュリティ
+- コード難読化にAndroidのProGuardを使用
+- SharedPreferencesに機密データを保存しない
+- バックアップモードを無効化して、バックアップ内の機密データを防止
+- ハードウェアバッキング（TEEまたはStrongBox）を持つAndroid Keystoreを使用
+- デバイスとアプリの整合性チェックにGoogleのPlay Integrity APIを実装
 
-#### iOS Security
-- Configure Shortcuts permissions to require device unlock for sensitive actions
-- Set Siri intent `requiresUserAuthentication` to true for sensitive functionality
-- Implement authentication checks on deep link endpoints
-- Use conditional logic to mask sensitive widget content on lock screen
-- Store sensitive data in iOS Keychain, not plist files
-- Use Secure Enclave for cryptographic key storage
-- Implement App Attest API for app integrity validation
-- Use DeviceCheck API for persistent device state tracking
+#### iOSセキュリティ
+- 機密アクションにデバイスのアンロックを要求するようにショートカット権限を設定
+- 機密機能のためにSiriインテント`requiresUserAuthentication`をtrueに設定
+- ディープリンクエンドポイントで認証チェックを実装
+- ロック画面で機密ウィジェットコンテンツをマスクする条件ロジックを使用
+- 機密データはplistファイルではなくiOS Keychainに保存
+- 暗号鍵の保存にSecure Enclaveを使用
+- アプリ整合性検証にApp Attest APIを実装
+- 永続的なデバイス状態追跡にDeviceCheck APIを使用
 
-### Testing and Monitoring
+### テストと監視
 
-Validate security controls through comprehensive testing:
-- Perform penetration testing including cryptographic vulnerability assessment
-- Leverage automated tests to ensure security features work as expected
-- Ensure security features do not harm usability
-- Use real-time monitoring to detect and respond to threats
-- Have a clear incident response plan in place
-- Plan for regular updates and implement forced update mechanisms when necessary
+包括的なテストでセキュリティ制御を検証：
+- 暗号脆弱性評価を含むペネトレーションテストを実施
+- 自動化テストを活用してセキュリティ機能が期待どおりに動作することを保証
+- セキュリティ機能が使いやすさを損なわないことを保証
+- リアルタイム監視を使用して脅威を検出し対応
+- 明確なインシデント対応計画を準備
+- 定期的な更新を計画し、必要に応じて強制更新メカニズムを実装
 
-### Input and Output Validation
+### 入力と出力の検証
 
-Prevent injection and execution attacks:
-- Validate and sanitize all user input
-- Validate and sanitize output to prevent injection attacks
-- Mask sensitive information on UI fields to prevent shoulder surfing
-- Inform users about security-related activities (logins from new devices)
+インジェクションと実行攻撃を防止：
+- すべてのユーザー入力を検証およびサニタイズ
+- インジェクション攻撃を防ぐため、出力を検証およびサニタイズ
+- ショルダーサーフィンを防ぐため、UIフィールドの機密情報をマスク
+- セキュリティ関連のアクティビティをユーザーに通知（新しいデバイスからのログイン）
 
-By following these practices derived from the OWASP Mobile Application Security framework, you can significantly improve the security posture of your mobile applications across both development and operational phases.
+OWASPモバイルアプリケーションセキュリティフレームワークから導出されたこれらのプラクティスに従うことで、開発と運用の両フェーズでモバイルアプリケーションのセキュリティ体制を大幅に改善できます。

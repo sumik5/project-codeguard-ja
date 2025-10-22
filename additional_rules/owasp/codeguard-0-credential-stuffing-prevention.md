@@ -1,5 +1,5 @@
 ---
-description: Credential Stuffing Prevention Best Practices
+description: 認証情報スタッフィング防止のベストプラクティス
 languages:
 - c
 - go
@@ -12,60 +12,60 @@ languages:
 alwaysApply: false
 ---
 
-## Defending Against Credential Stuffing and Password Spraying Attacks
+## 認証情報スタッフィングとパスワードスプレー攻撃への防御
 
-When implementing authentication systems, defend against automated attacks that leverage stolen credentials. These attacks are increasingly sophisticated, and a layered defense strategy is essential.
+認証システムを実装する際、盗まれた認証情報を利用する自動攻撃を防御してください。これらの攻撃はますます洗練されており、多層防御戦略が不可欠です。
 
-| Attack Type | Description |
+| 攻撃タイプ | 説明 |
 |-------------|-------------|
-| Brute Force | Testing multiple passwords from dictionary or other source against a single account |
-| Credential Stuffing | Testing username/password pairs obtained from the breach of another site |
-| Password Spraying | Testing a single weak password against a large number of different accounts |
+| ブルートフォース | 辞書または他のソースから複数のパスワードを単一のアカウントに対してテスト |
+| 認証情報スタッフィング | 他のサイトの侵害から取得したユーザー名/パスワードペアをテスト |
+| パスワードスプレー | 単一の弱いパスワードを多数の異なるアカウントに対してテスト |
 
-MFA is your most effective defense against credential stuffing attacks. Even if attackers have valid credentials, MFA creates a significant barrier.
+MFAは、認証情報スタッフィング攻撃に対する最も効果的な防御です。攻撃者が有効な認証情報を持っていても、MFAは重要な障壁を作り出します。
 
-### 1. Multi-Factor Authentication (MFA): Primary Defense
+### 1. 多要素認証（MFA）：主要な防御
 
-MFA stops 99.9% of credential-based attacks. Implement risk-based MFA that triggers on:
-- New devices or locations
-- Proxy/VPN usage
-- Recent failed login attempts
-- High-risk actions (admin changes, financial transactions)
+MFAは認証情報ベースの攻撃の99.9%を阻止します。以下の場合にトリガーされるリスクベースMFAを実装：
+- 新しいデバイスまたは場所
+- プロキシ/VPN使用
+- 最近のログイン失敗試行
+- 高リスクアクション（管理者変更、金融取引）
 
-Always require MFA for administrative functions and sensitive operations.
+管理機能と機密操作には常にMFAを要求します。
 
-### 2. Layered Controls: Defense in Depth
+### 2. 層状制御：深層防御
 
-* **CAPTCHA:** Trigger based on failed attempts (≥3), proxy/VPN IPs, bot user agents, or high-velocity traffic.
+* **CAPTCHA：** 失敗試行（≥3回）、プロキシ/VPN IP、ボットユーザーエージェント、高速度トラフィックに基づいてトリガー。
 
-* **Rate Limiting:** Implement multiple layers:
-  - Per-IP limits (3-15 attempts based on reputation)
-  - Per-user limits (5 attempts per account)
-  - Global limits to detect distributed attacks
-  - Temporary blocks with automatic expiration
+* **レート制限：** 複数の層を実装：
+  - IP単位の制限（評判に基づいて3-15回の試行）
+  - ユーザー単位の制限（アカウントごとに5回の試行）
+  - 分散攻撃を検出するグローバル制限
+  - 自動有効期限付きの一時ブロック
 
-* **Device Fingerprinting:** Track user-agent, language, screen resolution, and TLS fingerprints to detect anomalous patterns.
+* **デバイスフィンガープリント：** ユーザーエージェント、言語、画面解像度、TLSフィンガープリントを追跡して異常パターンを検出。
 
-* **Unpredictable Usernames:** Avoid email addresses as usernames; use generated, non-sequential identifiers.
+* **予測不可能なユーザー名：** ユーザー名としてメールアドレスを避ける；生成された非連続の識別子を使用。
 
-### 3. Additional Defenses
+### 3. 追加の防御
 
-* **Multi-Step Login:** Require JavaScript token generation or CSRF tokens to complicate automated tools.
+* **マルチステップログイン：** JavaScriptトークン生成またはCSRFトークンを要求して、自動ツールを複雑化。
 
-* **Breached Password Detection:** Check new passwords against breach databases using [HaveIBeenPwned API](https://haveibeenpwned.com/API/v3) and reject passwords found in data breaches.
+* **侵害パスワード検出：** [HaveIBeenPwned API](https://haveibeenpwned.com/API/v3)を使用して侵害データベースに対して新しいパスワードをチェックし、データ侵害で見つかったパスワードを拒否。
 
-* **User Notifications:** Alert users about successful logins from new devices and provide session management dashboards.
+* **ユーザー通知：** 新しいデバイスからのログイン成功についてユーザーにアラートし、セッション管理ダッシュボードを提供。
 
-### 4. Monitoring and Alerting
+### 4. 監視とアラート
 
-* **Attack Detection:** Monitor for:
-  - High failed login volumes (>100/min)
-  - Many unique attacking IPs (>50/min)
-  - Abnormal CAPTCHA solve rates (>95%)
-  - Distributed attacks from hosting providers
+* **攻撃検出：** 以下を監視：
+  - 高いログイン失敗量（>100/分）
+  - 多数の一意な攻撃IP（>50/分）
+  - 異常なCAPTCHA解決率（>95%）
+  - ホスティングプロバイダーからの分散攻撃
 
-* **Impossible Travel Detection:** Alert when users appear to login from distant locations within impossible timeframes (faster than commercial flight speed).
+* **不可能な移動の検出：** 不可能な時間枠内で遠い場所からユーザーがログインしたように見える場合（商業飛行速度より速い）にアラート。
 
-* **Breach Intelligence:** Integrate with [HaveIBeenPwned API](https://haveibeenpwned.com/API/v3) to detect newly compromised credentials.
+* **侵害インテリジェンス：** [HaveIBeenPwned API](https://haveibeenpwned.com/API/v3)と統合して、新たに侵害された認証情報を検出。
 
-These layered defenses significantly increase attack cost while maintaining good user experience.
+これらの層状防御は、良好なユーザーエクスペリエンスを維持しながら、攻撃コストを大幅に増加させます。
